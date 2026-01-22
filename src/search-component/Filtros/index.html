@@ -1,0 +1,792 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoricambi | Buscador</title>
+    <!-- Google Fonts: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#0066D6',
+                            dark: '#232628',
+                            grey: '#E6E6E6',
+                            light: '#F8F9FA'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Source Sans Pro"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        /* Header Dark Style */
+        .brand-header {
+            background-color: #232628;
+        }
+
+        /* Rounded Search Bar like the website */
+        .search-container input {
+            border-radius: 9999px;
+            border: 1px solid #E6E6E6;
+        }
+
+        /* Table improvements */
+        .table-header {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #eef2f7;
+        }
+
+        /* Brand Blue Accents */
+        .text-brand-blue {
+            color: #0066D6;
+        }
+
+        .bg-brand-blue {
+            background-color: #0066D6;
+        }
+
+        .border-brand-blue {
+            border-color: #0066D6;
+        }
+
+        /* Custom highlight color to match brand */
+        mark {
+            background-color: #e0f2fe;
+            color: #0066D6;
+            padding: 0 2px;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-card-view thead {
+                display: none;
+            }
+
+            .mobile-card-view tbody tr {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 1.5rem;
+                background-color: white;
+                border-radius: 1rem;
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+                border: 1px solid #eef2f7;
+                padding: 1.5rem;
+            }
+
+            .mobile-card-view td {
+                display: flex;
+                justify-content: space-between;
+                padding: 0.75rem 0;
+                border-bottom: 1px solid #f8fafc;
+                text-align: right;
+                font-size: 0.875rem;
+            }
+
+            .mobile-card-view td:last-child {
+                border-bottom: none;
+            }
+
+            .mobile-card-view td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: #94a3b8;
+                text-transform: uppercase;
+                font-size: 0.7rem;
+                letter-spacing: 0.05em;
+                text-align: left;
+                padding-right: 1rem;
+            }
+        }
+
+        /* Generic Loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0066D6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+        }
+
+        .modal-container {
+            max-height: 90vh;
+            width: 95%;
+            max-width: 900px;
+        }
+
+        /* Carousel Styles */
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+            background: #f8fafc;
+            width: 100%;
+            height: 100%;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.2s ease-out, opacity 0.3s ease;
+            cursor: zoom-in;
+            transform-origin: center center;
+        }
+
+        .carousel-slide.zoomed {
+            transform: scale(2.5);
+            cursor: zoom-out;
+            z-index: 10;
+        }
+
+        .carousel-slide.active {
+            display: block;
+        }
+
+        .dot {
+            height: 8px;
+            width: 8px;
+            background-color: #cbd5e1;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .dot.active {
+            background-color: #0066D6;
+            width: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Brand Header -->
+    <header class="brand-header py-4 px-6 md:px-12 shadow-md sticky top-0 z-50 flex-none">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <!-- Logo Section -->
+            <div class="flex-shrink-0">
+                <img src="logo.png" alt="Auto Ricambi Logo" class="h-10 md:h-12 w-auto object-contain">
+            </div>
+
+            <!-- Global Search - Re-styled to match website -->
+            <div class="relative w-full md:w-3/5 search-container group">
+                <input type="text" id="globalSearch"
+                    class="block w-full py-3 px-6 pl-12 text-base text-slate-900 bg-white focus:ring-2 focus:ring-brand-blue outline-none transition-all shadow-sm"
+                    placeholder="Buscar productos (Código, descripción, marca...)">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                    <i data-lucide="search"
+                        class="w-5 h-5 text-slate-400 group-focus-within:text-brand-blue transition-colors"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col justify-center max-w-7xl mx-auto p-4 md:p-8 space-y-8 w-full">
+
+        <!-- Filters Section -->
+        <div class="p-8 rounded-2xl shadow-sm border border-slate-100" style="background-color: rgb(187 187 187 / 0.5)">
+            <div class="flex items-center gap-2 mb-6 border-b border-slate-200 pb-4">
+                <i data-lucide="sliders-horizontal" class="w-5 h-5 text-brand-blue"></i>
+                <h2 class="text-lg font-bold text-brand-dark uppercase tracking-tight">Filtros Avanzados</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Rubro</label>
+                    <div class="relative">
+                        <select id="filterRubro"
+                            class="w-full p-4 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue focus:border-brand-blue outline-none appearance-none cursor-pointer transition-all hover:border-brand-blue/50 shadow-sm">
+                            <option value="">Todos los Rubros</option>
+                        </select>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-4 top-4.5 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Subrubro</label>
+                    <div class="relative">
+                        <select id="filterSubrubro" disabled
+                            class="w-full p-4 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none appearance-none cursor-pointer disabled:opacity-40 disabled:bg-slate-100 disabled:cursor-not-allowed transition-all hover:border-brand-blue/50 shadow-sm">
+                            <option value="">Selecciona Rubro primero</option>
+                        </select>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-4 top-4.5 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase tracking-widest pl-1">Marca</label>
+                    <div class="relative">
+                        <select id="filterMarca" disabled
+                            class="w-full p-4 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none appearance-none cursor-pointer disabled:opacity-40 disabled:bg-slate-100 disabled:cursor-not-allowed transition-all hover:border-brand-blue/50 shadow-sm">
+                            <option value="">Selecciona Subrubro primero</option>
+                        </select>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-4 top-4.5 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button id="btnSearch"
+                        class="w-full p-3.5 bg-brand-blue hover:bg-blue-700 text-white font-bold rounded-full shadow-lg hover:shadow-xl transform active:scale-95 transition-all flex justify-center items-center gap-2 uppercase text-sm">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                        Buscar
+                    </button>
+                    <button id="btnReset"
+                        class="w-full p-3.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-full border border-slate-200 transform active:scale-95 transition-all flex justify-center items-center gap-2 uppercase text-sm">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                        Limpiar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="statusMessage" class="text-center py-12 hidden">
+            <div class="flex flex-col items-center justify-center text-slate-400 gap-4">
+                <i data-lucide="search-x" class="w-16 h-16 text-slate-200"></i>
+                <p class="text-lg font-medium text-slate-600">No se encontraron productos con esa combinación.</p>
+                <button type="button" id="btnResetInline" class="text-brand-blue hover:underline font-semibold">Limpiar
+                    filtros e intentar de nuevo</button>
+            </div>
+        </div>
+
+        <div class="overflow-hidden rounded-2xl shadow-xl border border-slate-200"
+            style="background-color: rgb(187 187 187 / 0.5)">
+            <table class="w-full mobile-card-view" id="resultsTable">
+                <thead class="table-header">
+                    <tr>
+                        <th
+                            class="p-5 text-left text-xs font-bold text-slate-500 uppercase tracking-widest w-1/4 border-r border-slate-100">
+                            Código de Pieza</th>
+                        <th class="p-5 text-left text-xs font-bold text-slate-500 uppercase tracking-widest w-3/4">
+                            Descripción del Producto</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100" id="tableBody">
+                    <tr>
+                        <td colspan="2" class="p-8 text-center">
+                            <span class="text-slate-400">Selecciona los filtros y haz clic en "Buscar" para ver
+                                resultados</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="resultCount" class="text-right text-sm font-bold text-brand-dark opacity-60 mt-4 tracking-tight"></div>
+
+    </main>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 modal-overlay" onclick="closeModal()"></div>
+        <div
+            class="relative bg-white rounded-3xl shadow-2xl modal-container overflow-hidden flex flex-col md:flex-row animate-[fadeIn_0.2s_ease-out]">
+
+            <!-- Close Button -->
+            <button onclick="closeModal()"
+                class="absolute top-4 right-4 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-sm transition-all text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <!-- Left: Carousel (Full Width/Height) -->
+            <div class="w-full md:w-1/2 flex flex-col relative bg-slate-100 min-h-[400px]">
+                <div class="carousel-container">
+                    <img id="modalImg1" class="carousel-slide active" src="" alt="Imagen 1">
+                    <img id="modalImg2" class="carousel-slide" src="" alt="Imagen 2">
+                    <img id="modalImg3" class="carousel-slide" src="" alt="Imagen 3">
+
+                    <!-- Navigation Arrows -->
+                    <button onclick="changeSlide(-1)"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-md text-slate-700 hover:text-brand-blue z-20">
+                        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                    </button>
+                    <button onclick="changeSlide(1)"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 p-2 rounded-full shadow-md text-slate-700 hover:text-brand-blue z-20">
+                        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                    </button>
+
+                    <!-- Dots (Overlayed) -->
+                    <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-1 z-20" id="carouselDots">
+                        <span class="dot active" onclick="setSlide(0)"></span>
+                        <span class="dot" onclick="setSlide(1)"></span>
+                        <span class="dot" onclick="setSlide(2)"></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right: Technical Details -->
+            <div class="w-full md:w-1/2 p-6 md:p-8 pb-12 md:pb-16 bg-slate-50 overflow-y-auto">
+                <div class="flex flex-col">
+                    <div class="mb-6">
+                        <span id="modalRubro"
+                            class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 block"></span>
+                        <h2 id="modalTitle" class="text-xl md:text-2xl font-bold text-slate-800 leading-tight"></h2>
+                        <div class="flex items-center justify-between mt-1">
+                            <p id="modalCodigo" class="text-brand-blue font-bold"></p>
+                            <div id="modalStockBadge" class="w-6 h-6 rounded-full border border-white/20 shadow-sm"
+                                title="Stock"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <!-- Costo -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-400 flex flex-col h-full">
+                            <h3
+                                class="text-xs font-bold text-brand-blue uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <i data-lucide="wallet" class="w-3.5 h-3.5"></i> Costo
+                            </h3>
+                            <div
+                                class="flex items-center w-full px-3 py-2 bg-white/50 border border-slate-200 rounded-lg shadow-inner group/toggle relative overflow-hidden h-[46px]">
+                                <p id="modalCosto"
+                                    class="text-lg font-bold text-slate-700 flex-grow tracking-wider transition-all duration-200">
+                                </p>
+                                <button onclick="toggleCostVisibility()"
+                                    class="ml-2 p-1 text-slate-400 hover:text-brand-blue transition-colors outline-none"
+                                    title="Ver/Ocultar">
+                                    <div id="costToggleIconContainer" class="w-5 h-5"></div>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Precio Venta -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-400 flex flex-col h-full">
+                            <h3
+                                class="text-xs font-bold text-brand-blue uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <i data-lucide="tag" class="w-3.5 h-3.5"></i> Precio de Venta
+                            </h3>
+                            <div
+                                class="flex items-center w-full px-3 py-2 bg-white border border-slate-200 rounded-lg shadow-sm h-[46px]">
+                                <p id="modalPrecio" class="text-lg font-bold text-slate-700 flex-grow"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 flex-grow">
+                        <div>
+                            <h3
+                                class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <i data-lucide="info" class="w-3.5 h-3.5"></i> Marca
+                            </h3>
+                            <p id="modalMarca" class="text-slate-700 font-semibold"></p>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-400">
+                            <h3
+                                class="text-xs font-bold text-brand-blue uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <i data-lucide="info" class="w-3.5 h-3.5"></i> Información
+                            </h3>
+                            <p class="text-sm text-slate-500 italic">Características y equivalencias deshabilitadas
+                                temporalmente.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 mb-6 flex justify-center">
+                        <a id="modalWebLink" href="#" target="_blank"
+                            class="w-full max-w-[200px] bg-brand-blue hover:bg-blue-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-3 transition-all shadow-lg hover:shadow-brand-blue/20">
+                            Pedir
+                            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN
+        const EXCEL_FILE_PATH = 'Filtros.xlsx';
+
+        // ESTADO GLOBAL
+        let allData = [];
+        let filteredData = [];
+
+        // Elementos del DOM
+        const els = {
+            search: document.getElementById('globalSearch'),
+            rubro: document.getElementById('filterRubro'),
+            subrubro: document.getElementById('filterSubrubro'),
+            marca: document.getElementById('filterMarca'),
+            btnSearch: document.getElementById('btnSearch'),
+            reset: document.getElementById('btnReset'),
+            tbody: document.getElementById('tableBody'),
+            status: document.getElementById('statusMessage'),
+            count: document.getElementById('resultCount'),
+            modal: document.getElementById('productModal')
+        };
+
+        // INICIALIZACIÓN
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            fetchData();
+        });
+
+        // 1. CARGA Y PARSEO DE DATOS
+        async function fetchData() {
+            try {
+                // Add cache buster to ensure the browser gets the latest file
+                const response = await fetch(`${EXCEL_FILE_PATH}?t=${Date.now()}`);
+                if (!response.ok) throw new Error("No se pudo cargar el archivo Excel.");
+                const arrayBuffer = await response.arrayBuffer();
+                parseExcel(arrayBuffer);
+            } catch (error) {
+                console.error(error);
+                els.tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-red-500">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        function parseExcel(arrayBuffer) {
+            const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+            allData = data.slice(1).map(row => {
+                let costoValue = parseFloat((row[2] || '0').toString().replace(/[^\d.-]/g, '')) || 0;
+                let precioCalculado = (costoValue * 58) / 10000;
+
+                const sub = (row[8] || '').toString().trim();
+                const invalidSubs = ['INA', 'BOSCH', 'CONTITECH'];
+                const subrubroFiltered = invalidSubs.includes(sub.toUpperCase()) ? '' : sub;
+
+                return {
+                    codigo: (row[0] || '').toString().trim(),
+                    descripcion: (row[1] || '').toString().trim(),
+                    subrubro: subrubroFiltered,
+                    marca: (row[13] || '').toString().trim(),
+                    rubro: (row[14] || '').toString().trim(),
+                    costo: costoValue.toString(),
+                    precio: precioCalculado.toFixed(2),
+                    stock: parseInt((row[11] || 0).toString().replace(/\D/g, '')) || 0
+                };
+            }).filter(item => {
+                const cod = item.codigo.toLowerCase();
+                const rub = item.rubro.toLowerCase();
+                if (cod === 'código' || cod === 'codigo' || cod.includes('columna')) return false;
+                const invalidRubros = ['13', 'puente', 'mariposa', 'columna 13', 'columna 7', 'columna 12', 'cable puente', 'cuerpo mariposa'];
+                return item.codigo !== '' && !invalidRubros.includes(rub) && rub !== '';
+            });
+
+            initFilters();
+            showInitialMessage();
+        }
+
+        // 2. LOGICA DE FILTROS
+        function getUniqueValues(data, key) {
+            return [...new Set(data.map(item => item[key]).filter(x => x))].sort();
+        }
+
+        function populateSelect(selectElement, values, defaultText) {
+            selectElement.innerHTML = `<option value="">${defaultText}</option>`;
+            values.forEach(val => {
+                const opt = document.createElement('option');
+                opt.value = opt.textContent = val;
+                selectElement.appendChild(opt);
+            });
+            selectElement.disabled = false;
+        }
+
+        function initFilters() {
+            populateSelect(els.rubro, getUniqueValues(allData, 'rubro'), "Todos los Rubros");
+        }
+
+        els.rubro.addEventListener('change', (e) => {
+            const val = e.target.value;
+            els.subrubro.innerHTML = '<option value="">Todos los Subrubros</option>';
+            els.subrubro.disabled = true;
+            els.marca.innerHTML = '<option value="">Todas las Marcas</option>';
+            els.marca.disabled = true;
+            if (val) {
+                const subrubros = getUniqueValues(allData.filter(d => d.rubro === val), 'subrubro');
+                populateSelect(els.subrubro, subrubros, "Todos los Subrubros");
+            }
+            applyFilters();
+        });
+
+        els.subrubro.addEventListener('change', (e) => {
+            const r = els.rubro.value;
+            const s = e.target.value;
+            els.marca.innerHTML = '<option value="">Todas las Marcas</option>';
+            els.marca.disabled = true;
+            if (s) {
+                const marcas = getUniqueValues(allData.filter(d => d.rubro === r && d.subrubro === s), 'marca');
+                populateSelect(els.marca, marcas, "Todas las Marcas");
+            }
+            applyFilters();
+        });
+
+        // 3. BUSQUEDA
+        function applyFilters() {
+            const rub = els.rubro.value;
+            const sub = els.subrubro.value;
+            const mar = els.marca.value;
+            const search = els.search.value.toLowerCase().trim();
+            const terms = search.split(/\s+/).filter(t => t);
+
+            filteredData = allData.filter(item => {
+                const matchFiltros = (!rub || item.rubro === rub) && (!sub || item.subrubro === sub) && (!mar || item.marca === mar);
+                const itemVals = Object.values(item).map(v => v.toString().toLowerCase());
+                const matchSearch = terms.every(t => itemVals.some(v => v.includes(t)));
+                return matchFiltros && matchSearch;
+            });
+            renderTable(search);
+        }
+
+        function highlightText(text, query) {
+            if (!query) return text;
+            const terms = query.split(/\s+/).filter(t => t).sort((a, b) => b.length - a.length);
+            if (!terms.length) return text;
+            const pattern = terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+            const regex = new RegExp(`(${pattern})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        function renderTable(q = '') {
+            els.tbody.innerHTML = '';
+            els.count.textContent = `${filteredData.length} resultados encontrados`;
+            if (filteredData.length === 0) {
+                els.status.classList.remove('hidden');
+                return;
+            }
+            els.status.classList.add('hidden');
+            const fragment = document.createDocumentFragment();
+            filteredData.slice(0, 100).forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-white transition-colors duration-200 border-b border-white/10 last:border-b-0 cursor-default";
+                const searchUrl = `https://www.autoricambi.com.ar/busqueda?controller=search&order=product.position.desc&s=${item.codigo.toLowerCase()}`;
+                tr.innerHTML = `
+                    <td class="p-5 font-bold text-sm border-r border-slate-50" data-label="Código">
+                        <a href="${searchUrl}" target="_blank" class="text-brand-blue hover:text-blue-800 transition-all flex items-center gap-2 group">
+                            <span class="bg-slate-50 px-2 py-1 rounded-md border border-slate-100 group-hover:border-brand-blue group-hover:bg-blue-50">${highlightText(item.codigo, q)}</span>
+                            <i data-lucide="external-link" class="w-4 h-4 opacity-30 group-hover:opacity-100 transition-opacity"></i>
+                        </a>
+                    </td>
+                    <td class="p-5 text-sm text-slate-800 leading-relaxed" data-label="Descripción">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                            <a href="${searchUrl}" target="_blank" class="hover:text-brand-blue transition-colors flex-grow">
+                                ${highlightText(item.descripcion, q)}
+                            </a>
+                             <div class="flex items-center gap-2">
+                                <button onclick="openProductDetail('${item.codigo}')" class="flex-none flex items-center gap-2 px-4 py-2 bg-white hover:bg-brand-blue hover:text-white text-brand-blue border border-brand-blue/20 rounded-full text-xs font-bold transition-all shadow-sm active:scale-95 group/btn">
+                                    <span class="w-4 h-4 flex items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="group-hover/btn:stroke-white transition-colors"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    </span>
+                                    Ver más
+                                </button>
+                                ${(() => {
+                        const s = item.stock;
+                        let color = 'bg-red-500';
+                        if (s > 5) color = 'bg-green-500';
+                        else if (s >= 1) color = 'bg-yellow-400';
+                        return `<div class="w-[34px] h-[34px] rounded-full ${color} shadow-inner border border-white/20 flex-none" title="Disponibilidad: ${s} unidades"></div>`;
+                    })()}
+                             </div>
+                        </div>
+                    </td>
+                `;
+                fragment.appendChild(tr);
+            });
+            els.tbody.appendChild(fragment);
+            lucide.createIcons();
+        }
+
+        els.btnSearch.addEventListener('click', applyFilters);
+        els.search.addEventListener('keypress', e => e.key === 'Enter' && applyFilters());
+        els.reset.addEventListener('click', () => {
+            els.search.value = els.rubro.value = '';
+            els.subrubro.innerHTML = '<option value="">Selecciona Rubro primero</option>';
+            els.subrubro.disabled = true;
+            els.marca.innerHTML = '<option value="">Selecciona Subrubro primero</option>';
+            els.marca.disabled = true;
+            filteredData = [];
+            showInitialMessage();
+            const icon = els.reset.querySelector('i');
+            icon.classList.add('animate-spin');
+            setTimeout(() => icon.classList.remove('animate-spin'), 500);
+        });
+        document.getElementById('btnResetInline')?.addEventListener('click', () => els.reset.click());
+
+        function showInitialMessage() {
+            els.tbody.innerHTML = `<tr><td colspan="2" class="p-8 text-center text-slate-400">Selecciona los filtros y haz clic en "Buscar" para ver resultados</td></tr>`;
+            els.count.textContent = '';
+            els.status.classList.add('hidden');
+        }
+
+        // CAROUSEL & MODAL LOGIC
+        let currentSlide = 0;
+        const ICONS = {
+            eye: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0066D6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`,
+            eyeOff: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`
+        };
+
+        function openProductDetail(codigo) {
+            const item = allData.find(d => d.codigo === codigo);
+            if (!item) return;
+
+            // Fill Modal Data
+            document.getElementById('modalTitle').textContent = item.descripcion;
+            document.getElementById('modalCodigo').textContent = `Código: ${item.codigo}`;
+            document.getElementById('modalMarca').textContent = item.marca || 'N/A';
+            // Cost/Price Formatting
+            const formatPrice = (val) => {
+                const n = parseFloat(val.toString().replace('$', '').replace(',', ''));
+                return isNaN(n) ? '---' : n.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            };
+
+            const rawCost = formatPrice(item.costo);
+            document.getElementById('modalCosto').dataset.value = `$${rawCost}`;
+            document.getElementById('modalCosto').textContent = '••••••••';
+            document.getElementById('modalPrecio').textContent = `$${formatPrice(item.precio)}`;
+
+            // Features and equivalents logic removed per simplification request
+
+            // Carousel Images
+            // Lógica: Imagenes/codigo-1.webp, codigo-2.webp, codigo-3.webp (Todo en minúsculas)
+            for (let i = 1; i <= 3; i++) {
+                const img = document.getElementById(`modalImg${i}`);
+                const codeLower = item.codigo.toLowerCase();
+                img.src = `Imagenes/${codeLower}-${i}.webp`;
+                img.onerror = () => { img.src = 'https://placehold.co/600x600/f8fafc/0066D6?text=Foto+no+disponible'; };
+
+                // Add Zoom Event Listeners
+                img.onmousemove = (e) => handleZoom(e, img);
+                img.onmouseleave = () => resetZoom(img);
+                img.onclick = () => toggleZoom(img);
+            }
+
+            setSlide(0);
+
+            // Reset Cost privacy state
+            const costoEl = document.getElementById('modalCosto');
+            costoEl.textContent = '••••••••';
+            costoEl.classList.add('tracking-widest');
+            document.getElementById('costToggleIconContainer').innerHTML = ICONS.eyeOff;
+
+            els.modal.classList.remove('hidden');
+            lucide.createIcons(); // Re-activate for other icons in modal
+            document.body.style.overflow = 'hidden'; // Lock scroll
+        }
+
+        function toggleCostVisibility() {
+            const costoEl = document.getElementById('modalCosto');
+            const iconContainer = document.getElementById('costToggleIconContainer');
+            const isHidden = costoEl.textContent === '••••••••';
+
+            if (isHidden) {
+                costoEl.textContent = costoEl.dataset.value;
+                costoEl.classList.remove('tracking-widest');
+                iconContainer.innerHTML = ICONS.eye;
+            } else {
+                costoEl.textContent = '••••••••';
+                costoEl.classList.add('tracking-widest');
+                iconContainer.innerHTML = ICONS.eyeOff;
+            }
+        }
+
+        function closeModal() {
+            els.modal.classList.add('hidden');
+            document.body.style.overflow = ''; // Unlock scroll
+        }
+
+        function setSlide(index) {
+            currentSlide = index;
+            const slides = document.querySelectorAll('.carousel-slide');
+            const dots = document.querySelectorAll('.dot');
+
+            slides.forEach((s, i) => s.classList.toggle('active', i === index));
+            dots.forEach((d, i) => d.classList.toggle('active', i === index));
+        }
+
+        function changeSlide(n) {
+            let nextIndex = currentSlide + n;
+            if (nextIndex > 2) nextIndex = 0;
+            if (nextIndex < 0) nextIndex = 2;
+
+            // Reset zoom on all slides before changing
+            document.querySelectorAll('.carousel-slide').forEach(resetZoom);
+            setSlide(nextIndex);
+        }
+
+        // ZOOM LOGIC
+        function handleZoom(e, img) {
+            if (!img.classList.contains('zoomed')) return;
+
+            const rect = img.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+            img.style.transformOrigin = `${x}% ${y}%`;
+        }
+
+        function resetZoom(img) {
+            img.classList.remove('zoomed');
+            img.style.transformOrigin = 'center center';
+        }
+
+        function toggleZoom(img) {
+            img.classList.toggle('zoomed');
+            if (!img.classList.contains('zoomed')) {
+                img.style.transformOrigin = 'center center';
+            }
+        }
+
+        // Keyboard listeners
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+            if (!els.modal.classList.contains('hidden')) {
+                if (e.key === 'ArrowLeft') changeSlide(-1);
+                if (e.key === 'ArrowRight') changeSlide(1);
+            }
+        });
+    </script>
+</body>
+
+</html>

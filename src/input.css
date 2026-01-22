@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .btn-primary {
+        @apply bg-brand-blue text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300 font-bold;
+    }
+
+    .btn-outline {
+        @apply border-2 border-brand-blue text-brand-blue px-6 py-2 rounded-md hover:bg-brand-blue hover:text-white transition duration-300 font-bold;
+    }
+
+    .container-custom {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+}
+
+@layer utilities {
+    .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    @keyframes scroll {
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+
+    .animate-scroll {
+        animation: scroll 40s linear infinite;
+        width: max-content;
+    }
+}

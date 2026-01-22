@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoricambi | Buscador</title>
+    <!-- Tailwind CSS Output -->
+    <link href="./src/output.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+</head>
+
+<body class="bg-gray-50 text-brand-dark font-sans flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-brand-nav shadow-md sticky top-0 z-50">
+        <div class="container-custom py-2">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center">
+                    <img src="./src/img/logo.png" alt="Autoricambi" class="h-10 md:h-12 object-contain">
+                </a>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex flex-1 mx-12 justify-center">
+                    <div class="flex items-center space-x-6 text-white text-base font-medium">
+                        <a href="index.html" class="hover:text-brand-accent transition">Inicio</a>
+                        <a href="catalog.html?category=electricidad"
+                            class="hover:text-brand-accent transition">Electricidad</a>
+                        <a href="catalog.html?category=inyeccion"
+                            class="hover:text-brand-accent transition">Inyeccion</a>
+                        <a href="catalog.html?category=motor" class="hover:text-brand-accent transition">Motor</a>
+                        <a href="catalog.html?category=refrigeracion"
+                            class="hover:text-brand-accent transition">Refrigeración</a>
+                        <a href="catalog.html?category=accesorios"
+                            class="hover:text-brand-accent transition">Accesorios</a>
+                    </div>
+                </nav>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-6 text-white">
+                    <a href="login.html"
+                        class="hidden md:flex items-center space-x-2 hover:text-brand-accent transition">
+                        <i class="fas fa-user-circle text-2xl"></i>
+                        <span class="font-medium text-base">Iniciar Sesión</span>
+                    </a>
+
+                    <a href="cart.html" class="relative hover:text-brand-accent transition">
+                        <i class="fas fa-shopping-cart text-2xl"></i>
+                        <span
+                            class="cart-count absolute -top-2 -right-2 bg-brand-red text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-brand-blue">0</span>
+                    </a>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="md:hidden text-2xl focus:outline-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu (Hidden) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-nav border-t border-white/10 p-4">
+            <a href="login.html" class="block py-2 text-white hover:text-brand-accent"><i class="fas fa-user mr-2"></i>
+                Iniciar Sesión</a>
+            <a href="catalog.html" class="block py-2 text-white hover:text-brand-accent"><i
+                    class="fas fa-book-open mr-2"></i> Catálogo</a>
+            <a href="#contacto" class="block py-2 text-white hover:text-brand-accent"><i
+                    class="fas fa-envelope mr-2"></i> Contacto</a>
+        </div>
+    </header>
+
+    <main class="flex-grow container-custom py-8">
+        <h1 class="text-3xl font-bold mb-8">Mi Pedido</h1>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Cart Items -->
+            <div class="flex-grow bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+                            <tr>
+                                <th class="p-4" width="40%">Producto</th>
+                                <th class="p-4 text-right">Precio Unit.</th>
+                                <th class="p-4 text-center">Cantidad</th>
+                                <th class="p-4 text-right">Subtotal</th>
+                                <th class="p-4 text-center">Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cart-items" class="divide-y divide-gray-100 text-sm">
+                            <!-- Items Injected Here -->
+                            <tr>
+                                <td colspan="5" class="p-8 text-center"><i class="fas fa-spinner fa-spin"></i>
+                                    Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="w-full lg:w-96">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 sticky top-24">
+                    <h3 class="text-lg font-bold mb-4">Resumen de Cuenta</h3>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between text-gray-600">
+                            <span>Subtotal</span>
+                            <span id="cart-subtotal">-</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600">
+                            <span>Impuestos (Est.)</span>
+                            <span>Consultar</span>
+                        </div>
+                        <div class="border-t pt-3 flex justify-between font-bold text-xl text-brand-dark">
+                            <span>Total</span>
+                            <span id="cart-total">$ 0</span>
+                        </div>
+                    </div>
+
+                    <button onclick="window.checkout()"
+                        class="w-full bg-brand-blue text-white py-3 rounded-md font-bold shadow-lg hover:bg-green-600 transition duration-300 flex items-center justify-center">
+                        <i class="fab fa-whatsapp text-2xl mr-2"></i> Solicitar Presupuesto
+                    </button>
+                    <p class="text-xs text-gray-400 text-center mt-3">
+                        Al solicitar presupuesto serás redirigido a WhatsApp para confirmar stock y envíos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-auto">
+        <div class="container-custom grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <div class="text-white text-2xl font-bold mb-4">Autoricambi</div>
+                <p class="text-sm mb-4">Somos líderes en distribución de autopartes. Comprometidos con la calidad y el
+                    servicio al cliente.</p>
+                <div class="flex space-x-4">
+                    <a href="#"
+                        class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-brand-blue transition"><i
+                            class="fab fa-facebook-f"></i></a>
+                    <a href="#"
+                        class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-pink-600 transition"><i
+                            class="fab fa-instagram"></i></a>
+                    <a href="#"
+                        class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-green-500 transition"><i
+                            class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4">Enlaces Rápidos</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="index.html" class="hover:text-white transition">Inicio</a></li>
+                    <li><a href="catalog.html" class="hover:text-white transition">Catálogo</a></li>
+                    <li><a href="#" class="hover:text-white transition">Cómo Comprar</a></li>
+                    <li><a href="#" class="hover:text-white transition">Zona Clientes</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4" id="contacto">Contacto</h4>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-2 text-brand-accent"></i>
+                        Córdoba, Argentina</li>
+                    <li class="flex items-center"><i class="fas fa-phone-alt mr-2 text-brand-accent"></i> 351 686-1092
+                    </li>
+                    <li class="flex items-center"><i class="fas fa-envelope mr-2 text-brand-accent"></i>
+                        info@autoricambi.com.ar</li>
+                </ul>
+            </div>
+        </div>
+        <div class="container-custom border-t border-gray-800 mt-8 pt-8 text-center text-xs text-gray-500">
+            &copy; 2026 Autoricambi. Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/5493516861092?text=%C2%A1Hola%20Autoricambi!%20Quiero%20consultarles%20sobre..."
+        target="_blank" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;"
+        class="bg-green-500 hover:bg-green-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group">
+        <i class="fab fa-whatsapp text-3xl"></i>
+        <span
+            class="absolute right-full mr-3 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+            ¡Chateá con nosotros!
+        </span>
+    </a>
+
+    <script type="module" src="./src/js/main.js"></script>
+</body>
+
+</html>
