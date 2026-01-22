@@ -161,6 +161,65 @@ if (els.marca) {
 
 // 3. SEARCH LOGIC
 
+// Synonyms Configuration
+const SYNONYMS = {
+    'bomba': ['bba'],
+    'bba': ['bomba'],
+    'k': ['kit'],
+    'kit': ['k'],
+    'izq': ['izquierda'],
+    'der': ['derecha'],
+    'del': ['delantera'],
+    'tras': ['trasera']
+};
+
+// Levenshtein Distance for Fuzzy Search
+function levenshtein(a, b) {
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+
+    const matrix = [];
+
+    // increment along the first column of each row
+    for (let i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+    }
+
+    // increment each column in the first row
+    for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+    }
+
+    // Fill in the rest of the matrix
+    for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1, // substitution
+                    Math.min(
+                        matrix[i][j - 1] + 1, // insertion
+                        matrix[i - 1][j] + 1  // deletion
+                    )
+                );
+            }
+        }
+    }
+
+    return matrix[b.length][a.length];
+}
+
+function expandTerm(term) {
+    const expansions = [term];
+    if (SYNONYMS[term]) {
+        expansions.push(...SYNONYMS[term]);
+    }
+    return expansions;
+}
+
+// Helper to remove accents/diacritics
+
 // Helper to remove accents/diacritics
 function normalizeText(text) {
     if (!text) return "";
@@ -176,18 +235,72 @@ function applyFilters() {
     const mar = els.marca ? els.marca.value : '';
     const searchRaw = els.search.value.trim();
     const searchNorm = normalizeText(searchRaw);
-    const terms = searchNorm.split(/\s+/).filter(t => t);
 
-    filteredData = allData.filter(item => {
+    // Split query into terms and filter empty
+    const queryTerms = searchNorm.split(/\s+/).filter(t => t);
+
+    // If no search terms and no filters, show all (or limit if needed, but logic below handles filtering)
+    // We only filter if we have > 0 terms or active select filters.
+
+    filteredData = allData.map(item => {
+        // 1. Hard Filters (Rubro, Subrubro, Marca) - boolean check
         const matchFiltros = (!rub || item.rubro === rub) && (!sub || item.subrubro === sub) && (!mar || item.marca === mar);
+        if (!matchFiltros) return { item, score: -1 };
 
-        // Search in code, description, brand, rubric and sub-rubric
+        // 2. Search Text Scoring
+        if (queryTerms.length === 0) return { item, score: 1 }; // Pass if no search terms
+
+        // Prepare text to search against
         const fieldsToSearch = [item.codigo, item.descripcion, item.marca, item.rubro, item.subrubro];
         const itemText = normalizeText(fieldsToSearch.join(" "));
+        const itemWords = itemText.split(/\s+/); // Tokenize item text for better matching
 
-        const matchSearch = terms.every(t => itemText.includes(t));
-        return matchFiltros && matchSearch;
-    });
+        let totalScore = 0;
+        let allTermsMatched = true;
+
+        for (const term of queryTerms) {
+            let termMatched = false;
+            let termBestScore = 0;
+
+            // Expand synonyms
+            const expandedTerms = expandTerm(term);
+
+            for (const expanded of expandedTerms) {
+                // Exact substring match in full text
+                if (itemText.includes(expanded)) {
+                    termBestScore = Math.max(termBestScore, 10);
+                    termMatched = true;
+                }
+
+                // Check against individual words for Fuzzy
+                if (!termMatched && expanded.length > 3) {
+                    for (const word of itemWords) {
+                        const dist = levenshtein(expanded, word);
+                        // Allow 1 substitution/deletion for words 4-6 chars, 2 for longer
+                        const threshold = expanded.length > 6 ? 2 : 1;
+                        if (dist <= threshold) {
+                            termBestScore = Math.max(termBestScore, 5); // Lower score for fuzzy
+                            termMatched = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (termMatched) {
+                totalScore += termBestScore;
+            } else {
+                allTermsMatched = false;
+            }
+        }
+
+        if (allTermsMatched) return { item, score: totalScore };
+        return { item, score: -1 };
+    })
+        .filter(result => result.score > 0)
+        .sort((a, b) => b.score - a.score) // Sort by relevance
+        .map(result => result.item); // Unwrap
+
     renderTable(searchRaw);
 }
 
