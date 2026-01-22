@@ -35,6 +35,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // 1. DATA LOADING & PARSING
+// Helper to parse Argentinian price: "1.678,73" -> 1678.73
+const parsePrice = (val) => {
+    if (!val) return 0;
+    let s = val.toString().trim();
+    s = s.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
+    return parseFloat(s) || 0;
+};
+
+// Helper to format Argentinian price: 1678.73 -> "1.678,73"
+const formatPrice = (val) => {
+    return val.toLocaleString('es-AR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+};
+
 async function fetchData(initialQuery = null) {
     try {
         const response = await fetch(`${EXCEL_FILE_PATH}?t=${Date.now()}`);
@@ -52,39 +68,24 @@ function parseExcel(arrayBuffer, initialQuery = null) {
     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
 
-    // New mapping starting from row 3 (index 2):
-    // A=0: Codigo, B=1: Descripcion, C=2: Costo ((C * 58) / 10000 for precio), 
-    // I=8: SubRubro, L=11: Stock, N=13: Marca, O=14: Rubro
-    allData = data.slice(1).map(row => {
-        // Calculate precio from costo: (column C * 58) / 10000
-        let costoValue = parseFloat((row[2] || '0').toString().replace(/[^\d.-]/g, '')) || 0;
-        let precioCalculado = (costoValue * 58) / 10000;
 
-        // Normalize description: replace "BBA" at the start with "BOMBA"
-        let descripcionRaw = (row[1] || '').toString().trim();
-        let descripcionNormalizada = descripcionRaw.replace(/^BBA\b/i, 'BOMBA');
-
-        const sub = (row[8] || '').toString().trim();
-        const invalidSubs = ['INA', 'BOSCH', 'CONTITECH'];
-        const subrubroFiltered = invalidSubs.includes(sub.toUpperCase()) ? '' : sub;
+    allData = data.slice(2).map(row => {
+        const costVal = parsePrice(row[2]); // Column C
+        const priceVal = costVal / 0.58;
 
         return {
-            codigo: (row[0] || '').toString().trim(),
-            descripcion: descripcionNormalizada,
-            costo: costoValue.toString(),
-            precio: precioCalculado.toFixed(2),
-            subrubro: subrubroFiltered,
-            stock: parseInt((row[11] || 0).toString().replace(/\D/g, '')) || 0,
-            marca: (row[13] || '').toString().trim(),
-            rubro: (row[14] || '').toString().trim()
+            codigo: (row[0] || '').toString().trim(),         // Column A
+            descripcion: (row[1] || '').toString().trim(),    // Column B
+            costo: costVal,
+            precio: formatPrice(priceVal),
+            subrubro: (row[8] || '').toString().trim(),       // Column I
+            marca: (row[13] || '').toString().trim(),         // Column N
+            rubro: (row[14] || '').toString().trim(),         // Column O
+            caracteristicas: '', // Not specified in New Mapping, keep empty for now
+            equivalentes: '',   // Not specified in New Mapping, keep empty for now
+            stock: parseInt((row[11] || 0).toString().replace(/\D/g, '')) || 0 // Column L
         };
-    }).filter(item => {
-        const cod = item.codigo.toLowerCase();
-        const rub = item.rubro.toLowerCase();
-        if (cod === 'código' || cod === 'codigo' || cod.includes('columna')) return false;
-        const invalidRubros = ['13', 'puente', 'mariposa', 'columna 13', 'columna 7', 'columna 12', 'cable puente', 'cuerpo mariposa'];
-        return item.codigo !== '' && !invalidRubros.includes(rub) && rub !== '';
-    });
+    }).filter(item => item.codigo && item.rubro);
 
     initFilters();
 
@@ -159,26 +160,47 @@ if (els.marca) {
 }
 
 // 3. SEARCH LOGIC
+
+// Helper to remove accents/diacritics
+function normalizeText(text) {
+    if (!text) return "";
+    return text.toString()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
 function applyFilters() {
     const rub = els.rubro ? els.rubro.value : '';
     const sub = els.subrubro ? els.subrubro.value : '';
     const mar = els.marca ? els.marca.value : '';
-    const search = els.search.value.toLowerCase().trim();
-    const terms = search.split(/\s+/).filter(t => t);
+    const searchRaw = els.search.value.trim();
+    const searchNorm = normalizeText(searchRaw);
+    const terms = searchNorm.split(/\s+/).filter(t => t);
 
     filteredData = allData.filter(item => {
         const matchFiltros = (!rub || item.rubro === rub) && (!sub || item.subrubro === sub) && (!mar || item.marca === mar);
-        const itemVals = Object.values(item).map(v => v.toString().toLowerCase());
-        const matchSearch = terms.every(t => itemVals.some(v => v.includes(t)));
+
+        // Search in code, description, brand, rubric and sub-rubric
+        const fieldsToSearch = [item.codigo, item.descripcion, item.marca, item.rubro, item.subrubro];
+        const itemText = normalizeText(fieldsToSearch.join(" "));
+
+        const matchSearch = terms.every(t => itemText.includes(t));
         return matchFiltros && matchSearch;
     });
-    renderTable(search);
+    renderTable(searchRaw);
 }
 
 function highlightText(text, query) {
     if (!query) return text;
-    const terms = query.split(/\s+/).filter(t => t).sort((a, b) => b.length - a.length);
+    // For highlighting, we still need to handle names correctly but matching the normalized query
+    const terms = normalizeText(query).split(/\s+/).filter(t => t).sort((a, b) => b.length - a.length);
     if (!terms.length) return text;
+
+    // This is tricky: highlight original text based on normalized terms
+    // Simple approach: case-insensitive match on original text if possible, 
+    // but better to just use a regex that handles normalized matching if we wanted it perfect.
+    // For now, let's keep it simple and highlight case-insensitive matches.
     const pattern = terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
     const regex = new RegExp(`(${pattern})`, 'gi');
     return text.replace(regex, '<mark class="bg-blue-100 text-brand-blue font-bold px-0.5 rounded">$1</mark>');
@@ -285,23 +307,72 @@ window.openProductDetail = function (codigo) {
     document.getElementById('modalMarca').textContent = item.marca || 'Genérico';
     document.getElementById('modalRubro').textContent = `${item.rubro || '-'} > ${item.subrubro || '-'}`;
 
-    // Price
-    const formatPrice = (val) => {
-        // Simple heuristic parsing
-        let n = parseFloat(val.toString().replace('$', '').replace(',', ''));
-        if (isNaN(n)) return '---';
-        return n.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
-    };
+    // Display Price & Cost
+    const costEl = document.getElementById('modalCosto');
+    const priceEl = document.getElementById('modalPrecio');
 
-    // Display Price (Simulate Cost being hidden/secure)
-    document.getElementById('modalPrecio').textContent = formatPrice(item.precio);
+    if (costEl) {
+        costEl.dataset.value = `$ ${formatPrice(item.costo)}`;
+        costEl.textContent = '••••••••';
+        costEl.classList.add('is-hidden');
+    }
+    if (priceEl) priceEl.textContent = `$ ${item.precio}`;
 
-    // Features and Equivalents removed per requested simplification
+    // Update Stock Badge
+    const stockBadge = document.getElementById('modalStockBadge');
+    if (stockBadge) {
+        stockBadge.className = 'w-4 h-4 rounded-full shadow-sm transition-colors border border-gray-200';
+        let stockColor = 'bg-red-500';
+        let stockTitle = 'Sin Stock';
+
+        if (item.stock > 5) {
+            stockColor = 'bg-green-500';
+            stockTitle = 'Stock Disponible';
+        } else if (item.stock >= 1) {
+            stockColor = 'bg-yellow-400';
+            stockTitle = 'Últimas Unidades';
+        }
+
+        stockBadge.classList.add(stockColor);
+        stockBadge.title = `${stockTitle} (${item.stock})`;
+    }
+
+    // Reset eye icon
+    const eyeBtn = document.querySelector('[onclick="window.toggleCostVisibility()"] i');
+    if (eyeBtn && typeof lucide !== 'undefined') {
+        eyeBtn.setAttribute('data-lucide', 'eye-off');
+        lucide.createIcons();
+    }
+
+    // Features
     const featContainer = document.getElementById('modalFeatures');
-    if (featContainer) featContainer.innerHTML = '<span class="text-gray-400 italic text-xs">Información simplificada</span>';
+    featContainer.innerHTML = '';
+    if (item.caracteristicas) {
+        const feats = item.caracteristicas.split(/[,\n]/).filter(f => f.trim());
+        feats.forEach(f => {
+            const span = document.createElement('span');
+            span.className = "bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs border border-gray-200";
+            span.textContent = f;
+            featContainer.appendChild(span);
+        });
+    } else {
+        featContainer.innerHTML = '<span class="text-gray-400 italic text-xs">Sin detalles adicionales</span>';
+    }
 
+    // Equivalents
     const equivContainer = document.getElementById('modalEquivalents');
-    if (equivContainer) equivContainer.innerHTML = '<span class="text-gray-400 italic text-xs">N/A</span>';
+    equivContainer.innerHTML = '';
+    if (item.equivalentes) {
+        const codes = item.equivalentes.split(/[,\n]/).filter(c => c.trim());
+        codes.forEach(c => {
+            const span = document.createElement('span');
+            span.className = "font-mono text-xs bg-gray-50 border border-gray-200 px-2 py-1 rounded text-gray-500 select-all";
+            span.textContent = c;
+            equivContainer.appendChild(span);
+        });
+    } else {
+        equivContainer.innerHTML = '<span class="text-gray-400 italic text-xs">N/A</span>';
+    }
 
     // Images Carousel Logic (Simplified for now)
     // Try to load up to 3 images: Imagenes/{codigo}-1.webp
@@ -363,3 +434,22 @@ window.nextSlide = function (d) {
     if (n < 1) n = 3;
     showSlide(n);
 }
+
+window.toggleCostVisibility = function () {
+    const costEl = document.getElementById('modalCosto');
+    // Lucide replaces <i> with <svg>, so we look for both or just use the container
+    const btnIcon = document.querySelector('[onclick="window.toggleCostVisibility()"] i, [onclick="window.toggleCostVisibility()"] svg');
+    if (!costEl || !btnIcon) return;
+
+    const isHidden = costEl.classList.contains('is-hidden');
+    if (isHidden) {
+        costEl.textContent = costEl.dataset.value;
+        costEl.classList.remove('is-hidden');
+        btnIcon.setAttribute('data-lucide', 'eye');
+    } else {
+        costEl.textContent = '••••••••';
+        costEl.classList.add('is-hidden');
+        btnIcon.setAttribute('data-lucide', 'eye-off');
+    }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+};
