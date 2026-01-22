@@ -70,14 +70,14 @@ function parseExcel(arrayBuffer, initialQuery = null) {
 
 
     allData = data.slice(2).map(row => {
-        const costVal = parsePrice(row[2]); // Column C
-        const priceVal = costVal / 0.58;
+        const baseValue = parsePrice(row[2]); // Column C is now the Price
+        const costVal = baseValue * 0.58;     // Cost is 58% of Price
 
         return {
             codigo: (row[0] || '').toString().trim(),         // Column A
             descripcion: (row[1] || '').toString().trim(),    // Column B
             costo: costVal,
-            precio: formatPrice(priceVal),
+            precio: formatPrice(baseValue),
             subrubro: (row[8] || '').toString().trim(),       // Column I
             marca: (row[13] || '').toString().trim(),         // Column N
             rubro: (row[14] || '').toString().trim(),         // Column O
