@@ -566,3 +566,44 @@ window.toggleCostVisibility = function () {
     }
     if (typeof lucide !== 'undefined') lucide.createIcons();
 };
+
+// --- IMAGE ZOOM FUNCTIONALITY ---
+function initImageZoom() {
+    const images = [
+        document.getElementById('modalImg1'),
+        document.getElementById('modalImg2'),
+        document.getElementById('modalImg3')
+    ];
+
+    images.forEach(img => {
+        if (!img) return;
+
+        img.addEventListener('mouseenter', function () {
+            this.classList.add('image-zoom-active');
+            this.style.transform = 'scale(2)';
+            this.style.transition = 'transform 0.3s ease';
+        });
+
+        img.addEventListener('mouseleave', function () {
+            this.classList.remove('image-zoom-active');
+            this.style.transform = 'scale(1)';
+            this.style.transformOrigin = 'center center';
+        });
+
+        img.addEventListener('mousemove', function (e) {
+            if (!this.classList.contains('image-zoom-active')) return;
+
+            const rect = this.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            this.style.transformOrigin = `${x}% ${y}%`;
+        });
+    });
+}
+
+// Initialize zoom when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initImageZoom);
+} else {
+    initImageZoom();
+}
