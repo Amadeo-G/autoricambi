@@ -90,14 +90,16 @@ function parseExcel(arrayBuffer, initialCode = null) {
 
     const firstSheet = workbook.Sheets[targetSheetName];
     const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-    console.log("Total filas leídas:", data.length);
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userDiscount = (user.discount !== undefined && user.discount !== null) ? parseFloat(user.discount) : 42;
+    const multiplier = (100 - userDiscount) / 100;
 
     allData = data.slice(1).map((row, index) => {
         // We use slice(1) to skip header, but let's be careful with empty rows
         if (!row || row.length < 3) return null;
 
         const pvVal = parsePrice(row[2]); // Column C is PV (Precio de Venta)
-        const costVal = pvVal * 0.58;     // Cost is 58% of PV
+        const costVal = pvVal * multiplier;     // Cost is customized % of PV
 
         return {
             codigo: (row[0] || '').toString().trim(),         // Column A

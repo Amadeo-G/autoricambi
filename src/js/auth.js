@@ -39,8 +39,9 @@ export const auth = {
             if (user) {
                 const userData = {
                     email: user.email,
-                    name: user.name || user.email.split('@')[0], // Use 'name' if exists, else prefix
-                    role: 'client'
+                    name: user.name || user.email.split('@')[0],
+                    role: 'client',
+                    discount: (user.Descuento !== undefined && user.Descuento !== null) ? user.Descuento : 42
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
                 return { success: true };
