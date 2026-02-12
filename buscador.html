@@ -198,7 +198,7 @@
     <div id="productModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal()"></div>
         <div
-            class="relative bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row animate-fade-in-up">
+            class="relative bg-white rounded-3xl shadow-2xl w-full md:w-11/12 max-w-6xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row animate-fade-in-up">
 
             <button onclick="closeModal()"
                 class="absolute top-4 right-4 z-20 bg-white/80 p-2 rounded-full hover:bg-white text-gray-500 hover:text-red-500 transition shadow-sm">
@@ -206,13 +206,18 @@
             </button>
 
             <!-- Image Section -->
-            <div class="w-full md:w-1/2 bg-gray-100 flex items-center justify-center p-4 relative min-h-[300px]">
-                <div class="relative w-full h-full flex items-center justify-center">
-                    <img id="modalImg1" src="" class="max-h-[80%] max-w-full object-contain drop-shadow-xl"
+            <div
+                class="w-full md:w-1/2 bg-gray-100 flex items-center justify-center p-4 relative min-h-[300px] overflow-hidden group">
+                <div id="modalImageContainer"
+                    class="relative w-full h-full flex items-center justify-center p-6 cursor-crosshair overflow-hidden">
+                    <img id="modalImg1" src=""
+                        class="max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-200 ease-out will-change-transform"
                         style="display:block">
-                    <img id="modalImg2" src="" class="max-h-[80%] max-w-full object-contain drop-shadow-xl"
+                    <img id="modalImg2" src=""
+                        class="max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-200 ease-out will-change-transform"
                         style="display:none">
-                    <img id="modalImg3" src="" class="max-h-[80%] max-w-full object-contain drop-shadow-xl"
+                    <img id="modalImg3" src=""
+                        class="max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-200 ease-out will-change-transform"
                         style="display:none">
                 </div>
                 <!-- Controls -->
@@ -256,7 +261,7 @@
                                 Venta</span>
                         </div>
                         <span id="modalPrecio"
-                            class="text-xl md:text-2xl font-black text-gray-800 font-mono tracking-tight block">$
+                            class="text-4xl md:text-6xl font-black text-brand-blue tracking-tighter block mt-1">$
                             0.00</span>
                     </div>
                 </div>

@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     fetchData(initialCode);
+    initZoom(); // Initialize zoom functionality
 });
 
 // Handle Back/Forward buttons in browser
@@ -660,3 +661,37 @@ window.addToCartFromCatalog = function (codigo, event) {
         }
     }
 };
+
+// --- ZOOM LOGIC (8x) ---
+function initZoom() {
+    const container = document.getElementById('modalImageContainer');
+    if (!container) return;
+
+    container.addEventListener('mousemove', (e) => {
+        // Find visible image
+        const img = Array.from(container.querySelectorAll('img')).find(el => el.style.display !== 'none');
+        if (!img) return;
+
+        const rect = container.getBoundingClientRect();
+
+        // Calculate mouse position as percentage within the container
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Use percentages for transform-origin to properly center the zoom on cursor
+        const xPercent = (x / rect.width) * 100;
+        const yPercent = (y / rect.height) * 100;
+
+        img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+        img.style.transform = "scale(8)"; // 8x Zoom requested
+    });
+
+    container.addEventListener('mouseleave', () => {
+        const img = Array.from(container.querySelectorAll('img')).find(el => el.style.display !== 'none');
+        if (!img) return;
+
+        // Reset
+        img.style.transformOrigin = "center center";
+        img.style.transform = "scale(1)";
+    });
+}
