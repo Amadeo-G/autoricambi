@@ -264,7 +264,7 @@ window.setQty = (productId, newValue) => {
 };
 
 // Google Sheets Integration URL (Configurar después de publicar la App Script)
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzD8N0hjrH9gZvF6IGid8ligeYlOg6fX38rj5bQiQH8uoYa11mn8eymCuUPmF5DRME8/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXJoodlbOO11gWDOprtt2hcnkfEJdLUxAM5lEqTOuaDSe8N29yyDafrKjg07blvXo2/exec";
 
 window.sendToSystem = async () => {
     if (state.cart.length === 0) return;
