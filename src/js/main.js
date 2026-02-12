@@ -181,10 +181,14 @@ const renderCart = () => {
                 </td>
                 <td class="p-4 text-right font-medium text-gray-600">${formatPrice(item.price)}</td>
                 <td class="p-4 text-center">
-                    <div class="flex items-center justify-center space-x-2">
-                         <button onclick="window.updateQty(${item.id}, -1)" class="w-6 h-6 rounded bg-gray-200 text-gray-600 hover:bg-brand-blue hover:text-white transition">-</button>
-                         <span class="w-8 text-center font-bold">${item.quantity}</span>
-                         <button onclick="window.updateQty(${item.id}, 1)" class="w-6 h-6 rounded bg-gray-200 text-gray-600 hover:bg-brand-blue hover:text-white transition">+</button>
+                    <div class="flex items-center justify-center space-x-1">
+                         <button onclick="window.updateQty(${item.id}, -1)" class="w-6 h-6 rounded bg-gray-200 text-gray-600 hover:bg-brand-blue hover:text-white transition flex items-center justify-center">-</button>
+                         <input type="number" 
+                                value="${item.quantity}" 
+                                min="1" 
+                                onchange="window.setQty(${item.id}, this.value)"
+                                class="w-12 text-center font-bold border rounded py-0.5 focus:ring-1 focus:ring-brand-blue outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                         <button onclick="window.updateQty(${item.id}, 1)" class="w-6 h-6 rounded bg-gray-200 text-gray-600 hover:bg-brand-blue hover:text-white transition flex items-center justify-center">+</button>
                     </div>
                 </td>
                 <td class="p-4 text-right font-bold text-brand-dark">${formatPrice(itemTotal)}</td>
@@ -238,8 +242,18 @@ window.removeFromCart = (productId) => {
 window.updateQty = (productId, change) => {
     const item = state.cart.find(item => item.id === productId);
     if (item) {
-        item.quantity += change;
-        if (item.quantity < 1) item.quantity = 1;
+        item.quantity = Math.max(1, item.quantity + change);
+        saveCart();
+        renderCart();
+    }
+};
+
+window.setQty = (productId, newValue) => {
+    const item = state.cart.find(item => item.id === productId);
+    if (item) {
+        let val = parseInt(newValue);
+        if (isNaN(val) || val < 1) val = 1;
+        item.quantity = val;
         saveCart();
         renderCart();
     }
