@@ -82,11 +82,20 @@ async function fetchData(initialCode = null) {
 
 function parseExcel(arrayBuffer, initialCode = null) {
     const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+    console.log("Hojas detectadas:", workbook.SheetNames);
+
+    // Prefer "Hoja 1" or "Sheet1", fallback to the first one
+    let targetSheetName = workbook.SheetNames.find(n => n.includes("Hoja 1") || n.includes("Sheet1")) || workbook.SheetNames[0];
+    console.log("Usando hoja:", targetSheetName);
+
+    const firstSheet = workbook.Sheets[targetSheetName];
     const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+    console.log("Total filas leídas:", data.length);
 
+    allData = data.slice(1).map((row, index) => {
+        // We use slice(1) to skip header, but let's be careful with empty rows
+        if (!row || row.length < 3) return null;
 
-    allData = data.slice(2).map(row => {
         const pvVal = parsePrice(row[2]); // Column C is PV (Precio de Venta)
         const costVal = pvVal * 0.58;     // Cost is 58% of PV
 
@@ -103,7 +112,9 @@ function parseExcel(arrayBuffer, initialCode = null) {
             equivalentes: '',
             stock: parseInt((row[11] || 0).toString().replace(/\D/g, '')) || 0 // Column L
         };
-    }).filter(item => item.codigo && item.rubro);
+    }).filter(item => item && item.codigo && item.rubro);
+
+    console.log("Productos válidos procesados:", allData.length);
 
     initFilters();
 
