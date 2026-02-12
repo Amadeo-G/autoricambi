@@ -542,6 +542,14 @@ window.openProductDetail = function (codigo, pushState = true) {
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
+    // Setup Add to Cart Button Logic (Footer)
+    const btnAddFooter = document.getElementById('modalBtnAddFooter');
+    if (btnAddFooter) {
+        const newBtnFooter = btnAddFooter.cloneNode(true);
+        btnAddFooter.parentNode.replaceChild(newBtnFooter, btnAddFooter);
+        newBtnFooter.onclick = (e) => window.addToCartFromCatalog(item.codigo, e);
+    }
+
     // Reset Carousel to slide 1 (simple visibility toggle needed if implementing full carousel)
     showSlide(1);
     if (typeof lucide !== 'undefined') lucide.createIcons();

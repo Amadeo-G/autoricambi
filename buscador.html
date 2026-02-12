@@ -273,7 +273,7 @@
                         <span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Precio
                             Final</span>
                         <span id="modalPrecio"
-                            class="text-5xl md:text-6xl font-black text-gray-900 tracking-tighter leading-none">$
+                            class="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-none">$
                             0</span>
                     </div>
 
@@ -308,10 +308,15 @@
                 </div>
 
                 <!-- Footer Actions -->
-                <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="mt-6 pt-6 border-t border-gray-200 flex gap-4">
                     <button onclick="closeModal()"
-                        class="w-full py-4 bg-white border border-gray-200 text-gray-500 hover:text-gray-800 hover:border-gray-300 hover:bg-gray-50 font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
-                        <span>Cerrar Detalle</span>
+                        class="flex-1 py-3 bg-white border border-gray-200 text-gray-500 hover:text-gray-800 hover:border-gray-300 hover:bg-gray-50 font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                        <span>Cerrar</span>
+                    </button>
+                    <button id="modalBtnAddFooter"
+                        class="flex-1 py-3 bg-brand-blue hover:bg-brand-dark text-white font-bold rounded-xl shadow-lg hover:shadow-brand-blue/30 transition-all duration-200 flex items-center justify-center gap-2 active:scale-95">
+                        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                        <span>Agregar</span>
                     </button>
                 </div>
             </div>
