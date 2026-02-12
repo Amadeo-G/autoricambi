@@ -357,7 +357,7 @@ function renderTable(q = '') {
             <td class="p-4 text-right font-bold text-gray-800" data-label="Precio">
                 $ ${item.precio}
             </td>
-            <td class="p-4 text-right font-mono text-sm text-gray-400" data-label="Costo">
+            <td class="p-4 text-right font-bold text-gray-400" data-label="Costo">
                 <span id="cost-${item.codigo}" 
                       class="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded transition-all select-none"
                       onclick="window.toggleTableCost('${item.codigo}', ${item.costo})">***</span>
