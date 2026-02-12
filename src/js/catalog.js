@@ -1,7 +1,7 @@
 // catalog.js - Logic for the Dynamic Excel Catalog
 
 // CONFIGURATION
-const EXCEL_FILE_PATH = 'Filtros.xlsx';
+const EXCEL_FILE_PATH = '/Filtros.xlsx';
 
 // GLOBAL STATE
 let allData = [];
@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check for URL code: can be in path /buscador/CODE or in query ?p=CODE
     const pathParts = window.location.pathname.split('/');
     const codeFromPath = pathParts.includes('buscador') ? pathParts[pathParts.indexOf('buscador') + 1] : null;
+    const urlParams = new URLSearchParams(window.location.search);
     const initialCode = codeFromPath || urlParams.get('p') || urlParams.get('s');
 
     if (typeof lucide !== 'undefined') {
@@ -429,7 +430,7 @@ window.openProductDetail = function (codigo, pushState = true) {
             imgEl.onerror = function () {
                 this.src = 'https://placehold.co/600x400/f3f4f6/a3a3a3?text=Sin+Imagen';
             };
-            imgEl.src = `Imagenes/${codeLower}-${i}.webp`;
+            imgEl.src = `/Imagenes/${codeLower}-${i}.webp`;
         }
     }
 
@@ -517,7 +518,7 @@ window.addToCartFromCatalog = function (codigo) {
             name: item.descripcion,
             sku: item.codigo,
             price: item.priceRaw,
-            image: `Imagenes/${item.codigo.toLowerCase()}-1.webp`,
+            image: `/Imagenes/${item.codigo.toLowerCase()}-1.webp`,
             brand: item.marca,
             category: item.rubro,
             description: item.descripcion,
