@@ -110,7 +110,12 @@ function parseExcel(arrayBuffer, initialCode = null) {
             rubro: (row[14] || '').toString().trim(),         // Column O
             caracteristicas: '',
             equivalentes: '',
-            stock: parseInt((row[11] || 0).toString().replace(/\D/g, '')) || 0 // Column L
+            stock: (() => {
+                let s = (row[11] || 0).toString().trim();
+                // Take only characters before the first comma or dot
+                s = s.split(/[.,]/)[0];
+                return parseInt(s.replace(/\D/g, '')) || 0;
+            })() // Column L
         };
     }).filter(item => item && item.codigo && item.rubro);
 
