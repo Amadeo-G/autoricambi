@@ -59,7 +59,10 @@ const parsePrice = (val) => {
     if (!val) return 0;
     let s = val.toString().trim();
     s = s.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
-    return parseFloat(s) || 0;
+    let num = parseFloat(s) || 0;
+    // Custom Rounding Rule: < .50 rounds down, >= .50 rounds up
+    // This is equivalent to standard Math.round() for positive numbers
+    return Math.round(num);
 };
 
 // Helper to format Argentinian price: 1678.73 -> "1.678,73"
@@ -683,7 +686,7 @@ function initZoom() {
         const yPercent = (y / rect.height) * 100;
 
         img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-        img.style.transform = "scale(8)"; // 8x Zoom requested
+        img.style.transform = "scale(4)"; // 4x Zoom requested
     });
 
     container.addEventListener('mouseleave', () => {
