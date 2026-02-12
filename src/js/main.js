@@ -1,4 +1,4 @@
-import { products, categories } from './products.js';
+import { products, categories } from '/src/js/products.js';
 
 // State Management
 const state = {
@@ -55,11 +55,11 @@ const renderFeaturedCategories = () => {
 
     // Card Image mapping (optional override for icons)
     const categoryImages = {
-        'electricidad': './src/img/cat-electricidad.jpg',
-        'refrigeracion': './src/img/cat-refrigeracion.jpg',
-        'motor': './src/img/cat-motor.jpg',
-        'inyeccion': './src/img/cat-inyeccion.jpg',
-        'accesorios': './src/img/cat-accesorios.jpg'
+        'electricidad': '/src/img/cat-electricidad.jpg',
+        'refrigeracion': '/src/img/cat-refrigeracion.jpg',
+        'motor': '/src/img/cat-motor.jpg',
+        'inyeccion': '/src/img/cat-inyeccion.jpg',
+        'accesorios': '/src/img/cat-accesorios.jpg'
     };
 
     elements.featuredCategories.innerHTML = state.categories.slice(0, 5).map(cat => {
@@ -92,10 +92,10 @@ const renderCategoryFilters = () => {
     const currentCategory = urlParams.get('category');
 
     filterContainer.innerHTML = `
-        <li><a href="buscador.html" class="block ${!currentCategory ? 'text-brand-red font-bold' : 'text-gray-600 hover:text-brand-blue'}">Ver Todo</a></li>
+        <li><a href="/buscador.html" class="block ${!currentCategory ? 'text-brand-red font-bold' : 'text-gray-600 hover:text-brand-blue'}">Ver Todo</a></li>
         ${state.categories.map(cat => `
             <li>
-                <a href="buscador.html?category=${cat.id}" class="block ${currentCategory === cat.id ? 'text-brand-red font-bold' : 'text-gray-600 hover:text-brand-blue'}">
+                <a href="/buscador.html?category=${cat.id}" class="block ${currentCategory === cat.id ? 'text-brand-red font-bold' : 'text-gray-600 hover:text-brand-blue'}">
                     ${cat.name}
                 </a>
             </li>

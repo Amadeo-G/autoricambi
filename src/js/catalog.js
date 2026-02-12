@@ -23,10 +23,10 @@ const els = {
 
 // INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
-    // Check for URL code: can be in path /buscador/CODE or in query ?p=CODE
-    const pathParts = window.location.pathname.split('/').filter(p => p);
-    const buscadorIdx = pathParts.indexOf('buscador');
-    const codeFromPath = (buscadorIdx !== -1 && pathParts[buscadorIdx + 1]) ? pathParts[buscadorIdx + 1] : null;
+    // Unified Path Detection: Handles both /buscador/CODE and ?p=CODE
+    const path = window.location.pathname;
+    const match = path.match(/\/(buscador|buscador.html)\/([^/]+)/);
+    const codeFromPath = match ? match[2] : null;
 
     const urlParams = new URLSearchParams(window.location.search);
     const initialCode = codeFromPath || urlParams.get('p') || urlParams.get('s');
@@ -39,9 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Handle Back/Forward buttons in browser
-window.addEventListener('popstate', () => {
-    const pathParts = window.location.pathname.split('/');
-    const code = pathParts.includes('buscador') ? pathParts[pathParts.indexOf('buscador') + 1] : null;
+window.addEventListener('popstate', (event) => {
+    const path = window.location.pathname;
+    const match = path.match(/\/(buscador|buscador.html)\/([^/]+)/);
+    const code = match ? match[2] : null;
+
     if (code) {
         window.openProductDetail(code, false); // false to not push state again
     } else {

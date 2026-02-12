@@ -1,1 +1,4 @@
-/buscador/*  /buscador.html  200
+# SPA Redirects for Buscador
+/buscador/*    /buscador.html  200
+/buscador      /buscador.html  200
+/buscador.html/* /buscador.html 200
