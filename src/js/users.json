@@ -1,37 +1,602 @@
 [
     {
-        "name": "Juan Gomez",
+        "name": "ALEM SA",
+        "email": "fordalem@hotmail.com",
+        "password": "30-69847710-1"
+    },
+    {
+        "name": "ALTAMIRANO JUAN MANUEL",
+        "email": "rma.motors.17@gmail.com",
+        "password": "20-39495845-0"
+    },
+    {
+        "name": "ARNAUDO SERGIO MARCELO",
+        "email": "multimarcaslasmalvinas@gmail.com",
+        "password": "20-16123210-7"
+    },
+    {
+        "name": "AUTOPARTES ARGENTINA SRL",
+        "email": "autopartesargentina12@hotmail.com",
+        "password": "30-71380860-8"
+    },
+    {
+        "name": "BARRERA CARLOS EZEQUIEL",
+        "email": "luciano_anaya@yahoo.com",
+        "password": "20-34908448-2"
+    },
+    {
+        "name": "BECHLER RODOLFO CARLOS",
+        "email": "rodolfobechler@hotmail.com",
+        "password": "20-11975287-7"
+    },
+    {
+        "name": "BEDOGNI CHRISTIAN MAURICIO",
+        "email": "bedo-car@hotmail.com",
+        "password": "20-32457412-4"
+    },
+    {
+        "name": "BERROCAL SRL",
+        "email": "lukas-motors@hotmail.com",
+        "password": "30-71772885-4"
+    },
+    {
+        "name": "BERTOLOTTO GUSTAVO Y MARIMON ARIEL SH",
+        "email": "elsignorepuestos@hotmail.com",
+        "password": "30-71013582-3"
+    },
+    {
+        "name": "BLANGETTI DANIEL ALEJANDRO",
+        "email": "mx-motos@hotmail.com",
+        "password": "20-22161385-7"
+    },
+    {
+        "name": "BONINO ALEJANDRA ELIZABETH",
+        "email": "alebonino140340@gmail.com",
+        "password": "27-22772226-1"
+    },
+    {
+        "name": "BRESSAN HUGO ROGELIO",
+        "email": "edicar_rep@hotmail.com",
+        "password": "20-13964832-4"
+    },
+    {
+        "name": "BRESSAN MARCELA PATRICIA",
+        "email": "repuestosencecar@gmail.com",
+        "password": "27-20380427-5"
+    },
+    {
+        "name": "BROCANELLI EDUARDO ADRIAN",
+        "email": "polyrepuestos@yahoo.com.ar",
+        "password": "20-12872798-2"
+    },
+    {
+        "name": "BRONSTEIN JUAN PABLO",
+        "email": "egrepuestos@hotmail.com",
+        "password": "20-21902460-7"
+    },
+    {
+        "name": "BYB SRL",
+        "email": "byb.heras@gmail.com",
+        "password": "33-66806693-9"
+    },
+    {
+        "name": "CABANILLAS CRISTIAN GABRIEL",
+        "email": "cristian-cabanillas@hotmail.com",
+        "password": "23-29605716-9"
+    },
+    {
+        "name": "CACERES JOSE GABRIEL",
+        "email": "gabilangallego@gmail.com",
+        "password": "20-40110296-6"
+    },
+    {
+        "name": "CALOGRIAS IRENE BEATRIZ",
+        "email": "irecalogrias@yahoo.com.ar",
+        "password": "27-12350444-0"
+    },
+    {
+        "name": "CARDONA PE￑A RODRIGO",
+        "email": "repcard@hotmail.com",
+        "password": "20-38332057-8"
+    },
+    {
+        "name": "CARRILLO ANALIA TERESA",
+        "email": "analiacarrillo@hotmail.com",
+        "password": "27-25717217-7"
+    },
+    {
+        "name": "CARRIZO GRISELDA BEATRIZ",
+        "email": "chevromrepuestos@yahoo.com.ar",
+        "password": "27-31040552-9"
+    },
+    {
+        "name": "CARS BAPRO SAS",
+        "email": "carsbapro@gmail.com",
+        "password": "30-71856021-3"
+    },
+    {
+        "name": "CASTILLO CRISTIAN SERGIO",
+        "email": "fordnafa@hotmail.com",
+        "password": "20-22221723-8"
+    },
+    {
+        "name": "CONTRERAS MAURICIO EMMANUEL",
+        "email": "transmisiones_ac@hotmail.com",
+        "password": "20-31220856-4"
+    },
+    {
+        "name": "DAMER SA",
+        "email": "ezequielreyna87@gmail.com",
+        "password": "30-71516819-3"
+    },
+    {
+        "name": "DELDOTTO GABRIEL ALEJANDRO",
+        "email": "gabriel_deldotto@hotmail.com",
+        "password": "20-28271180-0"
+    },
+    {
+        "name": "DEMICHELIS AGUSTIN HERNAN",
+        "email": "weinsmotos@gmail.com",
+        "password": "20-34130835-7"
+    },
+    {
+        "name": "DI TOMASO REPUESTOS SRL",
+        "email": "ditomasorepuestos@gmail.com",
+        "password": "30-71734966-7"
+    },
+    {
+        "name": "DIAZ SAMANTA ELIZABETH",
+        "email": "samantaelizabeth@gmail.com",
+        "password": "23-30656406-4"
+    },
+    {
+        "name": "DISTRIBUIDORA GMG SRL",
+        "email": "distribuidoragmg@hotmail.com",
+        "password": "30-71472549-8"
+    },
+    {
+        "name": "EL OVALO REPUESTOS SRL",
+        "email": "elovalorepuestos@gmail.com",
+        "password": "30-71188139-1"
+    },
+    {
+        "name": "ESMA SA",
+        "email": "repuestos@esma-sa.com.ar",
+        "password": "30-53350893-2"
+    },
+    {
+        "name": "ESPINDOLA JOSE LUIS",
+        "email": "repuestosgcb.donato@gmail.com",
+        "password": "20-24841811-8"
+    },
+    {
+        "name": "FARIAS MARTIN GUSTAVO",
+        "email": "martingustavofarias@hotmail.com",
+        "password": "20-22370651-8"
+    },
+    {
+        "name": "FELTRIN JUAN GABRIEL",
+        "email": "fysrepuestos779@gmail.com",
+        "password": "20-31928420-7"
+    },
+    {
+        "name": "FRENOS BEAN SRL",
+        "email": "frenosbean@hotmail.com",
+        "password": "30-71564989-2"
+    },
+    {
+        "name": "FRENOSUR SRL",
+        "email": "frenosur@hotmail.com",
+        "password": "33-71499135-9"
+    },
+    {
+        "name": "GALAN EDUARDO",
+        "email": " ",
+        "password": "20-11978114-1"
+    },
+    {
+        "name": "GANLY AGUSTIN",
+        "email": "planetachevrolet@hotmail.com.ar",
+        "password": "20-24268249-2"
+    },
+    {
+        "name": "GARRIDO OSCAR",
+        "email": "oscarggarido@gmail.com",
+        "password": "20-17626616-4"
+    },
+    {
+        "name": "GERBAUDO ERICA LUISA",
+        "email": "caminosagustin1@gmail.com",
+        "password": "27-22564756-4"
+    },
+    {
+        "name": "GIUNCHIGLIA MARCELO DANIEL",
+        "email": "repuestosgiunchigliasa@hotmail.com",
+        "password": "23-18385893-9"
+    },
+    {
+        "name": "GNC DE LA VILLA SRL",
+        "email": " ",
+        "password": "30-70836460-2"
+    },
+    {
+        "name": "GOMEZ ORDAZZO LUCIO MAXIMILIANO",
+        "email": "inye-cor@hotmail.com",
+        "password": "20-33975215-0"
+    },
+    {
+        "name": "GRASSINI HNOS SRL",
+        "email": "adm.repuestosavenida@gmail.com",
+        "password": "30-71629067-7"
+    },
+    {
+        "name": "GUNTER ROBERTO RAMON",
+        "email": " ",
+        "password": "20-22073279-8"
+    },
+    {
+        "name": "GUTIERREZ CHRISTIAN MARCELO",
+        "email": "christiangutierrez1176@gmail.com",
+        "password": "20-25247114-7"
+    },
+    {
+        "name": "GUTIERREZ LUIS RAMON",
+        "email": "lramong73@gmail.com",
+        "password": "20-23197936-1"
+    },
+    {
+        "name": "HERRERA FABIO ARMANDO",
+        "email": "labombadeaguacba@gmail.com",
+        "password": "20-20786356-5"
+    },
+    {
+        "name": "HONGN MONICA ALEJANDRA",
+        "email": "femamotor@hotmail.com",
+        "password": "27-21393364-2"
+    },
+    {
+        "name": "HONORES YOHANA BEATRIZ",
+        "email": "signoretdeker@gmail.com",
+        "password": "27-35054764-4"
+    },
+    {
+        "name": "IBA￑EZ DANIEL GERARDO",
+        "email": "gerardoibanez1973@gmail.com",
+        "password": "23-23197582-9"
+    },
+    {
+        "name": "INTERAUTOPARTES SAS",
+        "email": "interautopartes.elporton@gmail.com",
+        "password": "30-71688462-3"
+    },
+    {
+        "name": "INTERNATIONAL ENGINE SRL",
+        "email": "internacionalengine@gmail.com",
+        "password": "30-71818917-5"
+    },
+    {
+        "name": "JUAN RAFAEL PEDRO",
+        "email": "repuestoselatlas4@gmail.com",
+        "password": "20-06134621-0"
+    },
+    {
+        "name": "LA CASA DEL ARO-CBA SRL",
+        "email": "lacasadelarocordoba@hotmail.com",
+        "password": "30-71454427-2"
+    },
+    {
+        "name": "LOPEZ ENRIQUE OMAR",
+        "email": "enriquezepol73@gmail.com",
+        "password": "20-23194152-6"
+    },
+    {
+        "name": "MARIANO ARLES MARTIN OCTAVIO",
+        "email": "arlesmm@hotmail.com",
+        "password": "20-22795801-5"
+    },
+    {
+        "name": "MARON MARCELO GABRIEL",
+        "email": "chevro_mar@outlook.com",
+        "password": "20-18153670-6"
+    },
+    {
+        "name": "MARTELLOTTO EDUARDO ALBERTO",
+        "email": " ",
+        "password": "23-12612959-9"
+    },
+    {
+        "name": "MARTIN ESTEBAN ANGEL",
+        "email": "emartin@arnet.com.ar",
+        "password": "20-10545294-3"
+    },
+    {
+        "name": "MARTINEZ MIGUEL DEL VALLE",
+        "email": "miguelmartinez7949@gmail.com",
+        "password": "23-26087949-9"
+    },
+    {
+        "name": "MARTINUZZI ARIEL OSCAR",
+        "email": "compras@riopeugeot.com.ar",
+        "password": "20-25267043-3"
+    },
+    {
+        "name": "MARTINUZZI GABRIELA DEL MILAGRO",
+        "email": "gabi.martinuzzi@gmail.com",
+        "password": "27-28429714-3"
+    },
+    {
+        "name": "MARUSICH JORGE OSCAR",
+        "email": "total-repuestos@outlook.com",
+        "password": "20-14562856-4"
+    },
+    {
+        "name": "MODENA SUD SRL",
+        "email": "modenasud@yahoo.com.ar",
+        "password": "30-70828637-7"
+    },
+    {
+        "name": "MORANDUZZO DANIEL LEONARDO",
+        "email": "tatihorihuela@gmail.com",
+        "password": "23-24368331-9"
+    },
+    {
+        "name": "NU￑EZ VICTOR HERNAN",
+        "email": "peugeot.norte2715@gmail.com",
+        "password": "20-23796103-0"
+    },
+    {
+        "name": "OLMEDO JUAN CARLOS",
+        "email": "potenciafiat@hotmail.com.ar",
+        "password": "20-13279479-1"
+    },
+    {
+        "name": "OLMOS SILVIO MARIANO",
+        "email": "cordobamotor@yahoo.com.ar",
+        "password": "20-22772452-9"
+    },
+    {
+        "name": "ORTEGA JUAN JOSE",
+        "email": "elpalaciodelmotor@hotmail.com",
+        "password": "20-29606134-5"
+    },
+    {
+        "name": "ORTIZ RODRIGO JAVIER",
+        "email": "rodrigojavierortiz@gmail.com",
+        "password": "20-34908163-7"
+    },
+    {
+        "name": "PAGLIERO JUAN LUDOVICO",
+        "email": "rcrepuestoscordoba@gmail.com",
+        "password": "20-07984473-0"
+    },
+    {
+        "name": "PAZ MAXIMILIANO NICOLAS",
+        "email": "maximilianopaz92@gmail.com",
+        "password": "20-36432320-5"
+    },
+    {
+        "name": "PEREGO DE LA TORRE MARCOS ARIEL",
+        "email": "marcosperego@hotmail.com",
+        "password": "20-26087438-2"
+    },
+    {
+        "name": "PEREYRA FRANCISCO BENITO",
+        "email": "franciscodaytona@hotmail.com",
+        "password": "23-07978262-9"
+    },
+    {
+        "name": "PEREZ ALVAREZ MATIAS NICOLAS",
+        "email": "franco_cba45@hotmail.com",
+        "password": "20-31921142-0"
+    },
+    {
+        "name": "PEREZ VILLALOBO FERNANDO JOSE",
+        "email": "yadarepuestosmotor@gmail.com",
+        "password": "20-25858003-7"
+    },
+    {
+        "name": "PETRINI LUIS DAVID",
+        "email": "scioli_bike@hotmail.com",
+        "password": "20-31217592-5"
+    },
+    {
+        "name": "PEUCOR REPUESTOS SA",
+        "email": "ventas@peucor.com.ar",
+        "password": "30-71605954-1"
+    },
+    {
+        "name": "PFULLER EDUARDO DANIEL",
+        "email": "autopartesfw@hotmail.com",
+        "password": "20-20532230-3"
+    },
+    {
+        "name": "PIZICHINI ANTONIO EUGENIO",
+        "email": "rocainyeccion@hotmail.com",
+        "password": "20-25919458-0"
+    },
+    {
+        "name": "PI￑EIRO EZEQUIEL ENRIQUE",
+        "email": "ezequielenripi03@gmail.com",
+        "password": "24-25344884-5"
+    },
+    {
+        "name": "PI￑EIRO MARIANA CAROLINA",
+        "email": "maro_508@hotmail.com",
+        "password": "27-28851496-3"
+    },
+    {
+        "name": "QUEVEDO EDUARDO FRANCISCO",
+        "email": "ncmrep@yahoo.com.ar",
+        "password": "20-12614129-8"
+    },
+    {
+        "name": "QUINTANA JULIO JORGE",
+        "email": "quintana_repuestos@hotmail.com",
+        "password": "20-12564774-0"
+    },
+    {
+        "name": "QUI￑ONES RAMON CESAR",
+        "email": "ramonautopartes@hotmail.com",
+        "password": "20-13821187-9"
+    },
+    {
+        "name": "RAMIRES CARLOS MANUEL",
+        "email": " ",
+        "password": "20-31356919-6"
+    },
+    {
+        "name": "RAVINALE FABIAN",
+        "email": "chevroletruta9@hotmail.com",
+        "password": "20-20073615-0"
+    },
+    {
+        "name": "RECTIFICACIONES Y REPUESTOS SAS",
+        "email": "repuver@hotmail.com",
+        "password": "30-71707114-6"
+    },
+    {
+        "name": "RECTISUR SRL",
+        "email": "rectisurmotores@gmail.com",
+        "password": "30-64011770-9"
+    },
+    {
+        "name": "REPUESTOS MORDINI SAS",
+        "email": "mordinirepuestos@outlook.com",
+        "password": "30-71758845-9"
+    },
+    {
+        "name": "REPUESTOS PERALTA PORCEL SA",
+        "email": "sistema@peraltaporcel.com",
+        "password": "30-70872883-3"
+    },
+    {
+        "name": "RERIANI LAURA JOSEFINA",
+        "email": "laurajreriani@hotmail.com",
+        "password": "27-16947353-1"
+    },
+    {
+        "name": "RIOS ANTONIO VICTOR",
+        "email": "riosmotor1@hotmail.com",
+        "password": "20-07799510-3"
+    },
+    {
+        "name": "RIVAROLA DANIEL JOSE OSCAR",
+        "email": "venetorepuestos@hotmail.com",
+        "password": "20-18018257-9"
+    },
+    {
+        "name": "ROLDAN MARCOS DAVID",
+        "email": "mariscalrepuestos@gmail.com",
+        "password": "20-36232064-0"
+    },
+    {
+        "name": "ROMERA GIULIANO MARTIN",
+        "email": "repuestosromera@gmail.com",
+        "password": "20-38500752-4"
+    },
+    {
+        "name": "RUBIO LUCAS MATIAS",
+        "email": "luppialem_repuestos@yahoo.com.ar",
+        "password": "20-25268661-5"
+    },
+    {
+        "name": "RUBIO RAMIRO",
+        "email": "lupirenault1@gmail.com",
+        "password": "20-28653546-2"
+    },
+    {
+        "name": "RUSSI NICOLAS MIGUEL",
+        "email": "enssirepuestos@hotmail.com",
+        "password": "20-25269210-0"
+    },
+    {
+        "name": "SAMARA JUAN ESTEBAN",
+        "email": " ",
+        "password": "20-28681778-6"
+    },
+    {
+        "name": "SANCHEZ LUCIANO ANDRES",
+        "email": "cuatrolatasrepuestosrenault@gmail.com",
+        "password": "20-27603319-1"
+    },
+    {
+        "name": "SCATTOLINI JOSE LUIS",
+        "email": "francoscattolinigreco@gmail.com",
+        "password": "20-14582980-2"
+    },
+    {
+        "name": "SILVESTRE JULIO CESAR CEFERINO",
+        "email": "montecarlorepuestos@hotmail.com",
+        "password": "20-18441449-0"
+    },
+    {
+        "name": "SILVESTRI GABRIEL CLEMENTE",
+        "email": "gabrielsilvestri@hotmail.com",
+        "password": "20-17003386-9"
+    },
+    {
+        "name": "SOLIS FABIO ANDRES",
+        "email": "fabioasolis@hotmail.com",
+        "password": "20-24726597-0"
+    },
+    {
+        "name": "SOLIS WALTER JAVIER",
+        "email": "motorboxrep@hotmail.com",
+        "password": "23-17629494-9"
+    },
+    {
+        "name": "SORIA PABLO DANTE",
+        "email": "psoria@live.com.ar",
+        "password": "20-12695396-9"
+    },
+    {
+        "name": "TAPIA RUBEN ALFREDO",
+        "email": "mancurepuestos@gmail.com",
+        "password": "20-16229487-4"
+    },
+    {
+        "name": "THE DOCTOR CARS SRL",
+        "email": "thedoctorcarssrl@hotmail.com",
+        "password": "30-71555424-7"
+    },
+    {
+        "name": "VALDEZ SERGIO EMANUEL",
+        "email": "emma.valdez10@gmail.com",
+        "password": "20-39080053-4"
+    },
+    {
+        "name": "VALENTINO HUMBERTO SALVADOR",
+        "email": "autopartesalem@gmail.com",
+        "password": "20-10377589-3"
+    },
+    {
+        "name": "VEGA JORGE ANIBAL",
+        "email": "vegajorge2020@hotmail.com",
+        "password": "20-24713332-2"
+    },
+    {
+        "name": "VELAZQUEZ JUAN JOSE Y SILVIO FRANCISCO SH",
+        "email": "repnorte@yahoo.com",
+        "password": "30-71020525-2"
+    },
+    {
+        "name": "YBARRA IVAN LUDOVICO",
+        "email": "puntomotorivan@hotmail.com",
+        "password": "20-27655680-1"
+    },
+    {
+        "name": "ZAMARRE￑O RAMIRO JOSE CARLOS",
+        "email": "gzparts2020@gmail.com",
+        "password": "20-29091909-7"
+    },
+    {
+        "name": "ZAMUDIO BENJAMIN ALEJANDRO",
+        "email": "benjaminzamu@gmail.com",
+        "password": "23-33699806-9"
+    },
+    {
+        "name": "PRUEBA DE USUARIO",
         "email": "usuario1@gmail.com",
         "password": "pass1"
-    },
-    {
-        "name": "Pedro Perez",
-        "email": "usuario2@gmail.com",
-        "password": "pass2"
-    },
-    {
-        "name": "Luis Sanchez",
-        "email": "usuario3@gmail.com",
-        "password": "pass3"
-    },
-    {
-        "name": "Amadeo Gonzalez",
-        "email": "usuario4@gmail.com",
-        "password": "pass4"
-    },
-    {
-        "name": "Marin Espindola",
-        "email": "usuario5@gmail.com",
-        "password": "pass5"
-    },
-    {
-        "name": "Sergio Daniel",
-        "email": "usuario6@gmail.com",
-        "password": "pass6"
-    },
-    {
-        "name": "Amadeo Raul",
-        "email": "usuario7@gmail.com",
-        "password": "pass7"
     }
 ]
