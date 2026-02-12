@@ -238,6 +238,18 @@
             background-size: 24px 24px;
             background-attachment: fixed;
         }
+
+        /* Hide Number Input Spinners */
+        .no-spin::-webkit-outer-spin-button,
+        .no-spin::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .no-spin {
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
