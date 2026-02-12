@@ -60,16 +60,15 @@ const parsePrice = (val) => {
     let s = val.toString().trim();
     s = s.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
     let num = parseFloat(s) || 0;
-    // Custom Rounding Rule: < .50 rounds down, >= .50 rounds up
-    // This is equivalent to standard Math.round() for positive numbers
-    return Math.round(num);
+    // Mantener decimales originales
+    return num;
 };
 
-// Helper to format Argentinian price: 1678.73 -> "1.678" (No decimals)
+// Helper to format Argentinian price: 1678.73 -> "1.678,73" (Con 2 decimales)
 const formatPrice = (val) => {
     return val.toLocaleString('es-AR', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
     });
 };
 
@@ -121,7 +120,9 @@ function parseExcel(arrayBuffer, initialCode = null) {
                 let s = (row[11] || 0).toString().trim();
                 // Take only characters before the first comma or dot
                 s = s.split(/[.,]/)[0];
-                return parseInt(s.replace(/\D/g, '')) || 0;
+                // Preserve negative sign for deferred deliveries (use [^\d-] instead of \D)
+                const cleanValue = s.replace(/[^\d-]/g, '');
+                return parseInt(cleanValue) || 0;
             })() // Column L
         };
     }).filter(item => item && item.codigo && item.rubro);
@@ -388,7 +389,10 @@ function getBadgeHtml(stock) {
     let colorClass = 'bg-red-500';
     let title = 'Sin Stock';
 
-    if (stock > 5) {
+    if (stock < 0) {
+        colorClass = 'bg-red-800';
+        title = 'Entrega Diferida';
+    } else if (stock > 5) {
         colorClass = 'bg-green-500';
         title = 'Stock Disponible';
     } else if (stock >= 1) {
@@ -617,7 +621,10 @@ window.addToCartFromCatalog = function (codigo, event) {
     if (!item) return;
 
     if (item.stock <= 0) {
-        alert(`Lo sentimos, el producto "${item.descripcion}" no tiene stock disponible.`);
+        const mensaje = item.stock < 0
+            ? `El producto "${item.descripcion}" está en entrega diferida (stock: ${item.stock}). No se puede agregar al carrito en este momento.`
+            : `Lo sentimos, el producto "${item.descripcion}" no tiene stock disponible.`;
+        alert(mensaje);
         return;
     }
 

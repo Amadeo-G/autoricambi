@@ -22,15 +22,13 @@ const elements = {
 
 // Helper Functions
 const formatPrice = (price) => {
-    // Regla: < .50 para abajo, >= .50 para arriba (Math.round)
-    // Sin decimales
-    const val = Math.round(price);
+    // Mostrar precios con centavos (2 decimales)
     return new Intl.NumberFormat('es-AR', {
         style: 'currency',
         currency: 'ARS',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    }).format(val);
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(price);
 };
 window.formatPrice = formatPrice;
 
@@ -178,8 +176,8 @@ const renderCart = () => {
 
     let subtotal = 0;
     elements.cartItemsContainer.innerHTML = state.cart.map(item => {
-        // Round unit price to integer per rule
-        const unitPrice = Math.round(item.price);
+        // Mantener precio con decimales
+        const unitPrice = item.price;
         const itemTotal = unitPrice * item.quantity;
         subtotal += itemTotal;
         return `
@@ -213,7 +211,7 @@ const renderCart = () => {
         `;
     }).join('');
 
-    const totalWithIVA = Math.round(subtotal * 1.21);
+    const totalWithIVA = subtotal * 1.21;
     if (elements.cartSubtotal) elements.cartSubtotal.textContent = formatPrice(subtotal);
     if (elements.cartTotal) elements.cartTotal.textContent = formatPrice(totalWithIVA);
 };
@@ -351,8 +349,8 @@ window.sendToSystem = async () => {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...';
 
-        const subtotal = state.cart.reduce((sum, item) => sum + (Math.round(item.price) * item.quantity), 0);
-        const totalWithIVA = Math.round(subtotal * 1.21);
+        const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const totalWithIVA = subtotal * 1.21;
         const user = state.user || {};
 
         // DEBUG: ver la estructura real de cada item del carrito
@@ -363,7 +361,7 @@ window.sendToSystem = async () => {
 
         // Construimos la lista de items con subtotal y total individual
         const items = state.cart.map(i => {
-            const unitPrice = Math.round(i.price || 0);
+            const unitPrice = i.price || 0;
             const itemSubtotal = unitPrice * (i.quantity || 1);
             return {
                 codigo: i.sku || i.codigo || i.id || i.name || "S/D",
@@ -371,7 +369,7 @@ window.sendToSystem = async () => {
                 cantidad: i.quantity || i.qty || 1,
                 precio_unitario: formatPrice(unitPrice),
                 subtotal: formatPrice(itemSubtotal),
-                total: formatPrice(Math.round(itemSubtotal * 1.21))
+                total: formatPrice(itemSubtotal * 1.21)
             };
         });
 
