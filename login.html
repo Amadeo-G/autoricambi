@@ -209,7 +209,44 @@
             background-attachment: fixed;
         }
     </style>
-    <script>
+
+
+    <script type="module">
+        import { auth } from './src/js/auth.js';
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.textContent;
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFICANDO...';
+            btn.disabled = true;
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const result = await auth.login(email, password);
+
+            if (result.success) {
+                const urlParams = new URLSearchParams(window.location.search);
+                const returnUrl = urlParams.get('returnUrl') || 'catalog-5.html';
+                window.location.href = returnUrl;
+            } else {
+                alert(result.error || 'Usuario o contraseña incorrectos.');
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        // Initialize and check current status
+        (async () => {
+            const user = await auth.getCurrentUser();
+            if (user) {
+                window.location.href = 'catalog-5.html';
+            }
+        })();
+
+        // Reveal animation
         document.addEventListener('DOMContentLoaded', () => {
             const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
             const observerCallback = (entries, observer) => {

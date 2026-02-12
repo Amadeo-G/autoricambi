@@ -250,9 +250,52 @@ window.checkout = () => {
 };
 
 
+
+
+// Header Logic (Login/User Status)
+const updateHeader = async () => {
+    // Import auth if not defined (though it's usually global)
+    const { auth } = await import('./auth.js');
+    const user = await auth.getCurrentUser();
+
+    const loginLink = document.querySelector('a[href="login.html"]');
+    const mobileLoginLink = document.querySelector('#mobile-menu a[href="login.html"]');
+
+    if (user && loginLink) {
+        const desktopLoginHTML = `
+            <div class="flex items-center space-x-3">
+                <div class="flex flex-col items-end">
+                    <span class="text-xs text-gray-400">Hola,</span>
+                    <span class="font-bold text-sm">${user.name}</span>
+                </div>
+                <button id="logout-btn" class="hover:text-brand-accent transition">
+                    <i class="fas fa-sign-out-alt text-xl"></i>
+                </button>
+            </div>
+        `;
+        const container = loginLink.parentElement;
+        loginLink.remove();
+        container.insertAdjacentHTML('afterbegin', desktopLoginHTML);
+
+        document.getElementById('logout-btn')?.addEventListener('click', async () => {
+            await auth.logout();
+        });
+    }
+
+    if (user && mobileLoginLink) {
+        mobileLoginLink.innerHTML = `<i class="fas fa-user mr-2"></i> ${user.name} (Cerrar Sesión)`;
+        mobileLoginLink.href = "#";
+        mobileLoginLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            await auth.logout();
+        });
+    }
+};
+
 // Initialization
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     updateCartUI();
+    await updateHeader();
     renderFeaturedCategories();
     renderCategoryFilters();
     renderCatalog();
