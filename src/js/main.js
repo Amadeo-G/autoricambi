@@ -16,6 +16,7 @@ const elements = {
     productList: document.getElementById('product-list'),
     featuredCategories: document.getElementById('featured-categories'),
     cartItemsContainer: document.getElementById('cart-items'),
+    cartSubtotal: document.getElementById('cart-subtotal'),
     cartTotal: document.getElementById('cart-total')
 };
 
@@ -162,14 +163,15 @@ const renderCart = () => {
 
     if (state.cart.length === 0) {
         elements.cartItemsContainer.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">El carrito está vacío</td></tr>';
+        if (elements.cartSubtotal) elements.cartSubtotal.textContent = formatPrice(0);
         if (elements.cartTotal) elements.cartTotal.textContent = formatPrice(0);
         return;
     }
 
-    let total = 0;
+    let subtotal = 0;
     elements.cartItemsContainer.innerHTML = state.cart.map(item => {
         const itemTotal = item.price * item.quantity;
-        total += itemTotal;
+        subtotal += itemTotal;
         return `
             <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                 <td class="p-4 flex items-center space-x-3">
@@ -199,7 +201,9 @@ const renderCart = () => {
         `;
     }).join('');
 
-    if (elements.cartTotal) elements.cartTotal.textContent = formatPrice(total);
+    const totalWithIVA = subtotal * 1.21;
+    if (elements.cartSubtotal) elements.cartSubtotal.textContent = formatPrice(subtotal);
+    if (elements.cartTotal) elements.cartTotal.textContent = formatPrice(totalWithIVA);
 };
 
 
