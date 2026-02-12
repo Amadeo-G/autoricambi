@@ -24,8 +24,10 @@ const els = {
 // INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
     // Check for URL code: can be in path /buscador/CODE or in query ?p=CODE
-    const pathParts = window.location.pathname.split('/');
-    const codeFromPath = pathParts.includes('buscador') ? pathParts[pathParts.indexOf('buscador') + 1] : null;
+    const pathParts = window.location.pathname.split('/').filter(p => p);
+    const buscadorIdx = pathParts.indexOf('buscador');
+    const codeFromPath = (buscadorIdx !== -1 && pathParts[buscadorIdx + 1]) ? pathParts[buscadorIdx + 1] : null;
+
     const urlParams = new URLSearchParams(window.location.search);
     const initialCode = codeFromPath || urlParams.get('p') || urlParams.get('s');
 
@@ -64,15 +66,15 @@ const formatPrice = (val) => {
     });
 };
 
-async function fetchData(initialQuery = null) {
+async function fetchData(initialCode = null) {
     try {
         const response = await fetch(`${EXCEL_FILE_PATH}?t=${Date.now()}`);
         if (!response.ok) throw new Error("No se pudo cargar el catálogo.");
         const arrayBuffer = await response.arrayBuffer();
-        parseExcel(arrayBuffer, initialQuery);
+        parseExcel(arrayBuffer, initialCode);
     } catch (error) {
         console.error(error);
-        if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="2" class="p-4 text-center text-red-500">Error: ${error.message} - Asegúrate de que Filtros.xlsx esté en la raíz.</td></tr>`;
+        if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Error: ${error.message} - Asegúrate de que Filtros.xlsx esté en la raíz.</td></tr>`;
     }
 }
 
@@ -105,10 +107,19 @@ function parseExcel(arrayBuffer, initialCode = null) {
 
     // Auto-search if code exists
     if (initialCode) {
+        const cleanCode = initialCode.trim().toLowerCase();
+
+        // Visual feedback while loading
+        if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue font-bold italic">Buscando producto: ${initialCode}...</td></tr>`;
+
         // If it's a specific code (more likely if initialCode comes from path)
-        const exactMatch = allData.find(d => d.codigo.toLowerCase() === initialCode.toLowerCase());
+        const exactMatch = allData.find(d => d.codigo.toLowerCase() === cleanCode);
+
         if (exactMatch) {
-            window.openProductDetail(exactMatch.codigo, false);
+            // Small delay to ensure DOM is ready and Lucide icons can be created
+            setTimeout(() => {
+                window.openProductDetail(exactMatch.codigo, false);
+            }, 500);
         } else {
             els.search.value = initialCode;
             applyFilters();
