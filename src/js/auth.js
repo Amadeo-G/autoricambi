@@ -22,8 +22,11 @@ export const auth = {
             */
 
             // Local Implementation (Excel-based)
-            const response = await fetch('src/js/users.json');
-            if (!response.ok) throw new Error('No se pudo cargar la base de usuarios.');
+            const response = await fetch(`/src/js/users.json?t=${Date.now()}`);
+            if (!response.ok) {
+                console.error('Fetch error:', response.status, response.statusText);
+                return { success: false, error: `No se pudo conectar con la base de datos (${response.status}).` };
+            }
 
             const users = await response.json();
 
@@ -46,7 +49,7 @@ export const auth = {
             }
         } catch (err) {
             console.error('Auth Error:', err);
-            return { success: false, error: 'Ocurrió un error al conectar con el servidor.' };
+            return { success: false, error: 'Error de conexión. Por favor, verifica que los cambios se hayan subido al servidor.' };
         }
     },
 
