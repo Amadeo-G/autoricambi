@@ -23,5 +23,10 @@
         "name": "Marin Espindola",
         "email": "usuario5@gmail.com",
         "password": "pass5"
+    },
+    {
+        "name": "Sergio Daniel",
+        "email": "usuario6@gmail.com",
+        "password": "pass6"
     }
 ]
