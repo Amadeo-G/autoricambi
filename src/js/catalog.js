@@ -163,49 +163,67 @@ function populateSelect(selectElement, values, defaultText) {
 }
 
 function initFilters() {
+    // Populate all initial values
     populateSelect(els.rubro, getUniqueValues(allData, 'rubro'), "Todos los Rubros");
+    populateSelect(els.subrubro, getUniqueValues(allData, 'subrubro'), "Todos los Subrubros");
+    populateSelect(els.marca, getUniqueValues(allData, 'marca'), "Todas las Marcas");
+}
+
+function syncFilters(changedField) {
+    const r = els.rubro.value;
+    const s = els.subrubro.value;
+    const m = els.marca.value;
+
+    // We refresh the options for the fields that WERE NOT changed
+    // based on what's available for the current selections.
+
+    if (changedField !== 'rubro') {
+        // Find rubros matching current subrubro and marca
+        let filtered = allData;
+        if (s) filtered = filtered.filter(item => item.subrubro === s);
+        if (m) filtered = filtered.filter(item => item.marca === m);
+        const available = getUniqueValues(filtered, 'rubro');
+        updateSelectOptions(els.rubro, available, r, "Todos los Rubros");
+    }
+
+    if (changedField !== 'subrubro') {
+        let filtered = allData;
+        if (r) filtered = filtered.filter(item => item.rubro === r);
+        if (m) filtered = filtered.filter(item => item.marca === m);
+        const available = getUniqueValues(filtered, 'subrubro');
+        updateSelectOptions(els.subrubro, available, s, "Todos los Subrubros");
+    }
+
+    if (changedField !== 'marca') {
+        let filtered = allData;
+        if (r) filtered = filtered.filter(item => item.rubro === r);
+        if (s) filtered = filtered.filter(item => item.subrubro === s);
+        const available = getUniqueValues(filtered, 'marca');
+        updateSelectOptions(els.marca, available, m, "Todas las Marcas");
+    }
+
+    applyFilters();
+}
+
+// Helper to update options while preserving selection
+function updateSelectOptions(selectElement, values, currentValue, defaultText) {
+    selectElement.innerHTML = `<option value="">${defaultText}</option>`;
+    values.forEach(val => {
+        const opt = document.createElement('option');
+        opt.value = opt.textContent = val;
+        if (val === currentValue) opt.selected = true;
+        selectElement.appendChild(opt);
+    });
 }
 
 if (els.rubro) {
-    els.rubro.addEventListener('change', (e) => {
-        const val = e.target.value;
-        const subExists = els.subrubro;
-        if (subExists) {
-            els.subrubro.innerHTML = '<option value="">Todos los Subrubros</option>';
-            els.subrubro.disabled = true;
-        }
-        if (els.marca) {
-            els.marca.innerHTML = '<option value="">Todas las Marcas</option>';
-            els.marca.disabled = true;
-        }
-
-        if (val && subExists) {
-            const subrubros = getUniqueValues(allData.filter(d => d.rubro === val), 'subrubro');
-            populateSelect(els.subrubro, subrubros, "Todos los Subrubros");
-        }
-        applyFilters();
-    });
+    els.rubro.addEventListener('change', () => syncFilters('rubro'));
 }
-
 if (els.subrubro) {
-    els.subrubro.addEventListener('change', (e) => {
-        const r = els.rubro.value;
-        const s = e.target.value;
-        if (els.marca) {
-            els.marca.innerHTML = '<option value="">Todas las Marcas</option>';
-            els.marca.disabled = true;
-        }
-
-        if (s && els.marca) {
-            const marcas = getUniqueValues(allData.filter(d => d.rubro === r && d.subrubro === s), 'marca');
-            populateSelect(els.marca, marcas, "Todas las Marcas");
-        }
-        applyFilters();
-    });
+    els.subrubro.addEventListener('change', () => syncFilters('subrubro'));
 }
-
 if (els.marca) {
-    els.marca.addEventListener('change', () => applyFilters());
+    els.marca.addEventListener('change', () => syncFilters('marca'));
 }
 
 // 3. SEARCH LOGIC
@@ -229,13 +247,27 @@ function applyFilters() {
 
     filteredData = allData.filter(item => {
         const matchFiltros = (!rub || item.rubro === rub) && (!sub || item.subrubro === sub) && (!mar || item.marca === mar);
+        if (!matchFiltros) return false;
 
-        // Search in code, description, brand, rubric and sub-rubric
-        const fieldsToSearch = [item.codigo, item.descripcion, item.marca, item.rubro, item.subrubro];
-        const itemText = normalizeText(fieldsToSearch.join(" "));
+        // If no search query, match only filters
+        if (!searchRaw) return true;
 
-        const matchSearch = terms.every(t => itemText.includes(t));
-        return matchFiltros && matchSearch;
+        const itemText = normalizeText([item.codigo, item.descripcion, item.marca, item.rubro, item.subrubro].join(" "));
+
+        // Strategy 1: All terms must exist in the text (Standard Search)
+        const matchStandard = terms.every(t => itemText.includes(t));
+        if (matchStandard) return true;
+
+        // Strategy 2: Approximate Code Match (Fuzzy for "KTB271" vs "LKTBN271")
+        // We check if the search term exists inside the code after removing non-alphanumeric characters
+        const cleanQuery = searchRaw.replace(/[^a-z0-9]/gi, '').toLowerCase();
+        const cleanCode = item.codigo.replace(/[^a-z0-9]/gi, '').toLowerCase();
+
+        if (cleanQuery.length >= 3 && cleanCode.includes(cleanQuery)) {
+            return true;
+        }
+
+        return false;
     });
     renderTable(searchRaw);
 }
@@ -329,8 +361,21 @@ function getBadgeHtml(stock) {
 }
 
 // Event Listeners
+// Event Listeners
 if (els.btnSearch) els.btnSearch.addEventListener('click', applyFilters);
-if (els.search) els.search.addEventListener('keypress', e => e.key === 'Enter' && applyFilters());
+
+// Live search: Update while typing
+if (els.search) {
+    let searchTimeout;
+    els.search.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        // Small delay (300ms) to avoid too many renders while typing fast
+        searchTimeout = setTimeout(applyFilters, 300);
+    });
+
+    // Also capture Enter for immediate search
+    els.search.addEventListener('keypress', e => e.key === 'Enter' && applyFilters());
+}
 if (els.btnReset) {
     els.btnReset.addEventListener('click', () => {
         els.search.value = '';
