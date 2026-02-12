@@ -264,24 +264,24 @@
 
                 <!-- Hero Action Card (Price + Add Button) -->
                 <div
-                    class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 mb-8 flex items-center justify-between gap-4 transition-transform hover:scale-[1.01] duration-300 relative overflow-hidden group/card">
+                    class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 mb-8 flex flex-col gap-6 items-center text-center transition-transform hover:scale-[1.01] duration-300 relative overflow-hidden group/card">
                     <div
-                        class="absolute top-0 right-0 w-16 h-16 bg-brand-blue/5 rounded-bl-full -mr-8 -mt-8 transition-all group-hover/card:bg-brand-blue/10">
+                        class="absolute top-0 right-0 w-24 h-24 bg-brand-blue/5 rounded-bl-full -mr-10 -mt-10 transition-all group-hover/card:bg-brand-blue/10">
                     </div>
 
-                    <div class="relative z-10">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Precio
+                    <div class="relative z-10 w-full border-b border-gray-100 pb-4">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Precio
                             Final</span>
                         <span id="modalPrecio"
-                            class="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-none">$
+                            class="text-5xl md:text-6xl font-black text-gray-900 tracking-tighter leading-none">$
                             0</span>
                     </div>
 
                     <button id="modalBtnAdd"
-                        class="group relative z-10 bg-brand-blue hover:bg-brand-dark text-white w-72 py-3 rounded-xl shadow-lg hover:shadow-brand-blue/30 transition-all duration-200 flex items-center justify-center gap-2 active:scale-95">
+                        class="group relative z-10 bg-brand-blue hover:bg-brand-dark text-white w-full py-4 rounded-xl shadow-lg hover:shadow-brand-blue/30 transition-all duration-200 flex items-center justify-center gap-3 active:scale-95">
                         <i data-lucide="shopping-cart"
-                            class="w-5 h-5 transition-transform group-hover:scale-110 group-hover:-rotate-12"></i>
-                        <span class="font-bold text-sm">Agregar</span>
+                            class="w-6 h-6 transition-transform group-hover:scale-110 group-hover:-rotate-12"></i>
+                        <span class="font-bold text-lg">AGREGAR AL CARRITO</span>
                     </button>
                 </div>
 
@@ -308,9 +308,9 @@
                 </div>
 
                 <!-- Footer Actions -->
-                <div class="mt-6 pt-6 border-t border-gray-100 flex justify-center items-center">
+                <div class="mt-6 pt-6 border-t border-gray-200">
                     <button onclick="closeModal()"
-                        class="w-72 py-3 bg-brand-blue hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-md transition transform hover:scale-105 flex items-center justify-center gap-2">
+                        class="w-full py-4 bg-white border border-gray-200 text-gray-500 hover:text-gray-800 hover:border-gray-300 hover:bg-gray-50 font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
                         <span>Cerrar Detalle</span>
                     </button>
                 </div>
