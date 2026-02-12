@@ -260,11 +260,13 @@ window.setQty = (productId, newValue) => {
 };
 
 window.checkout = () => {
-    const total = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const message = `Hola, quiero solicitar un presupuesto por los siguientes repuestos:%0A` +
-        state.cart.map(i => `- ${i.quantity}x ${i.name} (SKU: ${i.sku})`).join('%0A') +
-        `%0ATotal Estimado: ${formatPrice(total)}`;
-    window.open(`https://wa.me/543515550123?text=${message}`, '_blank');
+    if (state.cart.length === 0) return;
+
+    const message = `¡Hola Autoricambi! Este es mi pedido:%0A` +
+        state.cart.map(i => `${i.sku} x ${i.quantity}`).join('%0A');
+
+    const phoneNumber = "543516861092";
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
 };
 
 
