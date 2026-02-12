@@ -65,7 +65,7 @@ const renderFeaturedCategories = () => {
     elements.featuredCategories.innerHTML = state.categories.slice(0, 5).map(cat => {
         const hasImage = categoryImages[cat.id];
         return `
-        <a href="catalog.html?category=${cat.id}" class="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 block bg-white h-64 border border-gray-100">
+        <a href="buscador.html?category=${cat.id}" class="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 block bg-white h-64 border border-gray-100">
             <div class="h-2/3 bg-gray-50 flex items-center justify-center group-hover:bg-brand-blue/5 transition duration-500 overflow-hidden relative">
                 ${hasImage
                 ? `<img src="${categoryImages[cat.id]}" alt="${cat.name}" class="w-full h-full object-cover transition duration-700 transform group-hover:scale-110">
@@ -92,10 +92,10 @@ const renderCategoryFilters = () => {
     const currentCategory = urlParams.get('category');
 
     filterContainer.innerHTML = `
-        <li><a href="catalog.html" class="block ${!currentCategory ? 'text-brand-red font-bold' : 'text-gray-600 hover:text-brand-blue'}">Ver Todo</a></li>
+        <li><a href="buscador.html" class="block ${!currentCategory ? 'text-brand-red font-bold' : 'text-gray-600 hover:text-brand-blue'}">Ver Todo</a></li>
         ${state.categories.map(cat => `
             <li>
-                <a href="catalog.html?category=${cat.id}" class="block ${currentCategory === cat.id ? 'text-brand-red font-bold' : 'text-gray-600 hover:text-brand-blue'}">
+                <a href="buscador.html?category=${cat.id}" class="block ${currentCategory === cat.id ? 'text-brand-red font-bold' : 'text-gray-600 hover:text-brand-blue'}">
                     ${cat.name}
                 </a>
             </li>

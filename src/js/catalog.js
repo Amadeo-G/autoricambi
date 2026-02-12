@@ -23,15 +23,27 @@ const els = {
 
 // INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
-    // Check for URL params to auto-search
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialQuery = urlParams.get('s');
+    // Check for URL code: can be in path /buscador/CODE or in query ?p=CODE
+    const pathParts = window.location.pathname.split('/');
+    const codeFromPath = pathParts.includes('buscador') ? pathParts[pathParts.indexOf('buscador') + 1] : null;
+    const initialCode = codeFromPath || urlParams.get('p') || urlParams.get('s');
 
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
 
-    fetchData(initialQuery);
+    fetchData(initialCode);
+});
+
+// Handle Back/Forward buttons in browser
+window.addEventListener('popstate', () => {
+    const pathParts = window.location.pathname.split('/');
+    const code = pathParts.includes('buscador') ? pathParts[pathParts.indexOf('buscador') + 1] : null;
+    if (code) {
+        window.openProductDetail(code, false); // false to not push state again
+    } else {
+        window.closeModal(false);
+    }
 });
 
 // 1. DATA LOADING & PARSING
@@ -63,7 +75,7 @@ async function fetchData(initialQuery = null) {
     }
 }
 
-function parseExcel(arrayBuffer, initialQuery = null) {
+function parseExcel(arrayBuffer, initialCode = null) {
     const workbook = XLSX.read(arrayBuffer, { type: 'array' });
     const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
@@ -90,10 +102,16 @@ function parseExcel(arrayBuffer, initialQuery = null) {
 
     initFilters();
 
-    // Auto-search if query exists
-    if (initialQuery) {
-        els.search.value = initialQuery;
-        applyFilters();
+    // Auto-search if code exists
+    if (initialCode) {
+        // If it's a specific code (more likely if initialCode comes from path)
+        const exactMatch = allData.find(d => d.codigo.toLowerCase() === initialCode.toLowerCase());
+        if (exactMatch) {
+            window.openProductDetail(exactMatch.codigo, false);
+        } else {
+            els.search.value = initialCode;
+            applyFilters();
+        }
     } else {
         showInitialMessage();
     }
@@ -316,9 +334,16 @@ function showInitialMessage() {
 }
 
 // --- MODAL LOGIC (Exposed globally) ---
-window.openProductDetail = function (codigo) {
-    const item = allData.find(d => d.codigo === codigo);
+window.openProductDetail = function (codigo, pushState = true) {
+    const item = allData.find(d => d.codigo.toLowerCase() === codigo.toLowerCase());
     if (!item) return;
+
+    // Update URL if requested
+    if (pushState) {
+        // Clean paths: /buscador/RGU477
+        const newPath = `/buscador/${item.codigo}`;
+        history.pushState({ codigo: item.codigo }, '', newPath);
+    }
 
     // Populate Data
     document.getElementById('modalTitle').textContent = item.descripcion;
@@ -417,10 +442,15 @@ window.openProductDetail = function (codigo) {
     showSlide(1);
 };
 
-window.closeModal = function () {
+window.closeModal = function (pushState = true) {
     const modal = document.getElementById('productModal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
+
+    // Restore URL
+    if (pushState) {
+        history.pushState(null, '', '/buscador');
+    }
 };
 
 // Carousel Helpers
