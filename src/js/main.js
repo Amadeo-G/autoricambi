@@ -264,7 +264,7 @@ window.setQty = (productId, newValue) => {
 };
 
 // Google Sheets Integration URL (Configurar después de publicar la App Script)
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdZaNqnn2PuaWCL8uuZMWgfgTmHqvyfdnRVevKUAJKxYHecadsJw0seKqptsX-Capm/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzD8N0hjrH9gZvF6IGid8ligeYlOg6fX38rj5bQiQH8uoYa11mn8eymCuUPmF5DRME8/exec";
 
 window.sendToSystem = async () => {
     if (state.cart.length === 0) return;
@@ -294,12 +294,50 @@ window.sendToSystem = async () => {
             discount: user.discount || 42
         };
 
-        const blob = new Blob([JSON.stringify(orderData)], { type: 'text/plain' });
+        // Usamos un iframe oculto + formulario para evitar problemas de CORS con Google
+        await new Promise((resolve, reject) => {
+            const iframeName = 'hidden_iframe_' + Date.now();
+            const iframe = document.createElement('iframe');
+            iframe.name = iframeName;
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
 
-        await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: blob
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = GOOGLE_SCRIPT_URL;
+            form.target = iframeName;
+            form.style.display = 'none';
+
+            // Enviamos los datos como campos individuales del formulario
+            Object.keys(orderData).forEach(key => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = orderData[key];
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+
+            iframe.onload = () => {
+                // Limpiar después de enviar
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                    document.body.removeChild(form);
+                }, 500);
+                resolve();
+            };
+
+            iframe.onerror = () => {
+                document.body.removeChild(iframe);
+                document.body.removeChild(form);
+                reject(new Error('Error al enviar'));
+            };
+
+            form.submit();
+
+            // Timeout de seguridad: si no carga en 10 segundos, asumimos éxito
+            setTimeout(resolve, 10000);
         });
 
         alert('✅ ¡Pedido enviado con éxito! Se ha registrado en nuestro sistema.');
