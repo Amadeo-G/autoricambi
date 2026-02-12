@@ -530,7 +530,7 @@ window.addToCartFromCatalog = function (codigo) {
             id: Date.now() + Math.random(), // Unique temp ID
             name: item.descripcion,
             sku: item.codigo,
-            price: item.priceRaw,
+            price: item.costo, // Using COST instead of PV for wholesale
             image: `/Imagenes/${item.codigo.toLowerCase()}-1.webp`,
             brand: item.marca,
             category: item.rubro,
