@@ -96,8 +96,12 @@
                                 <i class="fas fa-key"></i>
                             </span>
                             <input type="password" id="password" required=""
-                                class="pl-10 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-blue focus:border-brand-blue sm:text-sm py-2 border"
+                                class="pl-10 pr-10 block w-full border-gray-300 rounded-md shadow-sm focus:ring-brand-blue focus:border-brand-blue sm:text-sm py-2 border"
                                 placeholder="••••••••">
+                            <button type="button" id="toggle-password"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-brand-blue transition">
+                                <i class="fas fa-eye" id="eye-icon"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -235,6 +239,20 @@
                 alert(result.error || 'Usuario o contraseña incorrectos.');
                 btn.textContent = originalText;
                 btn.disabled = false;
+            }
+        });
+
+        // Toggle password visibility
+        document.getElementById('toggle-password').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         });
 
