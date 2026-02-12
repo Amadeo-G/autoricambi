@@ -465,24 +465,7 @@ window.openProductDetail = function (codigo, pushState = true) {
     const priceEl = document.getElementById('modalPrecio');
     if (priceEl) priceEl.textContent = `$ ${item.precio}`;
 
-    // Update Stock Badge
-    const stockBadge = document.getElementById('modalStockBadge');
-    if (stockBadge) {
-        stockBadge.className = 'w-4 h-4 rounded-full shadow-sm transition-colors border border-gray-200';
-        let stockColor = 'bg-red-500';
-        let stockTitle = 'Sin Stock';
 
-        if (item.stock > 5) {
-            stockColor = 'bg-green-500';
-            stockTitle = 'Stock Disponible';
-        } else if (item.stock >= 1) {
-            stockColor = 'bg-yellow-400';
-            stockTitle = 'Últimas Unidades';
-        }
-
-        stockBadge.classList.add(stockColor);
-        stockBadge.title = `${stockTitle} (${item.stock})`;
-    }
 
 
     // Features
@@ -492,7 +475,7 @@ window.openProductDetail = function (codigo, pushState = true) {
         const feats = item.caracteristicas.split(/[,\n]/).filter(f => f.trim());
         feats.forEach(f => {
             const span = document.createElement('span');
-            span.className = "bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs border border-gray-200";
+            span.className = "bg-white text-gray-700 px-2 py-1 rounded text-xs border border-gray-200 shadow-sm";
             span.textContent = f;
             featContainer.appendChild(span);
         });
@@ -507,7 +490,7 @@ window.openProductDetail = function (codigo, pushState = true) {
         const codes = item.equivalentes.split(/[,\n]/).filter(c => c.trim());
         codes.forEach(c => {
             const span = document.createElement('span');
-            span.className = "font-mono text-xs bg-gray-50 border border-gray-200 px-2 py-1 rounded text-gray-500 select-all";
+            span.className = "font-mono text-xs bg-white border border-gray-200 px-2 py-1 rounded text-gray-500 select-all shadow-sm";
             span.textContent = c;
             equivContainer.appendChild(span);
         });

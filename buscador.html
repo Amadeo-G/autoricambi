@@ -207,7 +207,7 @@
 
             <!-- Image Section -->
             <div
-                class="w-full md:w-1/2 bg-gray-100 flex items-center justify-center p-4 relative min-h-[300px] overflow-hidden group">
+                class="w-full md:w-1/2 bg-white flex items-center justify-center p-4 relative min-h-[300px] overflow-hidden group">
                 <div id="modalImageContainer"
                     class="relative w-full h-full flex items-center justify-center p-6 cursor-crosshair overflow-hidden">
                     <img id="modalImg1" src=""
@@ -238,7 +238,7 @@
             </div>
 
             <!-- Content Section -->
-            <div class="w-full md:w-1/2 p-8 overflow-y-auto bg-white">
+            <div class="w-full md:w-1/2 p-8 overflow-y-auto bg-gray-50">
                 <div class="mb-6">
                     <span id="modalRubro"
                         class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Rubro >
@@ -254,7 +254,7 @@
 
                 <div class="grid grid-cols-1 gap-4 mb-6">
                     <!-- Venta Section -->
-                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
                         <div class="flex items-center gap-2 mb-2">
                             <i data-lucide="tag" class="w-4 h-4 text-brand-blue"></i>
                             <span class="text-[10px] font-bold text-brand-blue uppercase tracking-widest">Precio de
@@ -289,17 +289,11 @@
                 </div>
 
                 <!-- Footer Actions -->
-                <div class="mt-8 pt-6 border-t border-gray-100 flex gap-3 h-16">
+                <div class="mt-6 pt-6 border-t border-gray-100 flex justify-center items-center">
                     <button onclick="closeModal()"
-                        class="flex-1 bg-brand-blue hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition transform hover:scale-[1.02] flex items-center justify-center gap-2">
+                        class="px-8 py-2 bg-brand-blue hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-md transition transform hover:scale-105 flex items-center justify-center gap-2">
                         <span>Cerrar Detalle</span>
                     </button>
-                    <!-- Stock Indicator Button -->
-                    <div id="modalStockBadge"
-                        class="w-16 h-full rounded-xl bg-gray-300 shadow-lg flex items-center justify-center transition-colors border border-gray-200"
-                        title="Verificando stock...">
-                        <i data-lucide="box" class="w-6 h-6 text-white/90"></i>
-                    </div>
                 </div>
             </div>
         </div>
