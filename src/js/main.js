@@ -175,7 +175,9 @@ const renderCart = () => {
         return `
             <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                 <td class="p-4 flex items-center space-x-3">
-                    <img src="${item.image}" onerror="this.src='https://placehold.co/100?text=S/D'" class="w-12 h-12 object-cover rounded hidden sm:block">
+                    <img src="${item.image}" 
+                         onerror="window.cartImgError(this, '${item.sku}')" 
+                         class="w-12 h-12 object-cover rounded border border-gray-200">
                     <div>
                         <div class="font-bold text-gray-800">${item.name}</div>
                         <div class="text-xs text-gray-500">${item.sku}</div>
@@ -206,6 +208,26 @@ const renderCart = () => {
     if (elements.cartTotal) elements.cartTotal.textContent = formatPrice(totalWithIVA);
 };
 
+// Error Handler para imágenes del carrito
+window.cartImgError = (img, sku) => {
+    // Evitar bucles infinitos
+    if (img.dataset.triedLocal === "true") {
+        img.src = 'https://placehold.co/100?text=S/D';
+        img.onerror = null;
+        return;
+    }
+
+    // Marcar flag y probar imagen local
+    img.dataset.triedLocal = "true";
+    // Intentamos cargar la versión local si falla la de R2
+    // Limpiamos el SKU por si acaso tiene caracteres raros
+    const cleanSku = sku ? sku.toLowerCase().trim() : '';
+    if (cleanSku) {
+        img.src = `/Imagenes/${cleanSku}-1.webp`;
+    } else {
+        img.src = 'https://placehold.co/100?text=S/D';
+    }
+};
 
 // --- Global Actions (Window) ---
 
