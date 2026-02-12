@@ -70,19 +70,20 @@ function parseExcel(arrayBuffer, initialQuery = null) {
 
 
     allData = data.slice(2).map(row => {
-        const costVal = parsePrice(row[2]); // Column C
-        const priceVal = costVal / 0.58;
+        const pvVal = parsePrice(row[2]); // Column C is PV (Precio de Venta)
+        const costVal = pvVal * 0.58;     // Cost is 58% of PV
 
         return {
             codigo: (row[0] || '').toString().trim(),         // Column A
             descripcion: (row[1] || '').toString().trim(),    // Column B
             costo: costVal,
-            precio: formatPrice(priceVal),
+            precio: formatPrice(pvVal),
+            priceRaw: pvVal,
             subrubro: (row[8] || '').toString().trim(),       // Column I
             marca: (row[13] || '').toString().trim(),         // Column N
             rubro: (row[14] || '').toString().trim(),         // Column O
-            caracteristicas: '', // Not specified in New Mapping, keep empty for now
-            equivalentes: '',   // Not specified in New Mapping, keep empty for now
+            caracteristicas: '',
+            equivalentes: '',
             stock: parseInt((row[11] || 0).toString().replace(/\D/g, '')) || 0 // Column L
         };
     }).filter(item => item.codigo && item.rubro);
@@ -225,18 +226,36 @@ function renderTable(q = '') {
         tr.className = "hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 last:border-b-0";
 
         tr.innerHTML = `
-            <td class="p-4 font-bold text-sm text-gray-700 w-1/4" data-label="Código">
+            <td class="p-4 font-bold text-sm text-gray-700" data-label="Código">
                 <span class="bg-white px-2 py-1 rounded border border-gray-200 shadow-sm inline-block">${highlightText(item.codigo, q)}</span>
             </td>
-            <td class="p-4 text-sm text-gray-800 w-3/4" data-label="Descripción">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            <td class="p-4 text-sm text-gray-800" data-label="Descripción">
+                <div class="flex flex-col">
                     <span class="font-medium">${highlightText(item.descripcion, q)}</span>
-                     <div class="flex items-center gap-2 mt-2 md:mt-0">
-                        <button onclick="window.openProductDetail('${item.codigo}')" class="flex-none flex items-center gap-2 px-4 py-1.5 bg-white hover:bg-brand-blue hover:text-white text-brand-blue border border-brand-blue rounded-full text-xs font-bold transition-all shadow-sm active:scale-95">
-                            <i data-lucide="eye" class="w-3 h-3"></i> Ver
-                        </button>
-                        ${getBadgeHtml(item.stock)}
-                     </div>
+                    <span class="text-[10px] text-gray-400 uppercase font-bold">${item.marca} | ${item.rubro}</span>
+                </div>
+            </td>
+            <td class="p-4 text-right font-bold text-gray-800" data-label="Precio">
+                $ ${item.precio}
+            </td>
+            <td class="p-4 text-right font-mono text-sm text-gray-400" data-label="Costo">
+                <span id="cost-${item.codigo}" 
+                      class="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded transition-all select-none"
+                      onclick="window.toggleTableCost('${item.codigo}', ${item.costo})">***</span>
+            </td>
+            <td class="p-4 text-center" data-label="Acción">
+                <div class="flex items-center justify-center gap-2">
+                    <button onclick="window.addToCartFromCatalog('${item.codigo}')" 
+                            class="p-2 bg-brand-blue text-white rounded-lg hover:bg-blue-700 transition shadow-sm active:scale-95" 
+                            title="Agregar al carrito">
+                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="window.openProductDetail('${item.codigo}')" 
+                            class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-brand-blue hover:text-white transition shadow-sm active:scale-95" 
+                            title="Ver detalles">
+                        <i data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                    ${getBadgeHtml(item.stock)}
                 </div>
             </td>
         `;
@@ -435,21 +454,63 @@ window.nextSlide = function (d) {
     showSlide(n);
 }
 
-window.toggleCostVisibility = function () {
-    const costEl = document.getElementById('modalCosto');
-    // Lucide replaces <i> with <svg>, so we look for both or just use the container
-    const btnIcon = document.querySelector('[onclick="window.toggleCostVisibility()"] i, [onclick="window.toggleCostVisibility()"] svg');
-    if (!costEl || !btnIcon) return;
+window.toggleTableCost = function (codigo, costo) {
+    const el = document.getElementById(`cost-${codigo}`);
+    if (!el) return;
 
-    const isHidden = costEl.classList.contains('is-hidden');
-    if (isHidden) {
-        costEl.textContent = costEl.dataset.value;
-        costEl.classList.remove('is-hidden');
-        btnIcon.setAttribute('data-lucide', 'eye');
+    if (el.textContent === '***') {
+        el.textContent = `$ ${formatPrice(costo)}`;
+        el.classList.remove('text-gray-400');
+        el.classList.add('text-brand-blue', 'font-bold');
     } else {
-        costEl.textContent = '••••••••';
-        costEl.classList.add('is-hidden');
-        btnIcon.setAttribute('data-lucide', 'eye-off');
+        el.textContent = '***';
+        el.classList.remove('text-brand-blue', 'font-bold');
+        el.classList.add('text-gray-400');
     }
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+};
+
+window.addToCartFromCatalog = function (codigo) {
+    const item = allData.find(d => d.codigo === codigo);
+    if (!item) return;
+
+    if (!window.state || !window.state.cart) {
+        console.error("Cart state not initialized");
+        return;
+    }
+
+    const existingItem = window.state.cart.find(c => c.sku === item.codigo);
+    if (existingItem) {
+        existingItem.quantity += 1;
+    } else {
+        window.state.cart.push({
+            id: Date.now() + Math.random(), // Unique temp ID
+            name: item.descripcion,
+            sku: item.codigo,
+            price: item.priceRaw,
+            image: `Imagenes/${item.codigo.toLowerCase()}-1.webp`,
+            brand: item.marca,
+            category: item.rubro,
+            description: item.descripcion,
+            quantity: 1,
+            stock: item.stock > 0
+        });
+    }
+
+    if (window.saveCart) window.saveCart();
+
+    // Visual feedback on button
+    const btn = event.currentTarget;
+    const icon = btn.querySelector('i');
+    if (icon) {
+        const originalIcon = icon.getAttribute('data-lucide');
+        icon.setAttribute('data-lucide', 'check');
+        btn.classList.replace('bg-brand-blue', 'bg-green-500');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
+        setTimeout(() => {
+            icon.setAttribute('data-lucide', originalIcon);
+            btn.classList.replace('bg-green-500', 'bg-brand-blue');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }, 1000);
+    }
 };

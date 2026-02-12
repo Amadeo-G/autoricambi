@@ -23,16 +23,20 @@ const elements = {
 const formatPrice = (price) => {
     return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
 };
+window.formatPrice = formatPrice;
 
 const saveCart = () => {
     localStorage.setItem('cart', JSON.stringify(state.cart));
     updateCartUI();
 };
+window.saveCart = saveCart;
 
 const updateCartUI = () => {
     const totalItems = state.cart.reduce((sum, item) => sum + item.quantity, 0);
     elements.cartCount.forEach(el => el.textContent = totalItems);
 };
+window.updateCartUI = updateCartUI;
+window.state = state; // Also expose state for easier access
 
 // --- Rendering Logic ---
 
