@@ -20,7 +20,10 @@
     <!-- SheetJS for Excel Reading -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <!-- Auth Guard -->
-    <script type="module" src="src/js/auth.js"></script>
+    <script type="module">
+        import { auth } from './src/js/auth.js';
+        auth.checkAuth();
+    </script>
 </head>
 
 <body class="bg-gray-50 text-brand-dark font-sans flex flex-col min-h-screen">

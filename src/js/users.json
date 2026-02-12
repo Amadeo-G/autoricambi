@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Juan Gomez",
+        "email": "usuario1@gmail.com",
+        "password": "pass1"
+    },
+    {
+        "name": "Pedro Perez",
+        "email": "usuario2@gmail.com",
+        "password": "pass2"
+    },
+    {
+        "name": "Luis Sanchez",
+        "email": "usuario3@gmail.com",
+        "password": "pass3"
+    },
+    {
+        "name": "Amadeo Gonzalez",
+        "email": "usuario4@gmail.com",
+        "password": "pass4"
+    },
+    {
+        "name": "Marin Espindola",
+        "email": "usuario5@gmail.com",
+        "password": "pass5"
+    }
+]

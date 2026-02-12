@@ -1,62 +1,90 @@
 
 /**
- * Authentication Module (Workers Version)
- * Uses secure HttpOnly cookies and server-side validation.
+ * Authentication Module
+ * Manages user login and session using local storage and users.json (from Excel).
  */
 
 export const auth = {
     /**
-     * Attempts to log in a user via the API.
+     * Attempts to log in a user.
+     * First tries the API, falls back to local JSON check for static implementation.
      */
     async login(email, password) {
         try {
+            // Optional: You can keep the fetch if you have a real backend in the future
+            /*
             const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
+            if (response.ok) { ... }
+            */
 
-            if (response.ok) {
-                const data = await response.json();
-                // We still cache the user info for UI purposes, but the SECURE check is on the server.
-                localStorage.setItem('user', JSON.stringify(data.user));
+            // Local Implementation (Excel-based)
+            const response = await fetch('src/js/users.json');
+            if (!response.ok) throw new Error('No se pudo cargar la base de usuarios.');
+
+            const users = await response.json();
+
+            // Find user in standardized JSON
+            const user = users.find(u =>
+                (u.email?.toString().toLowerCase() === email.toLowerCase()) &&
+                (u.password?.toString() === password.toString())
+            );
+
+            if (user) {
+                const userData = {
+                    email: user.email,
+                    name: user.name || user.email.split('@')[0], // Use 'name' if exists, else prefix
+                    role: 'client'
+                };
+                localStorage.setItem('user', JSON.stringify(userData));
                 return { success: true };
             } else {
-                const error = await response.json();
-                return { success: false, error: error.error || 'Error de autenticación' };
+                return { success: false, error: 'Usuario o contraseña incorrectos.' };
             }
         } catch (err) {
+            console.error('Auth Error:', err);
             return { success: false, error: 'Ocurrió un error al conectar con el servidor.' };
         }
     },
 
     /**
-     * Logs out the current user via the API.
+     * Logs out the current user.
      */
     async logout() {
-        await fetch('/api/logout');
         localStorage.removeItem('user');
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
     },
 
     /**
-     * Checks if a user is currently logged in via the API.
+     * Checks if a user is currently logged in.
      */
     async getCurrentUser() {
+        const userJson = localStorage.getItem('user');
+        if (!userJson) return null;
         try {
-            const response = await fetch('/api/user');
-            if (response.ok) {
-                const data = await response.json();
-                if (data.user) {
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    return data.user;
-                }
-            }
+            return JSON.parse(userJson);
+        } catch (e) {
             localStorage.removeItem('user');
             return null;
-        } catch (e) {
-            return JSON.parse(localStorage.getItem('user'));
         }
+    },
+
+    /**
+     * Protects a page by redirecting to login if not authenticated.
+     */
+    async checkAuth() {
+        const user = await this.getCurrentUser();
+        if (!user) {
+            const currentPath = window.location.pathname;
+            const fileName = currentPath.substring(currentPath.lastIndexOf('/') + 1);
+            if (fileName !== 'login.html') {
+                window.location.href = `login.html?returnUrl=${fileName}`;
+            }
+        }
+        return user;
     }
 };
 
