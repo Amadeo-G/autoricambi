@@ -327,7 +327,7 @@ function renderTable(q = '') {
             </td>
             <td class="p-4 text-center" data-label="Acción">
                 <div class="flex items-center justify-center gap-2">
-                    <button onclick="window.addToCartFromCatalog('${item.codigo}')" 
+                    <button onclick="window.addToCartFromCatalog('${item.codigo}', event)" 
                             class="p-2 bg-brand-blue text-white rounded-lg hover:bg-blue-700 transition shadow-sm active:scale-95" 
                             title="Agregar al carrito">
                         <i data-lucide="shopping-cart" class="w-4 h-4"></i>
@@ -563,7 +563,7 @@ window.toggleTableCost = function (codigo, costo) {
     }
 };
 
-window.addToCartFromCatalog = function (codigo) {
+window.addToCartFromCatalog = function (codigo, event) {
     const item = allData.find(d => d.codigo === codigo);
     if (!item) return;
 
@@ -593,18 +593,20 @@ window.addToCartFromCatalog = function (codigo) {
     if (window.saveCart) window.saveCart();
 
     // Visual feedback on button
-    const btn = event.currentTarget;
-    const icon = btn.querySelector('i');
-    if (icon) {
-        const originalIcon = icon.getAttribute('data-lucide');
-        icon.setAttribute('data-lucide', 'check');
-        btn.classList.replace('bg-brand-blue', 'bg-green-500');
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-
-        setTimeout(() => {
-            icon.setAttribute('data-lucide', originalIcon);
-            btn.classList.replace('bg-green-500', 'bg-brand-blue');
+    if (event && event.currentTarget) {
+        const btn = event.currentTarget;
+        const icon = btn.querySelector('i');
+        if (icon) {
+            const originalIcon = icon.getAttribute('data-lucide');
+            icon.setAttribute('data-lucide', 'check');
+            btn.classList.replace('bg-brand-blue', 'bg-green-500');
             if (typeof lucide !== 'undefined') lucide.createIcons();
-        }, 1000);
+
+            setTimeout(() => {
+                icon.setAttribute('data-lucide', originalIcon);
+                btn.classList.replace('bg-green-500', 'bg-brand-blue');
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }, 1000);
+        }
     }
 };
