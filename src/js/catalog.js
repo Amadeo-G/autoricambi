@@ -529,8 +529,22 @@ window.openProductDetail = function (codigo, pushState = true) {
     modal.classList.remove('hidden');
     modal.classList.add('flex'); // Ensure flex display
 
+    // Setup Add to Cart Button Logic
+    const btnAdd = document.getElementById('modalBtnAdd');
+    if (btnAdd) {
+        // Remove previous listeners (cloning is a quick way to strip listeners if not using named functions)
+        const newBtn = btnAdd.cloneNode(true);
+        btnAdd.parentNode.replaceChild(newBtn, btnAdd);
+
+        newBtn.onclick = (e) => window.addToCartFromCatalog(item.codigo, e);
+
+        // Re-init icon if needed (since we cloned)
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
     // Reset Carousel to slide 1 (simple visibility toggle needed if implementing full carousel)
     showSlide(1);
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 };
 
 window.closeModal = function (pushState = true) {

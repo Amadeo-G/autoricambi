@@ -238,32 +238,50 @@
             </div>
 
             <!-- Content Section -->
-            <div class="w-full md:w-1/2 p-8 overflow-y-auto bg-gray-50">
-                <div class="mb-6">
+            <div class="w-full md:w-1/2 p-8 overflow-y-auto bg-gray-50 flex flex-col relative">
+
+                <!-- Header: Breadcrumbs & Brand -->
+                <div class="flex items-center justify-between mb-3">
                     <span id="modalRubro"
-                        class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-2">Rubro >
-                        Sub rubro</span>
-                    <h2 id="modalTitle" class="text-2xl font-bold text-gray-900 leading-tight mb-2">Descripción del
-                        Producto</h2>
-                    <div class="flex items-center gap-4">
+                        class="text-[10px] font-bold text-gray-400 uppercase tracking-widest bg-gray-100 px-2 py-1 rounded-md border border-gray-200">Rubro
+                        > Sub</span>
+                    <span id="modalMarca"
+                        class="text-[10px] font-bold text-brand-blue uppercase bg-blue-50 px-2 py-1 rounded-md border border-blue-100">Marca</span>
+                </div>
+
+                <!-- Title & Code -->
+                <div class="mb-6">
+                    <h2 id="modalTitle"
+                        class="text-2xl md:text-3xl font-bold text-gray-800 leading-tight mb-2 font-sans">Descripción
+                        del Producto</h2>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Cód:</span>
                         <span id="modalCodigo"
-                            class="bg-gray-100 text-gray-700 px-3 py-1 rounded font-mono text-sm border font-bold">COD-12345</span>
-                        <span id="modalMarca" class="text-brand-blue font-bold text-sm uppercase">Marca</span>
+                            class="font-mono font-bold text-gray-600 text-lg tracking-wide select-all">CODE123</span>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4 mb-6">
-                    <!-- Venta Section -->
-                    <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
-                        <div class="flex items-center gap-2 mb-2">
-                            <i data-lucide="tag" class="w-4 h-4 text-brand-blue"></i>
-                            <span class="text-[10px] font-bold text-brand-blue uppercase tracking-widest">Precio de
-                                Venta</span>
-                        </div>
-                        <span id="modalPrecio"
-                            class="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter block mt-1">$
-                            0.00</span>
+                <!-- Hero Action Card (Price + Add Button) -->
+                <div
+                    class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200 mb-8 flex items-center justify-between gap-4 transition-transform hover:scale-[1.01] duration-300 relative overflow-hidden group/card">
+                    <div
+                        class="absolute top-0 right-0 w-16 h-16 bg-brand-blue/5 rounded-bl-full -mr-8 -mt-8 transition-all group-hover/card:bg-brand-blue/10">
                     </div>
+
+                    <div class="relative z-10">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Precio
+                            Final</span>
+                        <span id="modalPrecio"
+                            class="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-none">$
+                            0</span>
+                    </div>
+
+                    <button id="modalBtnAdd"
+                        class="group relative z-10 bg-brand-blue hover:bg-brand-dark text-white pl-4 pr-5 py-3 rounded-xl shadow-lg hover:shadow-brand-blue/30 transition-all duration-200 flex items-center gap-2 active:scale-95">
+                        <i data-lucide="shopping-cart"
+                            class="w-5 h-5 transition-transform group-hover:scale-110 group-hover:-rotate-12"></i>
+                        <span class="font-bold text-sm">Agregar</span>
+                    </button>
                 </div>
 
                 <div class="space-y-5">
