@@ -270,7 +270,7 @@ window.sendToSystem = async () => {
     if (state.cart.length === 0) return;
 
     if (!GOOGLE_SCRIPT_URL) {
-        alert("Configuración pendiente: Primero debes crear y publicar tu Google App Script y pegar la URL en src/js/main.js");
+        alert("Configuración pendiente...");
         return;
     }
 
@@ -281,18 +281,8 @@ window.sendToSystem = async () => {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...';
 
-        const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const totalWithIVA = subtotal * 1.21;
-        const user = state.user || {};
-
-        const orderData = {
-            clientName: user.name || "Cliente No Identificado",
-            clientEmail: user.email || "S/D",
-            orderDetail: state.cart.map(i => `${i.sku} x ${i.quantity} (${i.name})`).join('\n'),
-            subtotal: formatPrice(subtotal),
-            total: formatPrice(totalWithIVA),
-            discount: user.discount || 42
-        };
+        // ... preparación de datos ...
+        const orderData = { ... };
 
         // Realizamos el envío. Enviamos como texto plano para máxima compatibilidad con Google Scripts
         const blob = new Blob([JSON.stringify(orderData)], { type: 'text/plain' });
@@ -303,20 +293,12 @@ window.sendToSystem = async () => {
             body: blob
         });
 
-        // Al ser 'no-cors' no podemos leer la respuesta, pero si no hay error en el fetch, asumimos éxito.
         alert('✅ ¡Pedido enviado con éxito! Se ha registrado en nuestro sistema.');
 
-        // Limpiamos el carrito
-        state.cart = [];
-        saveCart();
-        if (typeof renderCart === 'function') renderCart();
+        // ... limpieza del carrito ...
 
     } catch (error) {
-        console.error('Error al enviar pedido:', error);
-        alert('❌ Hubo un problema al enviar el pedido por sistema. Por favor intenta de nuevo o usa WhatsApp.');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
+        // ... manejo de error ...
     }
 };
 
