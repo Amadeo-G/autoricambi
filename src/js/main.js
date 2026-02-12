@@ -262,7 +262,8 @@ window.setQty = (productId, newValue) => {
 window.checkout = () => {
     if (state.cart.length === 0) return;
 
-    const message = `¡Hola Autoricambi! Este es mi pedido:%0A` +
+    const userName = state.user ? state.user.name : 'un cliente';
+    const message = `¡Hola Autoricambi! Soy ${userName} y este es mi pedido:%0A` +
         state.cart.map(i => `${i.sku} x ${i.quantity}`).join('%0A');
 
     const phoneNumber = "543516861092";
