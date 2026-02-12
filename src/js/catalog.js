@@ -386,11 +386,13 @@ function renderTable(q = '') {
 }
 
 function getBadgeHtml(stock) {
+    let colorStyle = '';
     let colorClass = 'bg-red-500';
     let title = 'Sin Stock';
 
     if (stock < 0) {
-        colorClass = 'bg-red-800';
+        colorStyle = 'style="background-color: #991b1b;"'; // Bordó (red-800 en Tailwind)
+        colorClass = ''; // No usar clase cuando hay style inline
         title = 'Entrega Diferida';
     } else if (stock > 5) {
         colorClass = 'bg-green-500';
@@ -400,7 +402,7 @@ function getBadgeHtml(stock) {
         title = 'Últimas Unidades';
     }
 
-    return `<div class="w-3 h-3 rounded-full ${colorClass} shadow-sm" title="${title}: ${stock}"></div>`;
+    return `<div class="w-3 h-3 rounded-full ${colorClass} shadow-sm" ${colorStyle} title="${title}: ${stock}"></div>`;
 }
 
 // Event Listeners
@@ -533,19 +535,6 @@ window.openProductDetail = function (codigo, pushState = true) {
     modal.classList.remove('hidden');
     modal.classList.add('flex'); // Ensure flex display
 
-    // Setup Add to Cart Button Logic
-    const btnAdd = document.getElementById('modalBtnAdd');
-    if (btnAdd) {
-        // Remove previous listeners (cloning is a quick way to strip listeners if not using named functions)
-        const newBtn = btnAdd.cloneNode(true);
-        btnAdd.parentNode.replaceChild(newBtn, btnAdd);
-
-        newBtn.onclick = (e) => window.addToCartFromCatalog(item.codigo, e);
-
-        // Re-init icon if needed (since we cloned)
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-    }
-
     // Setup Add to Cart Button Logic (Footer)
     const btnAddFooter = document.getElementById('modalBtnAddFooter');
     if (btnAddFooter) {
@@ -553,6 +542,7 @@ window.openProductDetail = function (codigo, pushState = true) {
         btnAddFooter.parentNode.replaceChild(newBtnFooter, btnAddFooter);
         newBtnFooter.onclick = (e) => window.addToCartFromCatalog(item.codigo, e);
     }
+
 
     // Reset Carousel to slide 1 (simple visibility toggle needed if implementing full carousel)
     showSlide(1);
