@@ -22,7 +22,15 @@ const elements = {
 
 // Helper Functions
 const formatPrice = (price) => {
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
+    // Regla: < .50 para abajo, >= .50 para arriba (Math.round)
+    // Sin decimales
+    const val = Math.round(price);
+    return new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(val);
 };
 window.formatPrice = formatPrice;
 
@@ -170,7 +178,9 @@ const renderCart = () => {
 
     let subtotal = 0;
     elements.cartItemsContainer.innerHTML = state.cart.map(item => {
-        const itemTotal = item.price * item.quantity;
+        // Round unit price to integer per rule
+        const unitPrice = Math.round(item.price);
+        const itemTotal = unitPrice * item.quantity;
         subtotal += itemTotal;
         return `
             <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
@@ -183,7 +193,7 @@ const renderCart = () => {
                         <div class="text-xs text-gray-500">${item.sku}</div>
                     </div>
                 </td>
-                <td class="p-4 text-right font-medium text-gray-600">${formatPrice(item.price)}</td>
+                <td class="p-4 text-right font-medium text-gray-600">${formatPrice(unitPrice)}</td>
                 <td class="p-4 text-center">
                     <div class="flex items-center justify-center space-x-1">
                          <button onclick="window.updateQty(${item.id}, -1)" class="w-6 h-6 rounded bg-gray-200 text-gray-600 hover:bg-brand-blue hover:text-white transition flex items-center justify-center">-</button>
@@ -203,7 +213,7 @@ const renderCart = () => {
         `;
     }).join('');
 
-    const totalWithIVA = subtotal * 1.21;
+    const totalWithIVA = Math.round(subtotal * 1.21);
     if (elements.cartSubtotal) elements.cartSubtotal.textContent = formatPrice(subtotal);
     if (elements.cartTotal) elements.cartTotal.textContent = formatPrice(totalWithIVA);
 };
@@ -341,8 +351,8 @@ window.sendToSystem = async () => {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...';
 
-        const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const totalWithIVA = subtotal * 1.21;
+        const subtotal = state.cart.reduce((sum, item) => sum + (Math.round(item.price) * item.quantity), 0);
+        const totalWithIVA = Math.round(subtotal * 1.21);
         const user = state.user || {};
 
         // DEBUG: ver la estructura real de cada item del carrito
@@ -353,13 +363,15 @@ window.sendToSystem = async () => {
 
         // Construimos la lista de items con subtotal y total individual
         const items = state.cart.map(i => {
-            const itemSubtotal = (i.price || 0) * (i.quantity || 1);
+            const unitPrice = Math.round(i.price || 0);
+            const itemSubtotal = unitPrice * (i.quantity || 1);
             return {
                 codigo: i.sku || i.codigo || i.id || i.name || "S/D",
                 descripcion: i.name || i.description || i.descripcion || "S/D",
                 cantidad: i.quantity || i.qty || 1,
+                precio_unitario: formatPrice(unitPrice),
                 subtotal: formatPrice(itemSubtotal),
-                total: formatPrice(itemSubtotal * 1.21)
+                total: formatPrice(Math.round(itemSubtotal * 1.21))
             };
         });
 
