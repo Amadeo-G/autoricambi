@@ -426,15 +426,8 @@ window.openProductDetail = function (codigo, pushState = true) {
     document.getElementById('modalMarca').textContent = item.marca || 'Genérico';
     document.getElementById('modalRubro').textContent = `${item.rubro || '-'} > ${item.subrubro || '-'}`;
 
-    // Display Price & Cost
-    const costEl = document.getElementById('modalCosto');
+    // Display Price
     const priceEl = document.getElementById('modalPrecio');
-
-    if (costEl) {
-        costEl.dataset.value = `$ ${formatPrice(item.costo)}`;
-        costEl.textContent = '••••••••';
-        costEl.classList.add('is-hidden');
-    }
     if (priceEl) priceEl.textContent = `$ ${item.precio}`;
 
     // Update Stock Badge
@@ -456,12 +449,6 @@ window.openProductDetail = function (codigo, pushState = true) {
         stockBadge.title = `${stockTitle} (${item.stock})`;
     }
 
-    // Reset eye icon
-    const eyeBtn = document.querySelector('[onclick="window.toggleCostVisibility()"] i');
-    if (eyeBtn && typeof lucide !== 'undefined') {
-        eyeBtn.setAttribute('data-lucide', 'eye-off');
-        lucide.createIcons();
-    }
 
     // Features
     const featContainer = document.getElementById('modalFeatures');
