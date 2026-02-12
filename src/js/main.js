@@ -138,7 +138,7 @@ const renderCatalog = () => {
     elements.productList.innerHTML = filteredProducts.map(product => `
         <div class="bg-white rounded-lg shadow hover:shadow-lg transition duration-300 border border-gray-100 flex flex-col overflow-hidden group">
             <div class="relative h-48 bg-gray-100 overflow-hidden">
-                 <img src="${product.image}" alt="${product.name}" 
+                 <img src="${product.image}" alt="${product.name}" onerror="this.src='https://placehold.co/300?text=Sin+Imagen'"
                       class="w-full h-full object-cover object-center transform group-hover:scale-105 transition duration-500 relative z-10">
                 ${!product.stock ? '<div class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">SIN STOCK</div>' : ''}
             </div>
@@ -175,7 +175,7 @@ const renderCart = () => {
         return `
             <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
                 <td class="p-4 flex items-center space-x-3">
-                    <img src="${item.image}" class="w-12 h-12 object-cover rounded hidden sm:block">
+                    <img src="${item.image}" onerror="this.src='https://placehold.co/100?text=S/D'" class="w-12 h-12 object-cover rounded hidden sm:block">
                     <div>
                         <div class="font-bold text-gray-800">${item.name}</div>
                         <div class="text-xs text-gray-500">${item.sku}</div>

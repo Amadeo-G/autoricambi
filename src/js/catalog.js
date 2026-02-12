@@ -2,6 +2,7 @@
 
 // CONFIGURATION
 const EXCEL_FILE_PATH = '/Filtros.xlsx';
+const R2_BASE_URL = 'https://pub-4a74b73ccfa3493ebcfc17e92136dcf4.r2.dev';
 
 // GLOBAL STATE
 let allData = [];
@@ -510,18 +511,29 @@ window.openProductDetail = function (codigo, pushState = true) {
         equivContainer.innerHTML = '<span class="text-gray-400 italic text-xs">N/A</span>';
     }
 
-    // Images Carousel Logic (Simplified for now)
-    // Try to load up to 3 images: Imagenes/{codigo}-1.webp
+    // Images Carousel Logic (R2 with fallback)
     const codeLower = item.codigo.toLowerCase();
 
     for (let i = 1; i <= 3; i++) {
         const imgEl = document.getElementById(`modalImg${i}`);
         if (imgEl) {
-            // Fallback logic
+            // Fallback logic chain: R2 (.jpg) -> Local (.webp) -> Placeholder
             imgEl.onerror = function () {
+                const currentSrc = this.src;
+
+                // If failed R2 JPG, try local WebP (legacy)
+                if (currentSrc.includes('r2.dev')) {
+                    this.src = `/Imagenes/${codeLower}-${i}.webp`;
+                    return;
+                }
+
+                // If failed local or other, show placeholder
                 this.src = 'https://placehold.co/600x400/f3f4f6/a3a3a3?text=Sin+Imagen';
+                this.onerror = null; // Stop chain
             };
-            imgEl.src = `/Imagenes/${codeLower}-${i}.webp`;
+
+            // Try R2 first (assuming .webp for uploads based on user request)
+            imgEl.src = `${R2_BASE_URL}/${codeLower}-${i}.webp`;
         }
     }
 
@@ -618,7 +630,7 @@ window.addToCartFromCatalog = function (codigo, event) {
             name: item.descripcion,
             sku: item.codigo,
             price: item.costo, // Using COST instead of PV for wholesale
-            image: `/Imagenes/${item.codigo.toLowerCase()}-1.webp`,
+            image: `${R2_BASE_URL}/${item.codigo.toLowerCase()}-1.webp`,
             brand: item.marca,
             category: item.rubro,
             description: item.descripcion,
