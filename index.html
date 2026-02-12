@@ -263,6 +263,92 @@
         </div>
     </section>
 
+    <!-- Price Lists Section -->
+    <section class="py-16 bg-gray-100">
+        <div class="container-custom">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-brand-dark">Listas de Precios</h2>
+                    <div class="h-1 w-20 bg-brand-accent mt-2 rounded-full"></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-6">
+                <!-- Fiat -->
+                <button onclick="downloadPriceList('fiat', 'pdf')" data-brand="fiat"
+                    class="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 p-6 flex flex-col items-center justify-center border border-gray-200 hover:border-brand-blue transform hover:-translate-y-2 cursor-pointer">
+                    <div class="w-20 h-20 mb-3 flex items-center justify-center">
+                        <i class="fas fa-file-pdf text-5xl text-red-600 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 group-hover:text-brand-blue transition text-center">Fiat</h3>
+                    <p class="text-xs text-gray-500 mt-1">Descargar PDF</p>
+                </button>
+
+                <!-- Renault -->
+                <button onclick="downloadPriceList('renault', 'pdf')" data-brand="renault"
+                    class="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 p-6 flex flex-col items-center justify-center border border-gray-200 hover:border-brand-blue transform hover:-translate-y-2 cursor-pointer">
+                    <div class="w-20 h-20 mb-3 flex items-center justify-center">
+                        <i class="fas fa-file-pdf text-5xl text-red-600 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 group-hover:text-brand-blue transition text-center">Renault</h3>
+                    <p class="text-xs text-gray-500 mt-1">Descargar PDF</p>
+                </button>
+
+                <!-- Chevrolet -->
+                <button onclick="downloadPriceList('chevrolet', 'pdf')" data-brand="chevrolet"
+                    class="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 p-6 flex flex-col items-center justify-center border border-gray-200 hover:border-brand-blue transform hover:-translate-y-2 cursor-pointer">
+                    <div class="w-20 h-20 mb-3 flex items-center justify-center">
+                        <i class="fas fa-file-pdf text-5xl text-red-600 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 group-hover:text-brand-blue transition text-center">Chevrolet
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1">Descargar PDF</p>
+                </button>
+
+                <!-- Volkswagen -->
+                <button onclick="downloadPriceList('volkswagen', 'pdf')" data-brand="volkswagen"
+                    class="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 p-6 flex flex-col items-center justify-center border border-gray-200 hover:border-brand-blue transform hover:-translate-y-2 cursor-pointer">
+                    <div class="w-20 h-20 mb-3 flex items-center justify-center">
+                        <i class="fas fa-file-pdf text-5xl text-red-600 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 group-hover:text-brand-blue transition text-center">Volkswagen
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1">Descargar PDF</p>
+                </button>
+
+                <!-- Ford -->
+                <button onclick="downloadPriceList('ford', 'pdf')" data-brand="ford"
+                    class="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 p-6 flex flex-col items-center justify-center border border-gray-200 hover:border-brand-blue transform hover:-translate-y-2 cursor-pointer">
+                    <div class="w-20 h-20 mb-3 flex items-center justify-center">
+                        <i class="fas fa-file-pdf text-5xl text-red-600 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 group-hover:text-brand-blue transition text-center">Ford</h3>
+                    <p class="text-xs text-gray-500 mt-1">Descargar PDF</p>
+                </button>
+
+                <!-- Peugeot -->
+                <button onclick="downloadPriceList('peugeot', 'pdf')" data-brand="peugeot"
+                    class="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 p-6 flex flex-col items-center justify-center border border-gray-200 hover:border-brand-blue transform hover:-translate-y-2 cursor-pointer">
+                    <div class="w-20 h-20 mb-3 flex items-center justify-center">
+                        <i class="fas fa-file-pdf text-5xl text-red-600 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 group-hover:text-brand-blue transition text-center">Peugeot</h3>
+                    <p class="text-xs text-gray-500 mt-1">Descargar PDF</p>
+                </button>
+
+                <!-- Motor -->
+                <button onclick="downloadPriceList('motor', 'pdf')" data-brand="motor"
+                    class="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 p-6 flex flex-col items-center justify-center border border-gray-200 hover:border-brand-blue transform hover:-translate-y-2 cursor-pointer">
+                    <div class="w-20 h-20 mb-3 flex items-center justify-center">
+                        <i class="fas fa-file-pdf text-5xl text-red-600 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-800 group-hover:text-brand-blue transition text-center">Motor</h3>
+                    <p class="text-xs text-gray-500 mt-1">Descargar PDF</p>
+                </button>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-300 py-12 mt-auto">
         <div class="container-custom grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -373,6 +459,57 @@
                 observer.observe(el);
             });
         });
+
+        // Price Lists Download with Authentication
+        async function downloadPriceList(brand, format = 'pdf') {
+            // Verify user is logged in
+            const userJson = localStorage.getItem('user');
+
+            if (!userJson) {
+                alert('⚠️ Debes iniciar sesión para descargar las listas de precios.\n\nSerás redirigido a la página de inicio de sesión.');
+                // Redirect to login page with return URL
+                window.location.href = `/login.html?returnUrl=${encodeURIComponent(window.location.pathname)}`;
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userJson);
+                console.log(`Usuario ${user.name} descargando lista: ${brand}.${format}`);
+
+                // Validate format
+                const validFormats = ['pdf', 'xlsx', 'csv', 'txt'];
+                if (!validFormats.includes(format.toLowerCase())) {
+                    alert('❌ Formato no válido. Formatos permitidos: PDF, XLSX, CSV, TXT');
+                    return;
+                }
+
+                // Create download link
+                const fileUrl = `/listas/${brand.toLowerCase()}.${format.toLowerCase()}`;
+                const link = document.createElement('a');
+                link.href = fileUrl;
+                link.download = `${brand}_precio_list.${format}`;
+                link.style.display = 'none';
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // Optional: Log download activity (you could send this to your backend)
+                console.log('Descarga realizada:', {
+                    user: user.email,
+                    brand: brand,
+                    format: format,
+                    timestamp: new Date().toISOString()
+                });
+
+            } catch (error) {
+                console.error('Error al procesar descarga:', error);
+                alert('❌ Error al descargar el archivo. Por favor, intenta nuevamente.');
+            }
+        }
+
+        // Expose function globally
+        window.downloadPriceList = downloadPriceList;
     </script>
 </body>
 
