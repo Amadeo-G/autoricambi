@@ -27,6 +27,14 @@ def sync_users():
         
         # Rename columns if they exist in the dataframe
         df = df.rename(columns=lambda x: col_map.get(x, x))
+
+        # Cleanup: Fix common encoding issues (like '￑' instead of 'Ñ')
+        def fix_encoding(val):
+            if isinstance(val, str):
+                return val.replace('￑', 'Ñ')
+            return val
+        
+        df = df.applymap(fix_encoding)
         
         # Ensure we have at least email and password
         if 'email' not in df.columns or 'password' not in df.columns:
