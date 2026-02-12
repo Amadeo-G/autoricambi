@@ -65,11 +65,11 @@ const parsePrice = (val) => {
     return Math.round(num);
 };
 
-// Helper to format Argentinian price: 1678.73 -> "1.678,73"
+// Helper to format Argentinian price: 1678.73 -> "1.678" (No decimals)
 const formatPrice = (val) => {
     return val.toLocaleString('es-AR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
     });
 };
 
@@ -686,7 +686,7 @@ function initZoom() {
         const yPercent = (y / rect.height) * 100;
 
         img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-        img.style.transform = "scale(4)"; // 4x Zoom requested
+        img.style.transform = "scale(3)"; // 3x Zoom requested
     });
 
     container.addEventListener('mouseleave', () => {
