@@ -82,9 +82,14 @@ export const auth = {
         const user = await this.getCurrentUser();
         if (!user) {
             const currentPath = window.location.pathname;
-            const fileName = currentPath.substring(currentPath.lastIndexOf('/') + 1);
-            if (fileName !== 'login.html') {
-                window.location.href = `login.html?returnUrl=${fileName}`;
+            // Get the last part of the path, removing trailing slash if exists
+            const pathParts = currentPath.split('/').filter(p => p);
+            const lastPart = pathParts[pathParts.length - 1] || 'index.html';
+
+            // Check if we are already on login page to avoid loops
+            if (!lastPart.includes('login.html')) {
+                // If we are in a virtual path like /buscador/REF, redirect correctly to root login
+                window.location.href = `/login.html?returnUrl=${encodeURIComponent(currentPath)}`;
             }
         }
         return user;

@@ -1,4 +1,2 @@
-# SPA Redirects for Buscador
+# SPA Redirects for Buscador - Simplified to avoid loops
 /buscador/*    /buscador.html  200
-/buscador      /buscador.html  200
-/buscador.html/* /buscador.html 200
