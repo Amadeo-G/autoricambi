@@ -287,8 +287,8 @@ window.sendToSystem = async () => {
 
         const orderData = {
             clientName: user.name || "Cliente No Identificado",
-            clientEmail: user.email || "S/D",
-            orderDetail: state.cart.map(i => `${i.sku} x ${i.quantity} (${i.name})`).join('\n'),
+            codigos: state.cart.map(i => i.sku).join(', '),
+            cantidades: state.cart.map(i => i.quantity).join(', '),
             subtotal: formatPrice(subtotal),
             total: formatPrice(totalWithIVA),
             discount: user.discount || 42
