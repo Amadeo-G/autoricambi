@@ -263,12 +263,69 @@ window.setQty = (productId, newValue) => {
     }
 };
 
+// Google Sheets Integration URL (Configurar después de publicar la App Script)
+const GOOGLE_SCRIPT_URL = "";
+
+window.sendToSystem = async () => {
+    if (state.cart.length === 0) return;
+
+    if (!GOOGLE_SCRIPT_URL) {
+        alert("Configuración pendiente: Primero debes crear y publicar tu Google App Script y pegar la URL en src/js/main.js");
+        return;
+    }
+
+    const btn = document.getElementById('btn-system');
+    const originalText = btn.innerHTML;
+
+    try {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...';
+
+        const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const totalWithIVA = subtotal * 1.21;
+        const user = state.user || {};
+
+        const orderData = {
+            clientName: user.name || "Cliente No Identificado",
+            clientEmail: user.email || "S/D",
+            orderDetail: state.cart.map(i => `${i.sku} x ${i.quantity} (${i.name})`).join('\n'),
+            subtotal: formatPrice(subtotal),
+            total: formatPrice(totalWithIVA),
+            discount: user.discount || 42
+        };
+
+        // Realizamos el envío. Usamos mode 'no-cors' para evitar problemas de origen cruzado con Google.
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+
+        // Al ser 'no-cors' no podemos leer la respuesta, pero si no hay error en el fetch, asumimos éxito.
+        alert('✅ ¡Pedido enviado con éxito! Se ha registrado en nuestro sistema.');
+
+        // Limpiamos el carrito
+        state.cart = [];
+        saveCart();
+        if (typeof renderCart === 'function') renderCart();
+
+    } catch (error) {
+        console.error('Error al enviar pedido:', error);
+        alert('❌ Hubo un problema al enviar el pedido por sistema. Por favor intenta de nuevo o usa WhatsApp.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+};
+
 window.checkout = () => {
     if (state.cart.length === 0) return;
 
-    const userName = state.user ? state.user.name : 'un cliente';
-    const message = `¡Hola Autoricambi! Soy ${userName} y este es mi pedido:%0A` +
-        state.cart.map(i => `${i.sku} x ${i.quantity}`).join('%0A');
+    const user = state.user || {};
+    const userName = user.name || 'un cliente';
+    const message = `¡Hola Autoricambi! Soy ${userName} (${user.email || 'S/D'}) y este es mi pedido:%0A` +
+        state.cart.map(i => `- ${i.sku} x ${i.quantity} (${i.name})`).join('%0A');
 
     const phoneNumber = "543516861092";
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
