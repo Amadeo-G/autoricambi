@@ -281,10 +281,19 @@ window.sendToSystem = async () => {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enviando...';
 
-        // ... preparación de datos ...
-        const orderData = { ... };
+        const subtotal = state.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const totalWithIVA = subtotal * 1.21;
+        const user = state.user || {};
 
-        // Realizamos el envío. Enviamos como texto plano para máxima compatibilidad con Google Scripts
+        const orderData = {
+            clientName: user.name || "Cliente No Identificado",
+            clientEmail: user.email || "S/D",
+            orderDetail: state.cart.map(i => `${i.sku} x ${i.quantity} (${i.name})`).join('\n'),
+            subtotal: formatPrice(subtotal),
+            total: formatPrice(totalWithIVA),
+            discount: user.discount || 42
+        };
+
         const blob = new Blob([JSON.stringify(orderData)], { type: 'text/plain' });
 
         await fetch(GOOGLE_SCRIPT_URL, {
@@ -295,10 +304,16 @@ window.sendToSystem = async () => {
 
         alert('✅ ¡Pedido enviado con éxito! Se ha registrado en nuestro sistema.');
 
-        // ... limpieza del carrito ...
+        state.cart = [];
+        saveCart();
+        if (typeof renderCart === 'function') renderCart();
 
     } catch (error) {
-        // ... manejo de error ...
+        console.error('Error al enviar pedido:', error);
+        alert('❌ Hubo un problema al enviar el pedido por sistema.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
     }
 };
 
