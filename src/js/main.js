@@ -210,23 +210,47 @@ const renderCart = () => {
 
 // Error Handler para imágenes del carrito
 window.cartImgError = (img, sku) => {
-    // Evitar bucles infinitos
-    if (img.dataset.triedLocal === "true") {
+    const cleanSku = sku ? sku.toLowerCase().trim() : '';
+    if (!cleanSku) {
         img.src = 'https://placehold.co/100?text=S/D';
         img.onerror = null;
         return;
     }
 
-    // Marcar flag y probar imagen local
-    img.dataset.triedLocal = "true";
-    // Intentamos cargar la versión local si falla la de R2
-    // Limpiamos el SKU por si acaso tiene caracteres raros
-    const cleanSku = sku ? sku.toLowerCase().trim() : '';
-    if (cleanSku) {
-        img.src = `/Imagenes/${cleanSku}-1.webp`;
-    } else {
-        img.src = 'https://placehold.co/100?text=S/D';
+    const R2_BASE = 'https://pub-4a74b73ccfa3493ebcfc17e92136dcf4.r2.dev';
+
+    // Inicializar estado de intentos si no existe
+    if (!img.dataset.retryCount) {
+        img.dataset.retryCount = '0';
     }
+
+    const state = parseInt(img.dataset.retryCount);
+
+    // Lógica de Reintentos en Cascada
+    // 0 -> Intenta R2 WebP (Corrige items viejos guardados como JPG u otros errores)
+    // 1 -> Intenta Local WebP (Fallback histórico)
+    // 2 -> Placeholder final
+
+    if (state === 0) {
+        img.dataset.retryCount = '1';
+        const targetUrl = `${R2_BASE}/${cleanSku}-1.webp`;
+        // Evitar recargar la misma URL si ya era esa la que falló
+        if (img.src !== targetUrl) {
+            img.src = targetUrl;
+            return;
+        }
+        // Si ya era esa, pasamos directo al siguiente paso
+    }
+
+    if (state <= 1) {
+        img.dataset.retryCount = '2';
+        img.src = `/Imagenes/${cleanSku}-1.webp`;
+        return;
+    }
+
+    // Fallback final
+    img.src = 'https://placehold.co/100?text=S/D';
+    img.onerror = null;
 };
 
 // --- Global Actions (Window) ---
