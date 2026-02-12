@@ -264,7 +264,7 @@ window.setQty = (productId, newValue) => {
 };
 
 // Google Sheets Integration URL (Configurar después de publicar la App Script)
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxAr88g4XgcVSDSIs3KbrNE2G-es2hfpqs6tCxV4TfRt7wRFKdq3cx5igI8s5YJ7nmH/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdZaNqnn2PuaWCL8uuZMWgfgTmHqvyfdnRVevKUAJKxYHecadsJw0seKqptsX-Capm/exec";
 
 window.sendToSystem = async () => {
     if (state.cart.length === 0) return;
@@ -294,12 +294,13 @@ window.sendToSystem = async () => {
             discount: user.discount || 42
         };
 
-        // Realizamos el envío. Usamos mode 'no-cors' para evitar problemas de origen cruzado con Google.
+        // Realizamos el envío. Enviamos como texto plano para máxima compatibilidad con Google Scripts
+        const blob = new Blob([JSON.stringify(orderData)], { type: 'text/plain' });
+
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
+            body: blob
         });
 
         // Al ser 'no-cors' no podemos leer la respuesta, pero si no hay error en el fetch, asumimos éxito.
