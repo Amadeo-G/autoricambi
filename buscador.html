@@ -238,7 +238,7 @@
             </div>
 
             <!-- Content Section -->
-            <div class="w-full md:w-1/2 p-8 overflow-y-auto bg-gray-50 flex flex-col relative">
+            <div class="w-full md:w-1/2 p-6 md:p-8 overflow-y-auto bg-gray-50 flex flex-col relative">
 
                 <!-- Header: Breadcrumbs & Brand -->
                 <div class="flex items-center gap-2 mb-3 flex-wrap">
@@ -273,8 +273,9 @@
                         <span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Precio
                             Final</span>
                         <span id="modalPrecio"
-                            class="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-none">$
-                            0</span>
+                            class="text-2xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight break-words">
+                            $ 0
+                        </span>
                     </div>
                 </div>
 
@@ -481,8 +482,8 @@
             const observer = new IntersectionObserver(observerCallback, observerOptions);
 
             // 1. Static Elements: Select and observe
-            // Exclude input/selects to avoid layout shifts while typing/clicking
-            const staticSelectors = 'h2, h3, p, .bg-white, .shadow-xl, footer';
+            // Exclude input/selects and things inside the modal to avoid janky behavior
+            const staticSelectors = 'h2:not(#productModal *), h3:not(#productModal *), p:not(#productModal *), .bg-white:not(#productModal *), .shadow-xl:not(#productModal *), footer';
             document.querySelectorAll(staticSelectors).forEach(el => {
                 el.classList.add('reveal');
                 observer.observe(el);
