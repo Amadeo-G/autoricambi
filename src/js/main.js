@@ -246,7 +246,15 @@ window.removeFromCart = (productId) => {
 window.updateQty = (productId, change) => {
     const item = state.cart.find(item => item.id === productId);
     if (item) {
-        item.quantity = Math.max(1, item.quantity + change);
+        const newQty = item.quantity + change;
+        if (newQty < 1) return;
+
+        if (item.maxStock !== undefined && newQty > item.maxStock) {
+            alert(`No puedes superar el stock disponible de ${item.maxStock} unidades.`);
+            return;
+        }
+
+        item.quantity = newQty;
         saveCart();
         renderCart();
     }
@@ -257,6 +265,12 @@ window.setQty = (productId, newValue) => {
     if (item) {
         let val = parseInt(newValue);
         if (isNaN(val) || val < 1) val = 1;
+
+        if (item.maxStock !== undefined && val > item.maxStock) {
+            alert(`Stock limitado: Se ajustó a ${item.maxStock} unidades.`);
+            val = item.maxStock;
+        }
+
         item.quantity = val;
         saveCart();
         renderCart();

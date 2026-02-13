@@ -563,6 +563,11 @@ window.addToCartFromCatalog = function (codigo, event) {
     const item = allData.find(d => d.codigo === codigo);
     if (!item) return;
 
+    if (item.stock <= 0) {
+        alert(`Lo sentimos, el producto "${item.descripcion}" no tiene stock disponible.`);
+        return;
+    }
+
     if (!window.state || !window.state.cart) {
         console.error("Cart state not initialized");
         return;
@@ -570,6 +575,10 @@ window.addToCartFromCatalog = function (codigo, event) {
 
     const existingItem = window.state.cart.find(c => c.sku === item.codigo);
     if (existingItem) {
+        if (existingItem.quantity + 1 > item.stock) {
+            alert(`No puedes agregar más unidades. El stock disponible para este producto es ${item.stock}.`);
+            return;
+        }
         existingItem.quantity += 1;
     } else {
         window.state.cart.push({
@@ -582,7 +591,8 @@ window.addToCartFromCatalog = function (codigo, event) {
             category: item.rubro,
             description: item.descripcion,
             quantity: 1,
-            stock: item.stock > 0
+            maxStock: item.stock,
+            stock: true
         });
     }
 
