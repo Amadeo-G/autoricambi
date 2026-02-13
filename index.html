@@ -66,7 +66,7 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="relative bg-gray-900 h-[500px] flex items-center overflow-hidden">
+    <section class="relative bg-gray-900 min-h-[450px] md:h-[500px] flex items-center overflow-hidden">
         <!-- Parallax Background (Fixed) -->
         <div class="absolute inset-0 z-0 opacity-60"
             style="background-image: url('src/img/hero.png'); background-attachment: fixed; background-position: center; background-size: cover; background-repeat: no-repeat;">
@@ -74,21 +74,21 @@
         <!-- Gradient Overlay (Restored Original Tone) -->
         <div class="absolute inset-0 z-0 bg-gradient-to-r from-brand-nav/90 to-transparent"></div>
 
-        <div class="container-custom relative z-10 text-white">
-            <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight mb-4 drop-shadow-lg">
-                Soluciones Integrales <br>
+        <div class="container-custom relative z-10 text-white py-12 md:py-0">
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 drop-shadow-lg">
+                Soluciones Integrales <br class="hidden md:block">
                 <span class="text-brand-accent">en repuestos automotor</span>
             </h1>
             <p class="text-xl md:text-2xl mb-8 max-w-2xl text-gray-200 shadow-black drop-shadow-md">
                 Distribución mayorista con envíos a todo el país.<br>Calidad, garantía y el mejor precio del mercado.
             </p>
-            <div class="flex space-x-4">
+            <div class="flex flex-col sm:flex-row gap-4">
                 <a href="buscador.html"
-                    class="btn-primary border-2 border-transparent text-lg px-8 py-3 shadow-lg transform hover:scale-105">
+                    class="btn-primary border-2 border-transparent text-lg px-8 py-3 shadow-lg transform hover:scale-105 text-center">
                     Buscador inteligente
                 </a>
                 <a href="#registro"
-                    class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-md hover:bg-white hover:text-brand-blue transition duration-300 font-bold text-lg">
+                    class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-md hover:bg-white hover:text-brand-blue transition duration-300 font-bold text-lg text-center">
                     Hacerme Cliente
                 </a>
             </div>
@@ -97,40 +97,42 @@
 
     <!-- Benefits Section -->
     <section
-        class="py-12 bg-[#eceeef] shadow-sm -mt-10 relative z-20 container-custom rounded-lg border-b-4 border-brand-accent"
+        class="py-12 bg-[#eceeef] shadow-sm md:-mt-10 relative z-20 container-custom rounded-lg border-b-4 border-brand-accent"
         style="background-color: #eceeef;">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div class="p-4 group">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 text-center px-4 md:px-0">
+            <div class="p-2 md:p-4 group">
                 <div
-                    class="w-28 h-28 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-blue transition duration-300 shadow-md">
-                    <i class="fas fa-truck text-5xl text-brand-blue group-hover:text-white transition"></i>
+                    class="w-20 h-20 md:w-28 md:h-28 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-blue transition duration-300 shadow-md">
+                    <i class="fas fa-truck text-3xl md:text-5xl text-brand-blue group-hover:text-white transition"></i>
                 </div>
-                <h3 class="font-bold text-lg mb-2 text-gray-900">Envíos 24hs</h3>
-                <p class="text-gray-700 text-sm">Distribución rápida a todo el país.</p>
+                <h3 class="font-bold text-sm md:text-lg mb-1 md:mb-2 text-gray-900 leading-tight">Envíos 24hs</h3>
+                <p class="text-gray-700 text-[10px] md:text-sm">Distribución rápida a todo el país.</p>
             </div>
-            <div class="p-4 group">
+            <div class="p-2 md:p-4 group">
                 <div
-                    class="w-28 h-28 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-blue transition duration-300 shadow-md">
-                    <i class="fas fa-medal text-5xl text-brand-blue group-hover:text-white transition"></i>
+                    class="w-20 h-20 md:w-28 md:h-28 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-blue transition duration-300 shadow-md">
+                    <i class="fas fa-medal text-3xl md:text-5xl text-brand-blue group-hover:text-white transition"></i>
                 </div>
-                <h3 class="font-bold text-lg mb-2 text-gray-900">Garantía Total</h3>
-                <p class="text-gray-700 text-sm">Respaldo directo en todos los productos.</p>
+                <h3 class="font-bold text-sm md:text-lg mb-1 md:mb-2 text-gray-900 leading-tight">Garantía Total</h3>
+                <p class="text-gray-700 text-[10px] md:text-sm">Respaldo directo en todos los productos.</p>
             </div>
-            <div class="p-4 group">
+            <div class="p-2 md:p-4 group">
                 <div
-                    class="w-28 h-28 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-blue transition duration-300 shadow-md">
-                    <i class="fas fa-handshake text-5xl text-brand-blue group-hover:text-white transition"></i>
+                    class="w-20 h-20 md:w-28 md:h-28 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-blue transition duration-300 shadow-md">
+                    <i
+                        class="fas fa-handshake text-3xl md:text-5xl text-brand-blue group-hover:text-white transition"></i>
                 </div>
-                <h3 class="font-bold text-lg mb-2 text-gray-900">Asesoramiento</h3>
-                <p class="text-gray-700 text-sm">Atención personalizada experta.</p>
+                <h3 class="font-bold text-sm md:text-lg mb-1 md:mb-2 text-gray-900 leading-tight">Asesoramiento</h3>
+                <p class="text-gray-700 text-[10px] md:text-sm">Atención personalizada experta.</p>
             </div>
-            <div class="p-4 group">
+            <div class="p-2 md:p-4 group">
                 <div
-                    class="w-28 h-28 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-blue transition duration-300 shadow-md">
-                    <i class="fas fa-tags text-5xl text-brand-blue group-hover:text-white transition"></i>
+                    class="w-20 h-20 md:w-28 md:h-28 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-brand-blue transition duration-300 shadow-md">
+                    <i class="fas fa-tags text-3xl md:text-5xl text-brand-blue group-hover:text-white transition"></i>
                 </div>
-                <h3 class="font-bold text-lg mb-2 text-gray-900">Precios Competitivos</h3>
-                <p class="text-gray-700 text-sm">Los mejores costos para tu negocio.</p>
+                <h3 class="font-bold text-sm md:text-lg mb-1 md:mb-2 text-gray-900 leading-tight">Precios Competitivos
+                </h3>
+                <p class="text-gray-700 text-[10px] md:text-sm">Mejores costos para tu negocio.</p>
             </div>
         </div>
     </section>
@@ -145,7 +147,7 @@
                 </div>
             </div>
 
-            <div id="featured-categories" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div id="featured-categories" class="grid grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
                 <!-- Javascript will populate this -->
             </div>
         </div>

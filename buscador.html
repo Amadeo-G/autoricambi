@@ -394,7 +394,69 @@
             background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
             background-size: 20px 20px;
             background-attachment: fixed;
-            /* Parallax-like fixed background */
+        }
+
+        /* Responsive Table for Mobile */
+        @media (max-width: 768px) {
+            #tableBody tr {
+                display: block;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                background: #fdfdfd;
+                border: 1px solid #e5e7eb;
+                border-radius: 1rem;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            }
+
+            #tableBody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.5rem 0;
+                border: none;
+                width: 100%;
+                text-align: right;
+            }
+
+            #tableBody td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 0.7rem;
+                color: #64748b;
+                text-align: left;
+                margin-right: 1rem;
+            }
+
+            #tableBody td[data-label="Descripción"] {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+                border-bottom: 1px solid #f1f5f9;
+                margin-bottom: 0.5rem;
+                padding-bottom: 0.75rem;
+            }
+
+            #tableBody td[data-label="Descripción"]::before {
+                margin-bottom: 0.25rem;
+            }
+
+            #tableBody td[data-label="Código"] {
+                border-bottom: 1px solid #f1f5f9;
+                margin-bottom: 0.5rem;
+            }
+
+            #tableBody td[data-label="Acción"] {
+                justify-content: center;
+                gap: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #f1f5f9;
+                margin-top: 0.5rem;
+            }
+
+            #tableBody td[data-label="Acción"]::before {
+                display: none;
+            }
         }
     </style>
     <script>

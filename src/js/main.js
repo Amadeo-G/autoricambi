@@ -72,7 +72,7 @@ const renderFeaturedCategories = () => {
     elements.featuredCategories.innerHTML = state.categories.slice(0, 5).map(cat => {
         const hasImage = categoryImages[cat.id];
         return `
-        <a href="buscador.html?category=${cat.id}" class="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 block bg-white h-64 border border-gray-100">
+        <a href="buscador.html?category=${cat.id}" class="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 block bg-white h-48 md:h-64 border border-gray-100">
             <div class="h-2/3 bg-gray-50 flex items-center justify-center group-hover:bg-brand-blue/5 transition duration-500 overflow-hidden relative">
                 ${hasImage
                 ? `<img src="${categoryImages[cat.id]}" alt="${cat.name}" class="w-full h-full object-cover transition duration-700 transform group-hover:scale-110">
@@ -181,8 +181,8 @@ const renderCart = () => {
         const itemTotal = unitPrice * item.quantity;
         subtotal += itemTotal;
         return `
-            <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50">
-                <td class="p-4 flex items-center space-x-3">
+            <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50 flex flex-col md:table-row p-4 md:p-0">
+                <td class="p-4 flex items-center space-x-3 md:table-cell" data-label="Producto">
                     <img src="${item.image}" 
                          onerror="window.cartImgError(this, '${item.sku}')" 
                          class="w-12 h-12 object-cover rounded border border-gray-200">
@@ -191,8 +191,12 @@ const renderCart = () => {
                         <div class="text-xs text-gray-500">${item.sku}</div>
                     </div>
                 </td>
-                <td class="p-4 text-right font-medium text-gray-600">${formatPrice(unitPrice)}</td>
-                <td class="p-4 text-center">
+                <td class="p-4 text-right font-medium text-gray-600 flex justify-between md:table-cell items-center" data-label="Precio Unit.">
+                    <span class="md:hidden font-bold text-gray-400 text-xs">PRECIO UNIT.</span>
+                    ${formatPrice(unitPrice)}
+                </td>
+                <td class="p-4 text-center flex justify-between md:table-cell items-center" data-label="Cantidad">
+                    <span class="md:hidden font-bold text-gray-400 text-xs">CANTIDAD</span>
                     <div class="flex items-center justify-center space-x-1">
                          <button onclick="window.updateQty(${item.id}, -1)" class="w-6 h-6 rounded bg-gray-200 text-gray-600 hover:bg-brand-blue hover:text-white transition flex items-center justify-center">-</button>
                          <input type="number" 
@@ -203,9 +207,12 @@ const renderCart = () => {
                          <button onclick="window.updateQty(${item.id}, 1)" class="w-6 h-6 rounded bg-gray-200 text-gray-600 hover:bg-brand-blue hover:text-white transition flex items-center justify-center">+</button>
                     </div>
                 </td>
-                <td class="p-4 text-right font-bold text-brand-dark">${formatPrice(itemTotal)}</td>
-                <td class="p-4 text-center">
-                    <button onclick="window.removeFromCart(${item.id})" class="text-red-400 hover:text-red-600 transition"><i class="fas fa-trash"></i></button>
+                <td class="p-4 text-right font-bold text-brand-dark flex justify-between md:table-cell items-center" data-label="Subtotal">
+                    <span class="md:hidden font-bold text-gray-400 text-xs">SUBTOTAL</span>
+                    ${formatPrice(itemTotal)}
+                </td>
+                <td class="p-4 text-center md:table-cell" data-label="Eliminar">
+                    <button onclick="window.removeFromCart(${item.id})" class="text-red-400 hover:text-red-600 transition flex items-center justify-center w-full md:w-auto"><i class="fas fa-trash mr-2 md:mr-0"></i><span class="md:hidden">Eliminar</span></button>
                 </td>
             </tr>
         `;
@@ -587,7 +594,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (elements.mobileMenuBtn) {
         elements.mobileMenuBtn.addEventListener('click', () => {
-            elements.mobileMenu.classList.toggle('hidden');
+            const isHidden = elements.mobileMenu.classList.contains('hidden');
+            if (isHidden) {
+                elements.mobileMenu.classList.remove('hidden');
+                elements.mobileMenu.classList.add('animate-fade-in');
+            } else {
+                elements.mobileMenu.classList.add('hidden');
+            }
         });
     }
 });
