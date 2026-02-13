@@ -285,10 +285,16 @@ window.sendToSystem = async () => {
         const totalWithIVA = subtotal * 1.21;
         const user = state.user || {};
 
-        // Construimos la lista de items como JSON para que Google la pueda parsear
+        // DEBUG: ver la estructura real de cada item del carrito
+        console.log("=== DEBUG CARRITO ===");
+        state.cart.forEach((item, idx) => {
+            console.log(`Item ${idx}:`, JSON.stringify(item));
+        });
+
+        // Construimos la lista de items - buscamos el código en todos los campos posibles
         const items = state.cart.map(i => ({
-            codigo: i.sku || i.name || "S/D",
-            cantidad: i.quantity || 1
+            codigo: i.sku || i.codigo || i.id || i.name || "S/D",
+            cantidad: i.quantity || i.qty || 1
         }));
 
         const orderData = {
@@ -300,6 +306,7 @@ window.sendToSystem = async () => {
         };
 
         console.log("Enviando pedido:", orderData);
+        console.log("Items JSON:", orderData.items);
 
         // Usamos un iframe oculto + formulario para evitar problemas de CORS con Google
         await new Promise((resolve, reject) => {
