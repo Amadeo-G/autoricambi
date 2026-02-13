@@ -239,6 +239,20 @@ function normalizeText(text) {
         .replace(/[\u0300-\u036f]/g, "");
 }
 
+// Helper to normalize parts of a code (remove leading zeros from numeric segments)
+function ultraCleanCode(text) {
+    if (!text) return "";
+    return text.toString()
+        .split(/[^a-z0-9]/i) // Split by non-alphanumeric
+        .filter(p => p)      // Remove empty parts
+        .map(p => {
+            // If it's a number, remove leading zeros (00123 -> 123)
+            if (/^\d+$/.test(p)) return parseInt(p, 10).toString();
+            return p.toLowerCase();
+        })
+        .join("");
+}
+
 function applyFilters() {
     const rub = els.rubro ? els.rubro.value : '';
     const sub = els.subrubro ? els.subrubro.value : '';
@@ -247,6 +261,9 @@ function applyFilters() {
     const searchNorm = normalizeText(searchRaw);
     const terms = searchNorm.split(/\s+/).filter(t => t);
 
+    // Prepare ultra-clean versions for flexible code search
+    const ultraCleanQuery = ultraCleanCode(searchRaw);
+
     filteredData = allData.filter(item => {
         const matchFiltros = (!rub || item.rubro === rub) && (!sub || item.subrubro === sub) && (!mar || item.marca === mar);
         if (!matchFiltros) return false;
@@ -254,19 +271,18 @@ function applyFilters() {
         // If no search query, match only filters
         if (!searchRaw) return true;
 
+        // Strategy 1: Standard Search (includes Description, Brand, etc.)
         const itemText = normalizeText([item.codigo, item.descripcion, item.marca, item.rubro, item.subrubro].join(" "));
-
-        // Strategy 1: All terms must exist in the text (Standard Search)
         const matchStandard = terms.every(t => itemText.includes(t));
         if (matchStandard) return true;
 
-        // Strategy 2: Approximate Code Match (Fuzzy for "KTB271" vs "LKTBN271")
-        // We check if the search term exists inside the code after removing non-alphanumeric characters
-        const cleanQuery = searchRaw.replace(/[^a-z0-9]/gi, '').toLowerCase();
-        const cleanCode = item.codigo.replace(/[^a-z0-9]/gi, '').toLowerCase();
-
-        if (cleanQuery.length >= 3 && cleanCode.includes(cleanQuery)) {
-            return true;
+        // Strategy 2: Flexible Code Search (handles 02-1796 vs 02-01796)
+        if (ultraCleanQuery.length >= 2) {
+            const itemUltraClean = ultraCleanCode(item.codigo);
+            // Match if query is at the start, at the end, or exact match of the cleaned code
+            if (itemUltraClean.includes(ultraCleanQuery)) {
+                return true;
+            }
         }
 
         return false;
