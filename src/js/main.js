@@ -359,9 +359,20 @@ window.sendToSystem = async () => {
 
         alert('✅ ¡Pedido enviado con éxito! Se ha registrado en nuestro sistema.');
 
+        // Guardar en historial local antes de limpiar el carrito
+        const orderRecord = {
+            date: new Date().toLocaleString('es-AR'),
+            items: items,
+            discount: user.discount || 42
+        };
+        const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+        history.unshift(orderRecord); // Más reciente primero
+        localStorage.setItem('orderHistory', JSON.stringify(history));
+
         state.cart = [];
         saveCart();
         if (typeof renderCart === 'function') renderCart();
+        if (typeof renderOrderHistory === 'function') renderOrderHistory();
 
     } catch (error) {
         console.error('Error al enviar pedido:', error);
@@ -384,6 +395,73 @@ window.checkout = () => {
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
 };
 
+
+// --- Order History ---
+window.renderOrderHistory = () => {
+    const container = document.getElementById('order-history');
+    if (!container) return;
+
+    const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+
+    if (history.length === 0) {
+        container.innerHTML = `
+            <div class="text-center text-gray-400 py-8">
+                <i class="fas fa-clipboard-list text-4xl mb-3"></i>
+                <p>No hay pedidos anteriores.</p>
+            </div>`;
+        return;
+    }
+
+    let html = '';
+    history.forEach((order, idx) => {
+        html += `
+        <div class="border border-gray-200 rounded-lg mb-4 overflow-hidden">
+            <div class="bg-gray-50 px-4 py-3 flex justify-between items-center">
+                <div>
+                    <span class="font-semibold text-gray-700"><i class="fas fa-calendar-alt mr-1"></i> ${order.date}</span>
+                    <span class="ml-3 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">${order.items.length} producto(s)</span>
+                </div>
+                <button onclick="window.deleteOrder(${idx})" class="text-gray-400 hover:text-red-500 transition text-sm" title="Eliminar pedido">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+            <table class="w-full text-sm">
+                <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-t">
+                    <tr>
+                        <th class="px-4 py-2 text-left">SKU</th>
+                        <th class="px-4 py-2 text-center">Cantidad</th>
+                        <th class="px-4 py-2 text-right">Precio s/IVA</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    ${order.items.map(item => `
+                    <tr>
+                        <td class="px-4 py-2 font-mono text-gray-800">${item.codigo}</td>
+                        <td class="px-4 py-2 text-center">${item.cantidad}</td>
+                        <td class="px-4 py-2 text-right text-gray-600">${item.subtotal || '-'}</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>`;
+    });
+
+    container.innerHTML = html;
+};
+
+window.deleteOrder = (idx) => {
+    if (!confirm('¿Eliminar este pedido del historial?')) return;
+    const history = JSON.parse(localStorage.getItem('orderHistory') || '[]');
+    history.splice(idx, 1);
+    localStorage.setItem('orderHistory', JSON.stringify(history));
+    renderOrderHistory();
+};
+
+// Inicializar historial al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (typeof renderOrderHistory === 'function') renderOrderHistory();
+    }, 500);
+});
 
 
 
