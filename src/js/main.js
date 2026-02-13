@@ -168,7 +168,21 @@ const renderCart = () => {
     if (!elements.cartItemsContainer) return;
 
     if (state.cart.length === 0) {
-        elements.cartItemsContainer.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">El carrito está vacío</td></tr>';
+        elements.cartItemsContainer.innerHTML = `
+            <tr>
+                <td colspan="5" class="py-20 text-center">
+                    <div class="flex flex-col items-center justify-center text-gray-400">
+                        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-shopping-basket text-4xl text-gray-300"></i>
+                        </div>
+                        <p class="text-xl font-bold text-gray-500">Tu carrito está vacío</p>
+                        <p class="text-sm mt-1 mb-6">Parece que aún no has agregado ningún producto.</p>
+                        <a href="buscador.html" class="inline-flex items-center px-6 py-3 bg-brand-blue text-white rounded-lg font-bold hover:bg-brand-nav transition-all">
+                            <i class="fas fa-search mr-2"></i> Explorar Catálogo
+                        </a>
+                    </div>
+                </td>
+            </tr>`;
         if (elements.cartSubtotal) elements.cartSubtotal.textContent = formatPrice(0);
         if (elements.cartTotal) elements.cartTotal.textContent = formatPrice(0);
         return;
@@ -181,38 +195,41 @@ const renderCart = () => {
         const itemTotal = unitPrice * item.quantity;
         subtotal += itemTotal;
         return `
-            <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50 flex flex-col md:table-row p-4 md:p-0">
-                <td class="p-4 flex items-center space-x-3 md:table-cell" data-label="Producto">
+            <tr class="border-b border-gray-100 last:border-0 hover:bg-blue-50/30 transition-colors flex flex-col md:table-row p-4 md:p-0">
+                <td class="p-4 md:py-6 md:px-6 flex items-center space-x-4 md:table-cell" data-label="Producto">
                     <img src="${item.image}" 
                          onerror="window.cartImgError(this, '${item.sku}')" 
-                         class="w-12 h-12 object-cover rounded border border-gray-200">
+                         class="w-16 h-16 object-cover rounded-lg shadow-sm border border-gray-200">
                     <div>
-                        <div class="font-bold text-gray-800">${item.name}</div>
-                        <div class="text-xs text-gray-500">${item.sku}</div>
+                        <div class="font-bold text-gray-800 text-base">${item.name}</div>
+                        <div class="text-xs font-mono text-gray-400 mt-1">${item.sku}</div>
                     </div>
                 </td>
-                <td class="p-4 text-right font-medium text-gray-600 flex justify-between md:table-cell items-center" data-label="Precio Unit.">
-                    <span class="md:hidden font-bold text-gray-400 text-xs">PRECIO UNIT.</span>
-                    ${formatPrice(unitPrice)}
+                <td class="p-4 md:py-6 md:px-6 text-right font-medium text-gray-600 flex justify-between md:table-cell items-center" data-label="Precio Unit.">
+                    <span class="md:hidden font-bold text-gray-400 text-xs uppercase">Precio Unit.</span>
+                    <span class="text-gray-900">${formatPrice(unitPrice)}</span>
                 </td>
-                <td class="p-4 text-center flex justify-between md:table-cell items-center" data-label="Cantidad">
-                    <span class="md:hidden font-bold text-gray-400 text-xs">CANTIDAD</span>
+                <td class="p-4 md:py-6 md:px-6 text-center flex justify-between md:table-cell items-center" data-label="Cantidad">
+                    <span class="md:hidden font-bold text-gray-400 text-xs uppercase">Cantidad</span>
                     <div class="flex items-center justify-center space-x-1">
-                         <button onclick="window.updateQty(${item.id}, -1)" class="w-6 h-6 rounded bg-gray-200 text-gray-600 hover:bg-brand-blue hover:text-white transition flex items-center justify-center">-</button>
+                         <button onclick="window.updateQty(${item.id}, -1)" class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center shadow-sm">-</button>
                          <input type="number" 
                                 value="${item.quantity}" 
                                 min="1" 
                                 onchange="window.setQty(${item.id}, this.value)"
-                                class="w-12 text-center font-bold border rounded py-0.5 focus:ring-1 focus:ring-brand-blue outline-none no-spin">
-                         <button onclick="window.updateQty(${item.id}, 1)" class="w-6 h-6 rounded bg-gray-200 text-gray-600 hover:bg-brand-blue hover:text-white transition flex items-center justify-center">+</button>
+                                class="w-12 text-center font-bold border-0 bg-transparent py-0.5 focus:ring-0 outline-none no-spin text-lg">
+                         <button onclick="window.updateQty(${item.id}, 1)" class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 hover:bg-brand-blue hover:text-white transition-all flex items-center justify-center shadow-sm">+</button>
                     </div>
                 </td>
-                <td class="p-4 text-right font-bold text-brand-dark flex justify-between md:table-cell items-center" data-label="Subtotal">
-                    <span class="md:hidden font-bold text-gray-400 text-xs">SUBTOTAL</span>
-                    ${formatPrice(itemTotal)}
+                <td class="p-4 md:py-6 md:px-6 text-right font-bold text-brand-dark flex justify-between md:table-cell items-center" data-label="Subtotal">
+                    <span class="md:hidden font-bold text-gray-400 text-xs uppercase">Subtotal</span>
+                    <span class="text-lg">${formatPrice(itemTotal)}</span>
                 </td>
-                <td class="p-4 text-center md:table-cell" data-label="Eliminar">
-                    <button onclick="window.removeFromCart(${item.id})" class="text-red-400 hover:text-red-600 transition flex items-center justify-center w-full md:w-auto"><i class="fas fa-trash mr-2 md:mr-0"></i><span class="md:hidden">Eliminar</span></button>
+                <td class="p-4 md:py-6 md:px-6 text-center md:table-cell" data-label="Eliminar">
+                    <button onclick="window.removeFromCart(${item.id})" class="text-gray-300 hover:text-red-500 transition-colors flex items-center justify-center w-full md:w-auto p-2">
+                        <i class="fas fa-trash-alt text-lg"></i>
+                        <span class="md:hidden ml-2">Eliminar Producto</span>
+                    </button>
                 </td>
             </tr>
         `;
@@ -493,33 +510,40 @@ window.renderOrderHistory = () => {
     let html = '';
     history.forEach((order, idx) => {
         html += `
-        <div class="border border-gray-200 rounded-lg mb-4 overflow-hidden">
-            <div class="bg-gray-50 px-4 py-3 flex justify-between items-center">
-                <div>
-                    <span class="font-semibold text-gray-700"><i class="fas fa-calendar-alt mr-1"></i> ${order.date}</span>
-                    <span class="ml-3 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">${order.items.length} producto(s)</span>
+        <div class="bg-white border border-gray-200 rounded-xl mb-6 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div class="bg-gray-50/50 px-6 py-4 flex justify-between items-center border-b border-gray-100">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-gray-800">${order.date}</div>
+                        <div class="text-xs font-semibold text-brand-nav uppercase tracking-wider">${order.items.length} producto(s)</div>
+                    </div>
                 </div>
-                <button onclick="window.deleteOrder(${idx})" class="text-gray-400 hover:text-red-500 transition text-sm" title="Eliminar pedido">
-                    <i class="fas fa-trash-alt"></i>
+                <button onclick="window.deleteOrder(${idx})" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all" title="Eliminar pedido">
+                    <i class="fas fa-trash-alt text-lg"></i>
                 </button>
             </div>
-            <table class="w-full text-sm">
-                <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-t">
-                    <tr>
-                        <th class="px-4 py-2 text-left">SKU</th>
-                        <th class="px-4 py-2 text-left">Descripción</th>
-                        <th class="px-4 py-2 text-center">Cantidad</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    ${order.items.map(item => `
-                    <tr>
-                        <td class="px-4 py-2 font-mono text-gray-800">${item.codigo}</td>
-                        <td class="px-4 py-2 text-gray-600">${item.descripcion || '-'}</td>
-                        <td class="px-4 py-2 text-center">${item.cantidad}</td>
-                    </tr>`).join('')}
-                </tbody>
-            </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="text-[10px] text-gray-400 uppercase bg-gray-50/30 border-b border-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-left font-bold tracking-widest">SKU</th>
+                            <th class="px-6 py-3 text-left font-bold tracking-widest">Descripción</th>
+                            <th class="px-6 py-3 text-center font-bold tracking-widest">Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        ${order.items.map(item => `
+                        <tr class="hover:bg-gray-50/50 transition-colors">
+                            <td class="px-6 py-3 font-mono text-xs text-brand-blue font-semibold">${item.codigo}</td>
+                            <td class="px-6 py-3 text-gray-700">${item.descripcion || '-'}</td>
+                            <td class="px-6 py-3 text-center font-bold text-gray-600">${item.cantidad}</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>
         </div>`;
     });
 

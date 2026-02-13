@@ -71,17 +71,19 @@
     </header>
 
     <main class="flex-grow container-custom py-8">
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="text-3xl font-bold">Mi Pedido</h1>
+        <div class="flex flex-col md:flex-row items-baseline justify-between mb-8 gap-4 border-b border-gray-200 pb-4">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-brand-dark flex items-center">
+                <i class="fas fa-shopping-cart mr-3 text-brand-blue"></i> Mi Pedido
+            </h1>
             <a href="javascript:history.back()"
-                class="flex items-center text-brand-nav hover:text-blue-900 font-semibold transition">
-                <i class="fas fa-arrow-left mr-2"></i> Volver
+                class="flex items-center text-brand-nav hover:text-brand-blue font-bold transition-all hover:-translate-x-1">
+                <i class="fas fa-arrow-left mr-2"></i> Seguir Comprando
             </a>
         </div>
 
         <div class="flex flex-col lg:flex-row gap-8">
             <!-- Cart Items -->
-            <div class="flex-grow bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            <div class="flex-grow bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
@@ -105,8 +107,9 @@
             </div>
 
             <!-- Summary -->
-            <div class="w-full lg:w-96">
-                <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 sticky top-24">
+            <div class="w-full lg:w-80">
+                <div
+                    class="bg-white rounded-xl shadow-xl border border-gray-100 p-6 sticky top-24 transform hover:scale-[1.01] transition-transform duration-300">
                     <h3 class="text-lg font-bold mb-4">Resumen de Cuenta</h3>
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between text-gray-600">
@@ -121,8 +124,8 @@
 
                     <div class="flex flex-col gap-3">
                         <button onclick="window.sendToSystem()" id="btn-system"
-                            class="w-full bg-brand-nav text-white py-3 rounded-md font-bold shadow-lg hover:bg-blue-900 transition duration-300 flex items-center justify-center">
-                            <i class="fas fa-paper-plane mr-2"></i> Enviar Pedido
+                            class="w-full bg-brand-nav text-white py-4 rounded-xl font-extrabold shadow-xl hover:bg-brand-blue transform hover:-translate-y-1 active:scale-95 transition-all duration-300 flex items-center justify-center">
+                            <i class="fas fa-paper-plane mr-2 text-brand-accent"></i> Enviar Pedido
                         </button>
                     </div>
                 </div>
@@ -130,14 +133,15 @@
         </div>
 
         <!-- Order History Section -->
-        <div class="mt-20 pt-10 border-t border-gray-100">
-            <h2 class="text-2xl font-bold mb-4"><i class="fas fa-clipboard-list mr-2 text-brand-blue"></i>Mis Pedidos
-                Anteriores</h2>
-            <div id="order-history" class="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+        <div class="mt-20 pt-10 border-t border-gray-200">
+            <h2 class="text-2xl font-extrabold mb-6 text-brand-dark flex items-center">
+                <i class="fas fa-history mr-3 text-brand-blue"></i> Mis Pedidos Anteriores
+            </h2>
+            <div id="order-history" class="space-y-6">
                 <!-- Rendered dynamically by main.js -->
-                <div class="text-center text-gray-400 py-8">
-                    <i class="fas fa-spinner fa-spin text-2xl"></i>
-                    <p class="mt-2">Cargando historial...</p>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center text-gray-400">
+                    <i class="fas fa-circle-notch fa-spin text-3xl mb-4 text-brand-blue"></i>
+                    <p class="font-medium">Cargando historial de pedidos...</p>
                 </div>
             </div>
         </div>
@@ -226,8 +230,9 @@
         }
 
         body {
-            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
-            background-size: 24px 24px;
+            background-color: #f1f5f9;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 32px 32px;
             background-attachment: fixed;
         }
 
