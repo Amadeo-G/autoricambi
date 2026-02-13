@@ -195,42 +195,45 @@ const renderCart = () => {
         const itemTotal = unitPrice * item.quantity;
         subtotal += itemTotal;
         return `
-            <tr class="border-b border-gray-50 last:border-0 hover:bg-slate-50/50 transition-colors group">
+            <tr class="border-b border-gray-50 last:border-0 hover:bg-slate-50/80 transition-all duration-300 group">
                 <td class="p-6">
-                    <div class="flex items-center space-x-4">
-                        <div class="relative">
+                    <div class="flex items-start space-x-5">
+                        <div class="relative flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
                             <img src="${item.image}" 
                                  onerror="window.cartImgError(this, '${item.sku}')" 
-                                 class="w-20 h-20 object-cover rounded-xl shadow-sm border border-gray-100 bg-gray-50">
+                                 class="w-24 h-24 object-cover rounded-xl shadow-sm border border-gray-100 bg-white">
                         </div>
-                        <div>
-                            <div class="font-extrabold text-brand-dark text-lg leading-tight mb-1">${item.name}</div>
-                            <div class="inline-block px-2 py-1 bg-gray-100 text-gray-400 font-mono text-[10px] rounded uppercase tracking-wider">${item.sku}</div>
+                        <div class="pt-1">
+                            <div class="font-extrabold text-brand-dark text-lg leading-tight mb-2 group-hover:text-brand-blue transition-colors">${item.name}</div>
+                            <div class="inline-flex items-center space-x-2">
+                                <span class="px-2.5 py-1 bg-gray-100 text-gray-500 font-mono text-[10px] rounded-md uppercase tracking-wider font-bold border border-gray-200">${item.sku}</span>
+                            </div>
                         </div>
                     </div>
                 </td>
-                <td class="p-6 text-right">
-                    <span class="text-gray-500 font-medium">${formatPrice(unitPrice)}</span>
+                <td class="p-6 text-right align-middle">
+                    <div class="text-gray-400 font-medium text-sm">Unitario</div>
+                    <div class="text-gray-700 font-bold">${formatPrice(unitPrice)}</div>
                 </td>
-                <td class="p-6">
+                <td class="p-6 align-middle">
                     <div class="flex items-center justify-center">
-                        <div class="inline-flex items-center bg-gray-50 rounded-lg p-1 border border-gray-100 shadow-sm">
-                             <button onclick="window.updateQty(${item.id}, -1)" class="w-8 h-8 rounded-md hover:bg-white hover:text-brand-blue hover:shadow-sm transition-all flex items-center justify-center text-gray-400">-</button>
+                        <div class="inline-flex items-center bg-white rounded-lg p-1 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                             <button onclick="window.updateQty(${item.id}, -1)" class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-400 hover:text-brand-blue transition-colors flex items-center justify-center active:scale-95"><i class="fas fa-minus text-xs"></i></button>
                              <input type="number" 
                                     value="${item.quantity}" 
                                     min="1" 
                                     onchange="window.setQty(${item.id}, this.value)"
-                                    class="w-12 text-center font-bold bg-transparent border-0 focus:ring-0 outline-none no-spin text-brand-dark">
-                             <button onclick="window.updateQty(${item.id}, 1)" class="w-8 h-8 rounded-md hover:bg-white hover:text-brand-blue hover:shadow-sm transition-all flex items-center justify-center text-gray-400">+</button>
+                                    class="w-12 text-center font-bold bg-transparent border-0 focus:ring-0 outline-none no-spin text-brand-dark text-lg">
+                             <button onclick="window.updateQty(${item.id}, 1)" class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-400 hover:text-brand-blue transition-colors flex items-center justify-center active:scale-95"><i class="fas fa-plus text-xs"></i></button>
                         </div>
                     </div>
                 </td>
-                <td class="p-6 text-right font-black text-brand-dark text-lg">
-                    ${formatPrice(itemTotal)}
+                <td class="p-6 text-right align-middle">
+                    <div class="text-2xl font-black text-brand-dark tracking-tight">${formatPrice(itemTotal)}</div>
                 </td>
-                <td class="p-6 text-center">
-                    <button onclick="window.removeFromCart(${item.id})" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100">
-                        <i class="fas fa-times-circle text-xl"></i>
+                <td class="p-6 text-center align-middle">
+                    <button onclick="window.removeFromCart(${item.id})" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100 transform hover:scale-110" title="Eliminar del carrito">
+                        <i class="fas fa-trash-alt"></i>
                     </button>
                 </td>
             </tr>
