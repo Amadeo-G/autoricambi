@@ -88,11 +88,11 @@
                     <table class="w-full text-left">
                         <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
                             <tr>
-                                <th class="p-4" width="60%">Producto</th>
-                                <th class="p-4 text-right">Precio Unit.</th>
-                                <th class="p-4 text-center">Cantidad</th>
-                                <th class="p-4 text-right">Subtotal</th>
-                                <th class="p-4 text-center">Eliminar</th>
+                                <th class="p-5 text-gray-400 font-bold" width="50%">Producto</th>
+                                <th class="p-5 text-right text-gray-400 font-bold">Precio Unit.</th>
+                                <th class="p-5 text-center text-gray-400 font-bold">Cantidad</th>
+                                <th class="p-5 text-right text-gray-400 font-bold">Subtotal</th>
+                                <th class="p-5 text-center text-gray-400 font-bold"></th>
                             </tr>
                         </thead>
                         <tbody id="cart-items" class="divide-y divide-gray-100 text-sm">
@@ -107,24 +107,24 @@
             </div>
 
             <!-- Summary -->
-            <div class="w-full lg:w-56">
-                <div
-                    class="bg-white rounded-xl shadow-xl border border-gray-100 p-6 sticky top-24 transform hover:scale-[1.01] transition-transform duration-300">
-                    <h3 class="text-lg font-bold mb-4">Resumen de Cuenta</h3>
-                    <div class="space-y-3 mb-6">
-                        <div class="flex justify-between text-gray-600">
-                            <span>Total s/IVA</span>
-                            <span id="cart-subtotal">$ 0</span>
+            <div class="w-full lg:w-80">
+                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 sticky top-24">
+                    <h3 class="text-xl font-black mb-6 text-brand-dark border-b border-gray-50 pb-4">Resumen</h3>
+                    <div class="space-y-4 mb-8">
+                        <div class="flex justify-between items-center text-gray-500">
+                            <span class="text-sm font-medium">Subtotal s/IVA</span>
+                            <span id="cart-subtotal" class="font-bold text-gray-700">$ 0</span>
                         </div>
-                        <div class="border-t pt-3 flex justify-between font-bold text-xl text-brand-dark">
-                            <span>Total c/IVA</span>
-                            <span id="cart-total">$ 0</span>
+                        <div
+                            class="flex justify-between items-center bg-brand-blue/5 p-4 rounded-xl border border-brand-blue/10">
+                            <span class="text-brand-nav font-bold">TOTAL c/IVA</span>
+                            <span id="cart-total" class="text-2xl font-black text-brand-blue">$ 0</span>
                         </div>
                     </div>
 
                     <div class="flex flex-col gap-3">
                         <button onclick="window.sendToSystem()" id="btn-system"
-                            class="w-full bg-brand-nav text-white py-4 rounded-xl font-extrabold shadow-xl hover:bg-brand-blue transform hover:-translate-y-1 active:scale-95 transition-all duration-300 flex items-center justify-center">
+                            class="w-full bg-brand-nav text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-900/20 hover:bg-brand-blue transform hover:-translate-y-1 active:scale-95 transition-all duration-300 flex items-center justify-center">
                             <i class="fas fa-paper-plane mr-2 text-brand-accent"></i> Enviar Pedido
                         </button>
                     </div>
@@ -230,9 +230,10 @@
         }
 
         body {
-            background-color: #f1f5f9;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 32px 32px;
+            background-color: #f8fafc;
+            background-image:
+                radial-gradient(circle at 2px 2px, #e2e8f0 1px, transparent 0);
+            background-size: 40px 40px;
             background-attachment: fixed;
         }
 
