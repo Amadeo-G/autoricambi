@@ -8,6 +8,37 @@ const R2_BASE_URL = 'https://pub-4a74b73ccfa3493ebcfc17e92136dcf4.r2.dev';
 let allData = [];
 let filteredData = [];
 
+// CACHE CONFIGURATION
+const CACHE_DB_NAME = 'AutoricambiCatalog';
+const CACHE_STORE_NAME = 'catalog_cache';
+
+const dbHelper = {
+    open: () => new Promise((resolve) => {
+        const request = indexedDB.open(CACHE_DB_NAME, 1);
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(CACHE_STORE_NAME)) {
+                db.createObjectStore(CACHE_STORE_NAME);
+            }
+        };
+        request.onsuccess = (e) => resolve(e.target.result);
+    }),
+    get: async (key) => {
+        const db = await dbHelper.open();
+        return new Promise((resolve) => {
+            const tx = db.transaction(CACHE_STORE_NAME, 'readonly');
+            const req = tx.objectStore(CACHE_STORE_NAME).get(key);
+            req.onsuccess = () => resolve(req.result);
+        });
+    },
+    set: async (key, val) => {
+        const db = await dbHelper.open();
+        const tx = db.transaction(CACHE_STORE_NAME, 'readwrite');
+        tx.objectStore(CACHE_STORE_NAME).put(val, key);
+        return tx.complete;
+    }
+};
+
 // DOM Elements
 const els = {
     search: document.getElementById('globalSearch'),
@@ -74,78 +105,97 @@ const formatPrice = (val) => {
 
 async function fetchData(initialCode = null) {
     try {
+        // 1. Check if we have a cached version and its timestamp
+        const cachedLastModified = await dbHelper.get('lastModified');
+        const cachedData = await dbHelper.get('rawData');
+
+        // 2. Perform a HEAD request to check the server version without downloading the whole file
+        let serverLastModified = null;
+        try {
+            const headResponse = await fetch(EXCEL_FILE_PATH, { method: 'HEAD' });
+            serverLastModified = headResponse.headers.get('Last-Modified');
+        } catch (e) {
+            console.warn("Could not perform HEAD request for cache validation:", e);
+        }
+
+        if (cachedData && serverLastModified && cachedLastModified === serverLastModified) {
+            console.log("🚀 Loading catalog from IndexedDB Cache...");
+            processRawData(cachedData, initialCode);
+            return;
+        }
+
+        // 3. If cache is invalid or missing, fetch the whole file
+        console.log("📥 Cache miss or outdated. Fetching Filtros.xlsx...");
         const response = await fetch(`${EXCEL_FILE_PATH}?t=${Date.now()}`);
         if (!response.ok) throw new Error("No se pudo cargar el catálogo.");
         const arrayBuffer = await response.arrayBuffer();
-        parseExcel(arrayBuffer, initialCode);
+
+        // Parse the Excel file
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const targetSheetName = workbook.SheetNames.find(n => n.includes("Hoja 1") || n.includes("Sheet1")) || workbook.SheetNames[0];
+        const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[targetSheetName], { header: 1 });
+
+        // Store in Cache
+        await dbHelper.set('rawData', rawData);
+        await dbHelper.set('lastModified', serverLastModified);
+
+        processRawData(rawData, initialCode);
+
     } catch (error) {
-        console.error(error);
-        if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Error: ${error.message} - Asegúrate de que Filtros.xlsx esté en la raíz.</td></tr>`;
+        console.error("Fetch Error:", error);
+        // Fallback: try to use cache even if HEAD request failed (offline)
+        const offlineData = await dbHelper.get('rawData');
+        if (offlineData) {
+            console.warn("⚠️ Using offline cache due to fetch error.");
+            processRawData(offlineData, initialCode);
+        } else if (els.tbody) {
+            els.tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Error: ${error.message}</td></tr>`;
+        }
     }
 }
 
-function parseExcel(arrayBuffer, initialCode = null) {
-    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-    console.log("Hojas detectadas:", workbook.SheetNames);
-
-    // Prefer "Hoja 1" or "Sheet1", fallback to the first one
-    let targetSheetName = workbook.SheetNames.find(n => n.includes("Hoja 1") || n.includes("Sheet1")) || workbook.SheetNames[0];
-    console.log("Usando hoja:", targetSheetName);
-
-    const firstSheet = workbook.Sheets[targetSheetName];
-    const data = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+// Renamed and refactored from parseExcel to processRawData
+function processRawData(dataRows, initialCode = null) {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const userDiscount = (user.discount !== undefined && user.discount !== null) ? parseFloat(user.discount) : 42;
     const multiplier = (100 - userDiscount) / 100;
 
-    allData = data.slice(1).map((row, index) => {
-        // We use slice(1) to skip header, but let's be careful with empty rows
+    allData = dataRows.slice(1).map((row) => {
         if (!row || row.length < 3) return null;
-
-        const pvVal = parsePrice(row[2]); // Column C is PV (Precio de Venta)
-        const costVal = pvVal * multiplier;     // Cost is customized % of PV
+        const pvVal = parsePrice(row[2]);
+        const costVal = pvVal * multiplier;
 
         return {
-            codigo: (row[0] || '').toString().trim(),         // Column A
-            descripcion: (row[1] || '').toString().trim(),    // Column B
+            codigo: (row[0] || '').toString().trim(),
+            descripcion: (row[1] || '').toString().trim(),
             costo: costVal,
             precio: formatPrice(pvVal),
             priceRaw: pvVal,
-            subrubro: (row[8] || '').toString().trim(),       // Column I
-            marca: (row[13] || '').toString().trim(),         // Column N
-            rubro: (row[14] || '').toString().trim(),         // Column O
+            subrubro: (row[8] || '').toString().trim(),
+            marca: (row[13] || '').toString().trim(),
+            rubro: (row[14] || '').toString().trim(),
             caracteristicas: '',
             equivalentes: '',
             stock: (() => {
                 let s = (row[11] || 0).toString().trim();
-                // Take only characters before the first comma or dot
                 s = s.split(/[.,]/)[0];
-                // Preserve negative sign for deferred deliveries (use [^\d-] instead of \D)
                 const cleanValue = s.replace(/[^\d-]/g, '');
                 return parseInt(cleanValue) || 0;
-            })() // Column L
+            })()
         };
     }).filter(item => item && item.codigo && item.rubro);
 
-    console.log("Productos válidos procesados:", allData.length);
-
     initFilters();
+    handleInitialCode(initialCode);
+}
 
-    // Auto-search if code exists
+function handleInitialCode(initialCode) {
     if (initialCode) {
         const cleanCode = initialCode.trim().toLowerCase();
-
-        // Visual feedback while loading
         if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue font-bold italic">Buscando producto: ${initialCode}...</td></tr>`;
-
-        // If it's a specific code (more likely if initialCode comes from path)
         const exactMatch = allData.find(d => d.codigo.toLowerCase() === cleanCode);
-
         if (exactMatch) {
-            // Small delay to ensure DOM is ready and Lucide icons can be created
-            setTimeout(() => {
-                window.openProductDetail(exactMatch.codigo, false);
-            }, 500);
+            setTimeout(() => window.openProductDetail(exactMatch.codigo, false), 500);
         } else {
             els.search.value = initialCode;
             applyFilters();
