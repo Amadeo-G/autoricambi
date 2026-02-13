@@ -72,7 +72,7 @@ const renderFeaturedCategories = () => {
     elements.featuredCategories.innerHTML = state.categories.slice(0, 5).map(cat => {
         const hasImage = categoryImages[cat.id];
         return `
-        <a href="buscador.html?category=${cat.id}" class="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 block bg-white h-48 md:h-64 border border-gray-100">
+        <a href="buscador.html?category=${cat.id}" class="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 block bg-white h-64 border border-gray-100">
             <div class="h-2/3 bg-gray-50 flex items-center justify-center group-hover:bg-brand-blue/5 transition duration-500 overflow-hidden relative">
                 ${hasImage
                 ? `<img src="${categoryImages[cat.id]}" alt="${cat.name}" class="w-full h-full object-cover transition duration-700 transform group-hover:scale-110">
