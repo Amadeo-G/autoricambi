@@ -274,14 +274,28 @@ function applyFilters() {
         // Strategy 1: Standard Search (includes Description, Brand, etc.)
         const itemText = normalizeText([item.codigo, item.descripcion, item.marca, item.rubro, item.subrubro].join(" "));
         const matchStandard = terms.every(t => itemText.includes(t));
-        if (matchStandard) return true;
-
-        // Strategy 2: Flexible Code Search (handles 02-1796 vs 02-01796)
+        // Strategy 2: Flexible Code Search (Improved fuzzy matching)
         if (ultraCleanQuery.length >= 2) {
             const itemUltraClean = ultraCleanCode(item.codigo);
-            // Match if query is at the start, at the end, or exact match of the cleaned code
-            if (itemUltraClean.includes(ultraCleanQuery)) {
-                return true;
+
+            // Si es un match directo o contenido, listo
+            if (itemUltraClean.includes(ultraCleanQuery)) return true;
+
+            // Búsqueda por segmentos (para casos como KTB271 -> LKTBN271)
+            // Dividimos la búsqueda en grupos de letras y grupos de números
+            const queryParts = searchRaw.match(/[a-z]+|\d+/gi) || [];
+            if (queryParts.length > 1) {
+                let lastIdx = -1;
+                const allPartsMatch = queryParts.every(part => {
+                    const cleanPart = /^\d+$/.test(part) ? parseInt(part, 10).toString() : part.toLowerCase();
+                    const foundIdx = itemUltraClean.indexOf(cleanPart, lastIdx + 1);
+                    if (foundIdx > lastIdx) {
+                        lastIdx = foundIdx;
+                        return true;
+                    }
+                    return false;
+                });
+                if (allPartsMatch) return true;
             }
         }
 
