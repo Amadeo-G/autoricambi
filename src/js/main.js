@@ -291,17 +291,20 @@ window.sendToSystem = async () => {
             console.log(`Item ${idx}:`, JSON.stringify(item));
         });
 
-        // Construimos la lista de items - buscamos el código en todos los campos posibles
-        const items = state.cart.map(i => ({
-            codigo: i.sku || i.codigo || i.id || i.name || "S/D",
-            cantidad: i.quantity || i.qty || 1
-        }));
+        // Construimos la lista de items con subtotal y total individual
+        const items = state.cart.map(i => {
+            const itemSubtotal = (i.price || 0) * (i.quantity || 1);
+            return {
+                codigo: i.sku || i.codigo || i.id || i.name || "S/D",
+                cantidad: i.quantity || i.qty || 1,
+                subtotal: formatPrice(itemSubtotal),
+                total: formatPrice(itemSubtotal * 1.21)
+            };
+        });
 
         const orderData = {
             clientName: user.name || "Cliente No Identificado",
             items: JSON.stringify(items),
-            subtotal: formatPrice(subtotal),
-            total: formatPrice(totalWithIVA),
             discount: String(user.discount || 42)
         };
 
