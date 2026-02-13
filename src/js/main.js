@@ -296,6 +296,7 @@ window.sendToSystem = async () => {
             const itemSubtotal = (i.price || 0) * (i.quantity || 1);
             return {
                 codigo: i.sku || i.codigo || i.id || i.name || "S/D",
+                descripcion: i.name || i.description || i.descripcion || "S/D",
                 cantidad: i.quantity || i.qty || 1,
                 subtotal: formatPrice(itemSubtotal),
                 total: formatPrice(itemSubtotal * 1.21)
@@ -429,16 +430,16 @@ window.renderOrderHistory = () => {
                 <thead class="text-xs text-gray-500 uppercase bg-gray-50 border-t">
                     <tr>
                         <th class="px-4 py-2 text-left">SKU</th>
+                        <th class="px-4 py-2 text-left">Descripción</th>
                         <th class="px-4 py-2 text-center">Cantidad</th>
-                        <th class="px-4 py-2 text-right">Precio s/IVA</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     ${order.items.map(item => `
                     <tr>
                         <td class="px-4 py-2 font-mono text-gray-800">${item.codigo}</td>
+                        <td class="px-4 py-2 text-gray-600">${item.descripcion || '-'}</td>
                         <td class="px-4 py-2 text-center">${item.cantidad}</td>
-                        <td class="px-4 py-2 text-right text-gray-600">${item.subtotal || '-'}</td>
                     </tr>`).join('')}
                 </tbody>
             </table>
