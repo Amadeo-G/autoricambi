@@ -378,29 +378,25 @@ if (els.search) {
     // Also capture Enter for immediate search
     els.search.addEventListener('keypress', e => e.key === 'Enter' && applyFilters());
 }
-if (els.btnReset) {
-    els.btnReset.addEventListener('click', () => {
-        els.search.value = '';
-        if (els.rubro) els.rubro.value = '';
-        if (els.subrubro) {
-            els.subrubro.innerHTML = '<option value="">Selecciona Rubro primero</option>';
-            els.subrubro.disabled = true;
-        }
-        if (els.marca) {
-            els.marca.innerHTML = '<option value="">Selecciona Subrubro primero</option>';
-            els.marca.disabled = true;
-        }
-        filteredData = [];
-        showInitialMessage();
+els.btnReset.addEventListener('click', () => {
+    els.search.value = '';
+    if (els.rubro) els.rubro.value = '';
+    if (els.subrubro) els.subrubro.value = '';
+    if (els.marca) els.marca.value = '';
 
-        // Spin icon effect
-        const icon = els.btnReset.querySelector('i');
-        if (icon) {
-            icon.classList.add('animate-spin');
-            setTimeout(() => icon.classList.remove('animate-spin'), 500);
-        }
-    });
-}
+    // Re-habilitar y poblar todos los filtros originales
+    initFilters();
+
+    filteredData = [];
+    showInitialMessage();
+
+    // Animación del icono
+    const icon = els.btnReset.querySelector('i');
+    if (icon) {
+        icon.classList.add('animate-spin');
+        setTimeout(() => icon.classList.remove('animate-spin'), 500);
+    }
+});
 
 document.getElementById('btnResetInline')?.addEventListener('click', () => els.btnReset.click());
 
