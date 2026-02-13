@@ -274,6 +274,8 @@ function applyFilters() {
         // Strategy 1: Standard Search (includes Description, Brand, etc.)
         const itemText = normalizeText([item.codigo, item.descripcion, item.marca, item.rubro, item.subrubro].join(" "));
         const matchStandard = terms.every(t => itemText.includes(t));
+        if (matchStandard) return true;
+
         // Strategy 2: Flexible Code Search (Improved fuzzy matching)
         if (ultraCleanQuery.length >= 2) {
             const itemUltraClean = ultraCleanCode(item.codigo);
