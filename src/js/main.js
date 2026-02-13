@@ -362,7 +362,7 @@ window.sendToSystem = async () => {
 
         // Guardar en historial local antes de limpiar el carrito
         const orderRecord = {
-            date: new Date().toLocaleString('es-AR'),
+            date: new Date().toLocaleString('es-AR', { hour12: false }),
             items: items,
             discount: user.discount || 42
         };
