@@ -285,14 +285,21 @@ window.sendToSystem = async () => {
         const totalWithIVA = subtotal * 1.21;
         const user = state.user || {};
 
+        // Construimos la lista de items como JSON para que Google la pueda parsear
+        const items = state.cart.map(i => ({
+            codigo: i.sku || i.name || "S/D",
+            cantidad: i.quantity || 1
+        }));
+
         const orderData = {
             clientName: user.name || "Cliente No Identificado",
-            codigos: state.cart.map(i => i.sku).join(', '),
-            cantidades: state.cart.map(i => i.quantity).join(', '),
+            items: JSON.stringify(items),
             subtotal: formatPrice(subtotal),
             total: formatPrice(totalWithIVA),
-            discount: user.discount || 42
+            discount: String(user.discount || 42)
         };
+
+        console.log("Enviando pedido:", orderData);
 
         // Usamos un iframe oculto + formulario para evitar problemas de CORS con Google
         await new Promise((resolve, reject) => {
