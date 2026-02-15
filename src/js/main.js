@@ -239,10 +239,10 @@ const renderCart = () => {
                         </div>
                     </div>
 
-                    <!-- Quantity & Actions -->
-                    <div class="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-4 md:gap-6 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
-                        <!-- Quantity Control - Diseño Premium -->
-                        <div class="flex flex-col items-center gap-3">
+                    <!-- Quantity & Actions - Grid Layout para Alineación Perfecta -->
+                    <div class="flex md:grid md:grid-cols-1 md:gap-4 items-center md:items-end justify-between md:justify-end border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 w-full md:w-auto">
+                        <!-- Quantity Control - Ancho Fijo -->
+                        <div class="flex flex-col items-center md:items-end gap-3">
                             <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cantidad</span>
                             <div class="flex flex-row items-center bg-white rounded-lg border-2 border-gray-200 hover:border-brand-blue transition-all shadow-sm hover:shadow-md">
                                 <button onclick="window.updateQty(${item.id}, -1)" 
@@ -261,18 +261,20 @@ const renderCart = () => {
                             </div>
                         </div>
 
-                        <!-- Subtotal -->
+                        <!-- Subtotal - Ancho Fijo para 9 Dígitos -->
                         <div class="flex flex-col items-end gap-1">
-                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Subtotal</span>
-                            <span class="text-2xl md:text-3xl font-black text-brand-blue">${formatPrice(itemTotal)}</span>
+                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Subtotal</span>
+                            <span class="text-2xl md:text-3xl font-black text-brand-blue tabular-nums min-w-[180px] text-right">${formatPrice(itemTotal)}</span>
                         </div>
 
-                        <!-- Remove Button -->
-                        <button onclick="window.removeFromCart(${item.id})" 
-                                class="w-11 h-11 rounded-xl flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 border-2 border-transparent hover:border-red-200 transition-all transform hover:scale-110 active:scale-95" 
-                                title="Eliminar del carrito">
-                            <i class="fas fa-trash-alt text-lg"></i>
-                        </button>
+                        <!-- Remove Button - Ancho Fijo -->
+                        <div class="flex justify-end">
+                            <button onclick="window.removeFromCart(${item.id})" 
+                                    class="w-11 h-11 rounded-xl flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 border-2 border-transparent hover:border-red-200 transition-all transform hover:scale-110 active:scale-95" 
+                                    title="Eliminar del carrito">
+                                <i class="fas fa-trash-alt text-lg"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
