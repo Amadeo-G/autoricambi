@@ -389,9 +389,16 @@ function renderTable(q = '') {
     if (els.count) els.count.textContent = `${filteredData.length} resultados encontrados`;
     if (els.status) els.status.classList.add('hidden');
 
+    // Ordenar alfabéticamente por código/SKU (ascendente)
+    const sortedData = [...filteredData].sort((a, b) => {
+        const codigoA = (a.codigo || '').toLowerCase();
+        const codigoB = (b.codigo || '').toLowerCase();
+        return codigoA.localeCompare(codigoB, 'es', { sensitivity: 'base' });
+    });
+
     const fragment = document.createDocumentFragment();
     // Limit to 100 for performance
-    filteredData.slice(0, 100).forEach(item => {
+    sortedData.slice(0, 100).forEach(item => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 last:border-b-0";
 
@@ -717,10 +724,15 @@ window.addToCartFromCatalog = function (codigo, event) {
     }
 };
 
-// --- ZOOM LOGIC (8x) ---
+// --- ZOOM LOGIC (2x) ---
 function initZoom() {
     const container = document.getElementById('modalImageContainer');
     if (!container) return;
+
+    // Add magnifying glass cursor on hover
+    container.addEventListener('mouseenter', () => {
+        container.style.cursor = 'zoom-in';
+    });
 
     container.addEventListener('mousemove', (e) => {
         // Find visible image
@@ -738,7 +750,7 @@ function initZoom() {
         const yPercent = (y / rect.height) * 100;
 
         img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
-        img.style.transform = "scale(3)"; // 3x Zoom requested
+        img.style.transform = "scale(2)"; // 2x Zoom
     });
 
     container.addEventListener('mouseleave', () => {
@@ -748,5 +760,6 @@ function initZoom() {
         // Reset
         img.style.transformOrigin = "center center";
         img.style.transform = "scale(1)";
+        container.style.cursor = '';
     });
 }

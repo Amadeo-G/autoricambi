@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autoricambi | Buscador</title>
+    <title>Mi Carrito | Autoricambi</title>
     <!-- Tailwind CSS Output -->
     <link href="src/output.css" rel="stylesheet">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -22,7 +22,8 @@
     </script>
 </head>
 
-<body class="bg-gray-50 text-brand-dark font-sans flex flex-col min-h-screen">
+<body
+    class="bg-gradient-to-br from-gray-50 via-blue-50/30 to-gray-50 text-brand-dark font-sans flex flex-col min-h-screen">
 
     <!-- Header -->
     <header class="bg-brand-nav shadow-md sticky top-0 z-50">
@@ -70,93 +71,146 @@
         </div>
     </header>
 
-    <main class="flex-grow container-custom py-8">
-        <div class="flex flex-col md:flex-row items-baseline justify-between mb-8 gap-4 border-b border-gray-200 pb-4">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-brand-dark flex items-center">
-                <i class="fas fa-shopping-cart mr-3 text-brand-blue"></i> Mi Pedido
-            </h1>
-            <a href="javascript:history.back()"
-                class="flex items-center text-brand-nav hover:text-brand-blue font-bold transition-all hover:-translate-x-1">
-                <i class="fas fa-arrow-left mr-2"></i> Seguir Comprando
-            </a>
+    <main class="flex-grow container-custom py-8 md:py-12">
+        <!-- Page Header -->
+        <div class="mb-8 md:mb-12">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl md:text-5xl font-black text-brand-dark flex items-center gap-4 mb-2">
+                        <div
+                            class="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-brand-blue to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-blue/30">
+                            <i class="fas fa-shopping-cart text-white text-xl md:text-2xl"></i>
+                        </div>
+                        Mi Carrito
+                    </h1>
+                    <p class="text-gray-500 text-sm md:text-base ml-16 md:ml-20">Revisa y confirma tu pedido</p>
+                </div>
+                <a href="buscador.html"
+                    class="group flex items-center gap-2 px-6 py-3 bg-white border-2 border-gray-200 hover:border-brand-blue text-brand-dark hover:text-brand-blue font-bold rounded-xl transition-all shadow-sm hover:shadow-md">
+                    <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+                    <span>Seguir Comprando</span>
+                </a>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <!-- Cart Items (8 Cols) -->
-            <div class="lg:col-span-8 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr
-                                class="bg-gray-50/50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-400">
-                                <th class="px-8 py-5 text-left font-black tracking-widest" width="50%">Producto</th>
-                                <th class="px-8 py-5 text-right font-black tracking-widest">Precio</th>
-                                <th class="px-8 py-5 text-center font-black tracking-widest">Cantidad</th>
-                                <th class="px-8 py-5 text-right font-black tracking-widest">Subtotal</th>
-                                <th class="px-8 py-5 text-center font-black tracking-widest" width="80"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="cart-items" class="divide-y divide-gray-50 text-sm">
-                            <!-- Items Injected Here -->
-                            <tr>
-                                <td colspan="5" class="p-12 text-center text-gray-400">
-                                    <i class="fas fa-circle-notch fa-spin text-2xl mb-2 text-brand-blue"></i>
-                                    <p>Cargando...</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+            <!-- Cart Items Section (8 cols) -->
+            <div class="lg:col-span-8 space-y-4">
+                <!-- Cart Items Container -->
+                <div id="cart-items-wrapper" class="space-y-4">
+                    <!-- Items Injected Here by JS -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                        <i class="fas fa-circle-notch fa-spin text-3xl mb-4 text-brand-blue"></i>
+                        <p class="text-gray-400 font-medium">Cargando carrito...</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Summary (4 cols) -->
-            <div class="lg:col-span-4 space-y-6 sticky top-24">
-                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                        <i class="fas fa-receipt mr-3 text-brand-blue opacity-50"></i>Resumen
-                    </h3>
-
-                    <div class="space-y-4 mb-8">
-                        <div class="flex justify-between items-center text-gray-500 text-sm">
-                            <span>Subtotal (s/IVA)</span>
-                            <span id="cart-subtotal" class="font-mono font-semibold">$ 0</span>
+            <!-- Summary Sidebar (4 cols) -->
+            <div class="lg:col-span-4">
+                <div class="sticky top-24 space-y-6">
+                    <!-- Summary Card -->
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                        <!-- Header -->
+                        <div class="bg-gradient-to-r from-brand-blue to-blue-600 px-6 py-5">
+                            <h3 class="text-xl font-black text-white flex items-center gap-3">
+                                <i class="fas fa-receipt"></i>
+                                Resumen del Pedido
+                            </h3>
                         </div>
-                        <div class="h-px bg-gray-50 my-2"></div>
-                        <div class="flex justify-between items-end">
-                            <span class="text-brand-dark font-bold text-lg mb-1">Total Final</span>
-                            <div class="text-right">
+
+                        <!-- Content -->
+                        <div class="p-6 space-y-6">
+                            <!-- Subtotal -->
+                            <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+                                <span class="text-gray-600 font-medium">Subtotal (s/IVA)</span>
+                                <span id="cart-subtotal" class="font-mono font-bold text-gray-800 text-lg">$ 0,00</span>
+                            </div>
+
+                            <!-- IVA Info -->
+                            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                                <div class="flex items-start gap-3">
+                                    <i class="fas fa-info-circle text-brand-blue mt-0.5"></i>
+                                    <div class="flex-1">
+                                        <p class="text-xs font-bold text-brand-blue uppercase tracking-wider mb-1">IVA
+                                            Incluido</p>
+                                        <p class="text-xs text-gray-600">El precio final incluye el 21% de IVA</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total -->
+                            <div
+                                class="bg-gradient-to-br from-gray-50 to-blue-50/50 rounded-xl p-6 border border-gray-200">
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Total
+                                            Final</p>
+                                        <p class="text-2xl md:text-3xl font-black text-brand-blue leading-none"
+                                            id="cart-total">$ 0,00</p>
+                                    </div>
+                                    <i class="fas fa-check-circle text-green-500 text-3xl opacity-50"></i>
+                                </div>
+                            </div>
+
+                            <!-- Confirm Button -->
+                            <button onclick="window.sendToSystem()" id="btn-system"
+                                class="group w-full bg-gradient-to-r from-brand-blue to-blue-600 hover:from-blue-700 hover:to-brand-dark text-white py-4 rounded-xl font-black text-lg shadow-lg shadow-brand-blue/30 hover:shadow-xl hover:shadow-brand-blue/40 transition-all duration-300 transform active:scale-95 flex items-center justify-center relative overflow-hidden">
                                 <span
-                                    class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold block mb-1">IVA
-                                    Incluido</span>
-                                <span id="cart-total" class="font-black text-3xl text-brand-blue leading-none">$
-                                    0</span>
+                                    class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></span>
+                                <span class="relative z-10 flex items-center gap-3">
+                                    <i class="fas fa-paper-plane"></i>
+                                    CONFIRMAR PEDIDO
+                                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                                </span>
+                            </button>
+
+                            <!-- Security Badge -->
+                            <div
+                                class="flex items-center justify-center gap-2 text-xs text-gray-500 bg-green-50 border border-green-100 rounded-lg p-3">
+                                <i class="fas fa-shield-alt text-green-600"></i>
+                                <span class="font-semibold">Compra 100% Segura y Verificada</span>
                             </div>
                         </div>
                     </div>
 
-                    <button onclick="window.sendToSystem()" id="btn-system"
-                        class="group w-full bg-brand-blue hover:bg-brand-dark text-white py-4 rounded-xl font-bold shadow-lg shadow-brand-blue/30 hover:shadow-xl transition-all duration-300 transform active:scale-95 flex items-center justify-center relative overflow-hidden">
-                        <span class="relative z-10 flex items-center">
-                            CONFIRMAR PEDIDO <i
-                                class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
-                        </span>
-                    </button>
-
-                    <div class="mt-6 flex items-center justify-center text-xs text-gray-400 bg-gray-50 rounded-lg p-3">
-                        <i class="fas fa-shield-alt mr-2 text-green-500"></i> Compra 100% Segura
+                    <!-- Help Card -->
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-xl p-6 text-white">
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-headset text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg mb-1">¿Necesitas ayuda?</h4>
+                                <p class="text-sm text-gray-300 mb-3">Estamos aquí para asistirte</p>
+                                <a href="https://wa.me/5493516861092" target="_blank"
+                                    class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm transition-all">
+                                    <i class="fab fa-whatsapp"></i>
+                                    Contactar por WhatsApp
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Order History Section -->
-        <div class="mt-20 pt-10 border-t border-gray-200">
-            <h2 class="text-2xl font-extrabold mb-6 text-brand-dark flex items-center">
-                <i class="fas fa-history mr-3 text-brand-blue"></i> Mis Pedidos Anteriores
-            </h2>
+        <div class="mt-16 md:mt-24 pt-12 border-t-2 border-gray-200">
+            <div class="mb-8">
+                <h2 class="text-2xl md:text-4xl font-black text-brand-dark flex items-center gap-4 mb-2">
+                    <div
+                        class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-history text-white text-lg md:text-xl"></i>
+                    </div>
+                    Historial de Pedidos
+                </h2>
+                <p class="text-gray-500 text-sm md:text-base ml-14 md:ml-16">Tus pedidos anteriores</p>
+            </div>
             <div id="order-history" class="space-y-6">
                 <!-- Rendered dynamically by main.js -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center text-gray-400">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center text-gray-400">
                     <i class="fas fa-circle-notch fa-spin text-3xl mb-4 text-brand-blue"></i>
                     <p class="font-medium">Cargando historial de pedidos...</p>
                 </div>
@@ -222,38 +276,8 @@
 
     <script type="module" src="src/js/main.js"></script>
 
-    <!-- Stronger Animations & Parallax -->
+    <!-- Premium Animations & Styles -->
     <style>
-        .reveal {
-            opacity: 0;
-            transform: translateY(50px);
-            will-change: transform, opacity;
-        }
-
-        .reveal.active {
-            animation: fadeInUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        body {
-            background-color: #f8fafc;
-            background-image:
-                radial-gradient(circle at 2px 2px, #e2e8f0 1px, transparent 0);
-            background-size: 40px 40px;
-            background-attachment: fixed;
-        }
-
         /* Hide Number Input Spinners */
         .no-spin::-webkit-outer-spin-button,
         .no-spin::-webkit-inner-spin-button {
@@ -266,107 +290,70 @@
             appearance: textfield;
         }
 
-        /* Responsive Table for Mobile */
-        @media (max-width: 1024px) {
-            thead {
-                display: none;
+        /* Smooth Fade In Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
 
-            tr {
-                display: block;
-                background: white;
-                margin-bottom: 1.5rem;
-                border: 1px solid #f1f5f9 !important;
-                border-radius: 1.5rem;
-                padding: 1rem;
-                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
-            }
-
-            td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.75rem 0.5rem !important;
-                border: none !important;
-                width: 100% !important;
-            }
-
-            td::before {
-                content: attr(data-label);
-                font-weight: 800;
-                text-transform: uppercase;
-                font-size: 0.7rem;
-                color: #94a3b8;
-                letter-spacing: 0.05em;
-            }
-
-            td[data-label="Producto"] {
-                flex-direction: column;
-                align-items: flex-start;
-                border-bottom: 1px solid #f1f5f9 !important;
-                margin-bottom: 0.5rem;
-                padding-bottom: 1.5rem !important;
-            }
-
-            td[data-label="Producto"]::before {
-                margin-bottom: 1rem;
-            }
-
-            td[data-label="Producto"]>div {
-                width: 100%;
-            }
-
-            td[data-label="Acción"] {
-                justify-content: center;
-                border-top: 1px solid #f1f5f9 !important;
-                margin-top: 0.5rem;
-                padding-top: 1rem !important;
-            }
-
-            td[data-label="Acción"]::before {
-                display: none;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
-    </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.15 };
-            const observerCallback = (entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('active');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            };
-            const observer = new IntersectionObserver(observerCallback, observerOptions);
-            const staticSelectors = 'h1, h3, h4, .bg-white, footer, table, .sticky';
-            document.querySelectorAll(staticSelectors).forEach(el => {
-                el.classList.add('reveal');
-                observer.observe(el);
-            });
 
-            // Dynamic Table Observer (for cart items)
-            const targetNode = document.getElementById('cart-items');
-            if (targetNode) {
-                const config = { childList: true };
-                const callback = function (mutationsList) {
-                    for (const mutation of mutationsList) {
-                        if (mutation.type === 'childList') {
-                            mutation.addedNodes.forEach(node => {
-                                if (node.nodeType === 1 && node.tagName === 'TR') {
-                                    node.classList.add('reveal');
-                                    observer.observe(node);
-                                }
-                            });
-                        }
-                    }
-                };
-                const mutationObserver = new MutationObserver(callback);
-                mutationObserver.observe(targetNode, config);
+        .animate-fade-in {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        /* Cart Item Card Hover Effect */
+        .cart-item-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cart-item-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        /* Gradient Background Animation */
+        body {
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
             }
-        });
-    </script>
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </body>
 
 </html>
