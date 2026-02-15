@@ -208,16 +208,22 @@ const renderCart = () => {
             }
         }
 
+        /* 
+           CRITICAL FIX: 
+           We use inline styles and a unique class structure to guarantee the 70/15/15 
+           distribution because the project's Tailwind build might not support arbitrary values 
+           (like w-[70%]) on the fly.
+        */
         return `
-            <div class="cart-item-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 hover:border-brand-blue/30 transition-all relative overflow-hidden">
-                <!-- Grid Layout strictly enforcing 70/15/15 -->
-                <div class="grid grid-cols-1 md:grid-cols-[70%_15%_15%] gap-6 md:gap-0 items-center">
+            <div class="cart-item-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 transition-all hover:border-brand-blue/30 relative">
+                <!-- Wrapper Flex Container -->
+                <div class="flex flex-wrap md:flex-nowrap items-center">
                     
-                    <!-- 1. PRODUCTO (70%) -->
-                    <div class="flex items-center gap-6 w-full pr-4 md:border-r md:border-gray-50">
+                    <!-- 1. PRODUCTO (70% en Desktop, 100% en Mobile) -->
+                    <div class="w-full md:w-auto flex items-center gap-4 pr-0 md:pr-4 mb-4 md:mb-0" style="flex: 0 0 70%;">
                         <!-- Imagen -->
                         <div class="relative flex-shrink-0">
-                            <div class="w-20 h-20 bg-white rounded-lg border border-gray-100 p-2 flex items-center justify-center overflow-hidden">
+                            <div class="w-16 h-16 md:w-20 md:h-20 bg-white rounded-lg border border-gray-100 p-2 flex items-center justify-center overflow-hidden">
                                 <img src="${item.image}" 
                                      onerror="window.cartImgError(this, '${item.sku}')" 
                                      class="max-w-full max-h-full object-contain">
@@ -225,57 +231,60 @@ const renderCart = () => {
                             ${item.maxStock !== undefined ? `<div class="absolute -top-1 -left-1 w-3 h-3 ${stockBadgeColor} rounded-full border-2 border-white" title="${stockTitle}"></div>` : ''}
                         </div>
                         
-                        <!-- Descripción & Detalles -->
+                        <!-- Info -->
                         <div class="flex-grow min-w-0">
-                            <h3 class="font-bold text-brand-dark text-base md:text-lg leading-snug mb-2 break-words">${item.name}</h3>
-                            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+                            <h3 class="font-bold text-brand-dark text-base leading-snug mb-1 break-words">${item.name}</h3>
+                            <div class="flex flex-wrap items-center gap-2 text-sm text-gray-500">
                                 <span class="bg-gray-50 text-brand-blue font-mono font-bold px-2 py-0.5 rounded border border-gray-100 text-xs">${item.sku}</span>
+                                ${item.brand ? `<span class="hidden md:inline text-gray-300">|</span><span class="font-medium text-xs">${item.brand}</span>` : ''}
                                 <span class="hidden md:inline text-gray-300">|</span>
-                                ${item.brand ? `<span class="font-medium bg-gray-50 px-2 py-0.5 rounded border border-gray-100 text-xs">${item.brand}</span>` : ''}
-                                <span class="hidden md:inline text-gray-300">|</span>
-                                <span class="font-medium whitespace-nowrap">Unitario: <span class="text-gray-900 font-bold">${formatPrice(unitPrice)}</span></span>
+                                <span class="font-medium whitespace-nowrap text-xs md:text-sm">Unit: <span class="text-gray-900 font-bold">${formatPrice(unitPrice)}</span></span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 2. CANTIDAD (15%) -->
-                    <div class="flex flex-col justify-center items-center w-full px-2">
-                         <span class="md:hidden text-xs font-bold text-gray-400 mb-1 uppercase tracking-wider">Cantidad</span>
-                        <div class="flex items-center bg-white rounded-lg border-2 border-gray-100 shadow-sm transition-shadow transform hover:shadow-md">
+                    <!-- 2. CANTIDAD (15% en Desktop, 50% en Mobile) -->
+                    <div class="w-1/2 md:w-auto flex flex-col items-center justify-center pl-12 md:pl-0 border-r md:border-r-0 border-gray-100 md:border-none" style="flex: 0 0 15%;">
+                        <div class="flex items-center bg-gray-50 rounded-lg border border-gray-200">
                             <button onclick="window.updateQty(${item.id}, -1)" 
-                                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-gray-50 rounded-l-lg transition-colors border-r border-gray-100">
+                                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-white rounded-l-lg transition-colors">
                                 <i class="fas fa-minus text-[10px]"></i>
                             </button>
                             <input type="number" 
                                    value="${item.quantity}" 
                                    min="1" 
                                    onchange="window.setQty(${item.id}, this.value)"
-                                   class="w-12 h-8 text-center text-sm font-bold bg-transparent border-none focus:ring-0 p-0 text-gray-800 no-spin">
+                                   class="w-10 h-8 text-center text-sm font-bold bg-transparent border-none focus:ring-0 p-0 text-gray-800 no-spin">
                             <button onclick="window.updateQty(${item.id}, 1)" 
-                                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-gray-50 rounded-r-lg transition-colors border-l border-gray-100">
+                                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-white rounded-r-lg transition-colors">
                                 <i class="fas fa-plus text-[10px]"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- 3. SUBTOTAL (15%) -->
-                    <div class="flex items-center justify-between md:justify-end gap-3 w-full pl-0 md:pl-4">
-                        <span class="md:hidden text-xs font-bold text-gray-400 uppercase tracking-wider">Subtotal</span>
-                        
-                        <div class="flex items-center gap-4">
-                             <div class="text-right">
-                                <div class="font-black text-brand-blue text-lg whitespace-nowrap">${formatPrice(itemTotal)}</div>
-                            </div>
-                            
-                            <button onclick="window.removeFromCart(${item.id})" 
-                                    class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                                    title="Eliminar del carrito">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
+                    <!-- 3. SUBTOTAL (15% en Desktop, 50% en Mobile) -->
+                    <div class="w-1/2 md:w-auto flex items-center justify-end gap-3 pl-4" style="flex: 0 0 15%;">
+                         <div class="text-right">
+                            <div class="font-black text-brand-blue text-base md:text-lg whitespace-nowrap">${formatPrice(itemTotal)}</div>
                         </div>
+                        <button onclick="window.removeFromCart(${item.id})" 
+                                class="flex-shrink-0 w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                title="Eliminar">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
                     </div>
+
                 </div>
             </div>
+            
+            <!-- Mobile Layout Overrides using Style Tag for this specific block if needed -->
+            <style>
+                @media (max-width: 768px) {
+                    /* Reset flex basis on mobile to stack correctly if the inline style overrides standard behavior */
+                    .flex-wrap > div[style*="70%"] { flex: 0 0 100% !important; margin-bottom: 1rem; }
+                    .flex-wrap > div[style*="15%"] { flex: 0 0 50% !important; }
+                }
+            </style>
         `;
     }).join('');
 
