@@ -209,73 +209,67 @@ const renderCart = () => {
         }
 
         return `
-            <div class="cart-item-card bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 hover:border-brand-blue/30 transition-all">
-                <div class="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
-                    <!-- Product Image & Info - Más Espacio -->
-                    <div class="flex gap-4 flex-1 min-w-0">
-                        <div class="relative flex-shrink-0 group">
-                            <!-- Imagen más pequeña: equivalente a 3 líneas de texto (~4.5rem = 72px) -->
-                            <div class="w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 p-1.5 group-hover:border-brand-blue/30 transition-all">
-                                <img src="${item.image}" 
-                                     onerror="window.cartImgError(this, '${item.sku}')" 
-                                     class="w-full h-full object-contain">
-                            </div>
-                            <!-- Stock Badge: solo color, sin texto de cantidad -->
-                            ${item.maxStock !== undefined ? `<div class="absolute -top-1 -right-1 w-4 h-4 ${stockBadgeColor} rounded-full shadow-lg border-2 border-white" title="${stockTitle}"></div>` : ''}
+            <div class="cart-item-card bg-white rounded-xl shadow-sm border border-gray-100 p-3 hover:border-brand-blue/30 transition-all group">
+                <div class="flex flex-col md:flex-row items-center gap-4">
+                    
+                    <!-- 1. Imagen (Compacta) -->
+                    <div class="relative flex-shrink-0">
+                        <div class="w-16 h-16 bg-white rounded-lg border border-gray-100 p-1 flex items-center justify-center overflow-hidden">
+                            <img src="${item.image}" 
+                                 onerror="window.cartImgError(this, '${item.sku}')" 
+                                 class="max-w-full max-h-full object-contain">
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <!-- Título limitado a 2 líneas -->
-                            <h3 class="font-black text-brand-dark text-base md:text-lg leading-tight mb-2 line-clamp-2 hover:text-brand-blue transition-colors">${item.name}</h3>
-                            <div class="flex flex-wrap items-center gap-2 mb-2">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-100 text-brand-blue font-mono text-xs rounded-lg font-bold">
-                                    <i class="fas fa-barcode"></i>
-                                    ${item.sku}
-                                </span>
-                                ${item.brand ? `<span class="text-xs text-gray-500 font-semibold">${item.brand}</span>` : ''}
+                        ${item.maxStock !== undefined ? `<div class="absolute -top-1 -left-1 w-3 h-3 ${stockBadgeColor} rounded-full border-2 border-white" title="${stockTitle}"></div>` : ''}
+                    </div>
+
+                    <!-- 2. Info del Producto (Flexible) -->
+                    <div class="flex-1 text-center md:text-left w-full md:w-auto">
+                        <div class="flex flex-col">
+                            <h3 class="font-bold text-brand-dark text-sm md:text-base leading-tight mb-1 line-clamp-2" title="${item.name}">${item.name}</h3>
+                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 text-xs text-gray-500 mb-1">
+                                <span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-mono font-bold">${item.sku}</span>
+                                ${item.brand ? `<span>${item.brand}</span>` : ''}
                             </div>
-                            <div class="flex items-baseline gap-2">
-                                <span class="text-xs text-gray-500 font-medium">Precio unitario:</span>
-                                <span class="text-sm md:text-base font-bold text-gray-800">${formatPrice(unitPrice)}</span>
+                            <div class="flex items-center justify-center md:justify-start gap-1">
+                                <span class="text-xs text-gray-400">Unit:</span>
+                                <span class="text-xs font-bold text-gray-700">${formatPrice(unitPrice)}</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Quantity, Subtotal & Actions - Grid Optimizado -->
-                    <div class="grid grid-cols-[auto_auto_auto] md:grid-cols-[120px_150px_48px] gap-3 md:gap-4 items-start ml-auto">
-                        <!-- Quantity Control - Columna 120px -->
-                        <div class="flex flex-col items-center md:items-end gap-2">
-                            <span class="text-xs text-gray-500 font-semibold whitespace-nowrap">Cantidad</span>
-                            <div class="flex flex-row items-center bg-white rounded-lg border-2 border-gray-200 hover:border-brand-blue transition-all shadow-sm hover:shadow-md">
+                    <!-- 3. Controles (Horizontal en Desktop) -->
+                    <div class="flex items-center justify-between w-full md:w-auto gap-6 border-t md:border-t-0 border-gray-100 pt-3 md:pt-0 mt-2 md:mt-0">
+                        
+                        <!-- Cantidad -->
+                        <div class="flex flex-col items-center">
+                            <div class="flex items-center bg-gray-50 rounded-lg border border-gray-200">
                                 <button onclick="window.updateQty(${item.id}, -1)" 
-                                        class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-l-md group">
-                                    <i class="fas fa-minus text-xs group-hover:scale-110 transition-transform"></i>
+                                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-white rounded-l-lg transition-colors">
+                                    <i class="fas fa-minus text-[10px]"></i>
                                 </button>
                                 <input type="number" 
                                        value="${item.quantity}" 
                                        min="1" 
                                        onchange="window.setQty(${item.id}, this.value)"
-                                       class="w-16 h-9 text-center font-bold bg-gray-50 border-0 focus:ring-0 focus:bg-blue-50 outline-none no-spin text-gray-800 text-sm md:text-base transition-colors">
+                                       class="w-12 h-8 text-center text-sm font-bold bg-transparent border-none focus:ring-0 p-0 text-gray-800 no-spin">
                                 <button onclick="window.updateQty(${item.id}, 1)" 
-                                        class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-r-md group">
-                                    <i class="fas fa-plus text-xs group-hover:scale-110 transition-transform"></i>
+                                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-white rounded-r-lg transition-colors">
+                                    <i class="fas fa-plus text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Subtotal - Columna 150px -->
-                        <div class="flex flex-col items-end gap-2">
-                            <span class="text-xs text-gray-500 font-semibold whitespace-nowrap">Subtotal</span>
-                            <span class="text-sm md:text-base font-bold text-brand-blue tabular-nums whitespace-nowrap">${formatPrice(itemTotal)}</span>
+                        <!-- Subtotal -->
+                        <div class="text-right" style="min-width: 90px;">
+                            <div class="font-bold text-brand-blue text-base">${formatPrice(itemTotal)}</div>
                         </div>
 
-                        <!-- Remove Button - Columna 48px -->
-                        <div class="flex items-end justify-center h-full pt-6">
-                            <button onclick="window.removeFromCart(${item.id})" 
-                                    class="w-10 h-10 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 border-2 border-transparent hover:border-red-200 transition-all transform hover:scale-110 active:scale-95" 
-                                    title="Eliminar del carrito">
-                                <i class="fas fa-trash-alt text-sm"></i>
-                            </button>
-                        </div>
+                        <!-- Eliminar -->
+                        <button onclick="window.removeFromCart(${item.id})" 
+                                class="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+                                title="Eliminar">
+                            <i class="fas fa-trash-alt text-sm"></i>
+                        </button>
                     </div>
                 </div>
             </div>
