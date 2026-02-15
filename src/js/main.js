@@ -194,19 +194,34 @@ const renderCart = () => {
         const unitPrice = item.price;
         const itemTotal = unitPrice * item.quantity;
         subtotal += itemTotal;
+
+        // Determinar color del badge de stock
+        let stockBadgeColor = 'bg-red-500'; // Sin stock por defecto
+        let stockTitle = 'Sin Stock';
+        if (item.maxStock !== undefined) {
+            if (item.maxStock > 5) {
+                stockBadgeColor = 'bg-green-500';
+                stockTitle = 'Stock Disponible';
+            } else if (item.maxStock >= 1) {
+                stockBadgeColor = 'bg-yellow-400';
+                stockTitle = 'Últimas Unidades';
+            }
+        }
+
         return `
             <div class="cart-item-card bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 hover:border-brand-blue/30 transition-all">
                 <div class="flex flex-col md:flex-row gap-6">
                     <!-- Product Image & Info -->
                     <div class="flex gap-4 md:gap-6 flex-1">
                         <div class="relative flex-shrink-0 group">
-                            <div class="w-24 h-24 md:w-32 md:h-32 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 p-2 group-hover:border-brand-blue/30 transition-all">
+                            <!-- Imagen más pequeña: equivalente a 3 líneas de texto (~4.5rem = 72px) -->
+                            <div class="w-16 h-16 md:w-20 md:h-20 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 p-1.5 group-hover:border-brand-blue/30 transition-all">
                                 <img src="${item.image}" 
                                      onerror="window.cartImgError(this, '${item.sku}')" 
                                      class="w-full h-full object-contain">
                             </div>
-                            <!-- Stock Badge (if available) -->
-                            ${item.maxStock ? `<div class="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg">${item.maxStock} disponibles</div>` : ''}
+                            <!-- Stock Badge: solo color, sin texto de cantidad -->
+                            ${item.maxStock !== undefined ? `<div class="absolute -top-1 -right-1 w-4 h-4 ${stockBadgeColor} rounded-full shadow-lg border-2 border-white" title="${stockTitle}"></div>` : ''}
                         </div>
                         <div class="flex-1 min-w-0">
                             <h3 class="font-black text-brand-dark text-lg md:text-xl leading-tight mb-2 hover:text-brand-blue transition-colors">${item.name}</h3>
