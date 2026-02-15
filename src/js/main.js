@@ -228,7 +228,6 @@ const renderCart = () => {
                                      onerror="window.cartImgError(this, '${item.sku}')" 
                                      class="max-w-full max-h-full object-contain">
                             </div>
-                            ${item.maxStock !== undefined ? `<div class="absolute -top-1 -left-1 w-3 h-3 ${stockBadgeColor} rounded-full border-2 border-white" title="${stockTitle}"></div>` : ''}
                         </div>
                         
                         <!-- Info -->
@@ -238,7 +237,7 @@ const renderCart = () => {
                                 <span class="bg-gray-50 text-brand-blue font-mono font-bold px-2 py-0.5 rounded border border-gray-100 text-xs">${item.sku}</span>
                                 ${item.brand ? `<span class="hidden md:inline text-gray-300">|</span><span class="font-medium text-xs">${item.brand}</span>` : ''}
                                 <span class="hidden md:inline text-gray-300">|</span>
-                                <span class="font-medium whitespace-nowrap text-xs md:text-sm">Unit: <span class="text-gray-900 font-bold">${formatPrice(unitPrice)}</span></span>
+                                <span class="font-medium whitespace-nowrap text-xs md:text-sm">Precio unitario: <span class="text-gray-900 font-bold">${formatPrice(unitPrice)}</span></span>
                             </div>
                         </div>
                     </div>
