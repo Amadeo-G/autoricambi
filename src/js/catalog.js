@@ -389,10 +389,70 @@ function renderTable(q = '') {
     if (els.count) els.count.textContent = `${filteredData.length} resultados encontrados`;
     if (els.status) els.status.classList.add('hidden');
 
-    // Ordenar alfabéticamente por código/SKU (ascendente)
+    // Ordenar por relevancia cuando hay búsqueda, alfabéticamente cuando no
     const sortedData = [...filteredData].sort((a, b) => {
         const codigoA = (a.codigo || '').toLowerCase();
         const codigoB = (b.codigo || '').toLowerCase();
+
+        // Si hay una búsqueda activa, ordenar por relevancia
+        if (q && q.trim()) {
+            const searchTerm = q.toLowerCase().trim();
+
+            // Calcular relevancia para cada código
+            const getRelevanceScore = (codigo) => {
+                // Puntuación base: 1000 (mayor = más relevante)
+                let score = 1000;
+
+                // 1. Coincidencia exacta completa (máxima prioridad)
+                if (codigo === searchTerm) {
+                    return 10000;
+                }
+
+                // 2. Comienza con el término de búsqueda (alta prioridad)
+                if (codigo.startsWith(searchTerm)) {
+                    // Mientras más corto el código, más relevante
+                    // Penalizar por cada carácter extra después de la búsqueda
+                    const extraChars = codigo.length - searchTerm.length;
+                    return 5000 - extraChars;
+                }
+
+                // 3. Contiene el término de búsqueda (prioridad media)
+                const indexOfSearch = codigo.indexOf(searchTerm);
+                if (indexOfSearch !== -1) {
+                    // Mientras más cerca del inicio, más relevante
+                    // Mientras más corto el código, más relevante
+                    return 2000 - indexOfSearch - (codigo.length * 0.1);
+                }
+
+                // 4. Coincidencia parcial de caracteres en orden
+                let matchCount = 0;
+                let lastIndex = -1;
+                for (let char of searchTerm) {
+                    const idx = codigo.indexOf(char, lastIndex + 1);
+                    if (idx > lastIndex) {
+                        matchCount++;
+                        lastIndex = idx;
+                    }
+                }
+
+                if (matchCount > 0) {
+                    return 1000 - (codigo.length - matchCount);
+                }
+
+                // 5. Sin coincidencia directa (menor prioridad)
+                return 0;
+            };
+
+            const scoreA = getRelevanceScore(codigoA);
+            const scoreB = getRelevanceScore(codigoB);
+
+            // Ordenar por score descendente (mayor score = más relevante)
+            if (scoreA !== scoreB) {
+                return scoreB - scoreA;
+            }
+        }
+
+        // Si no hay búsqueda o tienen el mismo score, ordenar alfabéticamente
         return codigoA.localeCompare(codigoB, 'es', { sensitivity: 'base' });
     });
 
