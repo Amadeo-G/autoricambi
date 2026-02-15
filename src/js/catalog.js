@@ -7,6 +7,32 @@ const R2_BASE_URL = 'https://pub-4a74b73ccfa3493ebcfc17e92136dcf4.r2.dev';
 // GLOBAL STATE
 let allData = [];
 let filteredData = [];
+let pendingInitialCode = null;
+let currentServerLastModified = null;
+
+// WEB WORKER INITIALIZATION
+const excelWorker = new Worker('/src/js/excel-worker.js');
+
+excelWorker.onmessage = async function (e) {
+    const { type, data, error } = e.data;
+
+    if (type === 'DONE') {
+        allData = data;
+        initFilters();
+        handleInitialCode(pendingInitialCode);
+    } else if (type === 'CACHE_DATA') {
+        // Cache the RAW data (rows) for future loads
+        if (currentServerLastModified) {
+            await dbHelper.set('rawData', data);
+            await dbHelper.set('lastModified', currentServerLastModified);
+        }
+    } else if (type === 'ERROR') {
+        console.error("Worker Error:", error);
+        if (els.tbody) {
+            els.tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Error al procesar datos: ${error}</td></tr>`;
+        }
+    }
+};
 
 // CACHE CONFIGURATION
 const CACHE_DB_NAME = 'AutoricambiCatalog';
@@ -85,15 +111,6 @@ window.addEventListener('popstate', (event) => {
 });
 
 // 1. DATA LOADING & PARSING
-// Helper to parse Argentinian price: "1.678,73" -> 1678.73
-const parsePrice = (val) => {
-    if (!val) return 0;
-    let s = val.toString().trim();
-    s = s.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
-    let num = parseFloat(s) || 0;
-    // Mantener decimales originales
-    return num;
-};
 
 // Helper to format Argentinian price: 1678.73 -> "1.678,73" (Con 2 decimales)
 const formatPrice = (val) => {
@@ -104,42 +121,52 @@ const formatPrice = (val) => {
 };
 
 async function fetchData(initialCode = null) {
+    pendingInitialCode = initialCode;
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const userDiscount = (user.discount !== undefined && user.discount !== null) ? parseFloat(user.discount) : 42;
+
     try {
         // 1. Check if we have a cached version and its timestamp
         const cachedLastModified = await dbHelper.get('lastModified');
-        const cachedData = await dbHelper.get('rawData');
+        const cachedData = await dbHelper.get('rawData'); // Raw JSON rows
 
-        // 2. Perform a HEAD request to check the server version without downloading the whole file
-        let serverLastModified = null;
+        // 2. Perform a HEAD request to check the server version
         try {
             const headResponse = await fetch(EXCEL_FILE_PATH, { method: 'HEAD' });
-            serverLastModified = headResponse.headers.get('Last-Modified');
+            currentServerLastModified = headResponse.headers.get('Last-Modified');
         } catch (e) {
             console.warn("Could not perform HEAD request for cache validation:", e);
         }
 
-        if (cachedData && serverLastModified && cachedLastModified === serverLastModified) {
-            console.log("🚀 Loading catalog from IndexedDB Cache...");
-            processRawData(cachedData, initialCode);
+        if (cachedData && currentServerLastModified && cachedLastModified === currentServerLastModified) {
+            console.log("🚀 Loading catalog from IndexedDB Cache (Background Process)...");
+            // Process cached JSON in background
+            if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-circle-notch fa-spin mr-2"></i>Procesando datos...</td></tr>`;
+
+            excelWorker.postMessage({
+                type: 'PROCESS_JSON',
+                data: cachedData,
+                userDiscount: userDiscount
+            });
             return;
         }
 
-        // 3. If cache is invalid or missing, fetch the whole file
+        // 3. If cache is invalid or missing, fetch the whole Excel file
         console.log("📥 Cache miss or outdated. Fetching Filtros.xlsx...");
+        if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-cloud-download-alt mr-2"></i>Descargando catálogo actualizado...</td></tr>`;
+
         const response = await fetch(`${EXCEL_FILE_PATH}?t=${Date.now()}`);
         if (!response.ok) throw new Error("No se pudo cargar el catálogo.");
         const arrayBuffer = await response.arrayBuffer();
 
-        // Parse the Excel file
-        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-        const targetSheetName = workbook.SheetNames.find(n => n.includes("Hoja 1") || n.includes("Sheet1")) || workbook.SheetNames[0];
-        const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[targetSheetName], { header: 1 });
+        if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-cog fa-spin mr-2"></i>Procesando base de datos...</td></tr>`;
 
-        // Store in Cache
-        await dbHelper.set('rawData', rawData);
-        await dbHelper.set('lastModified', serverLastModified);
-
-        processRawData(rawData, initialCode);
+        // Send ArrayBuffer to worker for parsing and processing
+        excelWorker.postMessage({
+            type: 'PARSE_EXCEL',
+            data: arrayBuffer,
+            userDiscount: userDiscount
+        });
 
     } catch (error) {
         console.error("Fetch Error:", error);
@@ -147,46 +174,16 @@ async function fetchData(initialCode = null) {
         const offlineData = await dbHelper.get('rawData');
         if (offlineData) {
             console.warn("⚠️ Using offline cache due to fetch error.");
-            processRawData(offlineData, initialCode);
+            document.title = "[OFFLINE] " + document.title;
+            excelWorker.postMessage({
+                type: 'PROCESS_JSON',
+                data: offlineData,
+                userDiscount: userDiscount
+            });
         } else if (els.tbody) {
             els.tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Error: ${error.message}</td></tr>`;
         }
     }
-}
-
-// Renamed and refactored from parseExcel to processRawData
-function processRawData(dataRows, initialCode = null) {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const userDiscount = (user.discount !== undefined && user.discount !== null) ? parseFloat(user.discount) : 42;
-    const multiplier = (100 - userDiscount) / 100;
-
-    allData = dataRows.slice(1).map((row) => {
-        if (!row || row.length < 3) return null;
-        const pvVal = parsePrice(row[2]);
-        const costVal = pvVal * multiplier;
-
-        return {
-            codigo: (row[0] || '').toString().trim(),
-            descripcion: (row[1] || '').toString().trim(),
-            costo: costVal,
-            precio: formatPrice(pvVal),
-            priceRaw: pvVal,
-            subrubro: (row[8] || '').toString().trim(),
-            marca: (row[13] || '').toString().trim(),
-            rubro: (row[14] || '').toString().trim(),
-            caracteristicas: '',
-            equivalentes: '',
-            stock: (() => {
-                let s = (row[11] || 0).toString().trim();
-                s = s.split(/[.,]/)[0];
-                const cleanValue = s.replace(/[^\d-]/g, '');
-                return parseInt(cleanValue) || 0;
-            })()
-        };
-    }).filter(item => item && item.codigo && item.rubro);
-
-    initFilters();
-    handleInitialCode(initialCode);
 }
 
 function handleInitialCode(initialCode) {
