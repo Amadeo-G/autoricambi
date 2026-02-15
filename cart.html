@@ -119,38 +119,20 @@
 
                             <!-- Content -->
                             <div class="p-6 space-y-6">
-                                <!-- Subtotal -->
-                                <div class="flex justify-between items-center pb-4 border-b border-gray-100">
-                                    <span class="text-gray-600 font-medium">Subtotal (s/IVA)</span>
-                                    <span id="cart-subtotal" class="font-mono font-bold text-gray-800 text-lg">$
-                                        0,00</span>
-                                </div>
-
-                                <!-- IVA Info -->
-                                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                                    <div class="flex items-start gap-3">
-                                        <i class="fas fa-info-circle text-brand-blue mt-0.5"></i>
-                                        <div class="flex-1">
-                                            <p class="text-xs font-bold text-brand-blue uppercase tracking-wider mb-1">
-                                                IVA
-                                                Incluido</p>
-                                            <p class="text-xs text-gray-600">El precio final incluye el 21% de IVA</p>
-                                        </div>
+                                <!-- Totals Grid -->
+                                <div class="grid grid-cols-2 gap-4 pb-4 border-b border-gray-100">
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Subtotal
+                                            (s/IVA)</span>
+                                        <span id="cart-subtotal" class="text-2xl font-black text-brand-blue">$
+                                            0,00</span>
                                     </div>
-                                </div>
-
-                                <!-- Total -->
-                                <div
-                                    class="bg-gradient-to-br from-gray-50 to-blue-50/50 rounded-xl p-6 border border-gray-200">
-                                    <div class="flex justify-between items-end">
-                                        <div>
-                                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">
-                                                Total
-                                                Final</p>
-                                            <p class="text-2xl md:text-3xl font-black text-brand-blue leading-none"
-                                                id="cart-total">$ 0,00</p>
-                                        </div>
-                                        <i class="fas fa-check-circle text-green-500 text-3xl opacity-50"></i>
+                                    <div class="flex flex-col text-right">
+                                        <span
+                                            class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Total
+                                            (c/IVA)</span>
+                                        <span id="cart-total" class="text-2xl font-black text-brand-blue">$ 0,00</span>
                                     </div>
                                 </div>
 
