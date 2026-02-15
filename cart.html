@@ -149,9 +149,26 @@
 
                                 <!-- Confirm Button -->
                                 <div class="flex justify-center w-full">
+                                    <style>
+                                        #btn-system {
+                                            background-color: #1f2937;
+                                            color: #ffffff;
+                                            min-width: 200px;
+                                            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                                        }
+
+                                        #btn-system:hover {
+                                            background-color: #111827 !important;
+                                            transform: translateY(-2px);
+                                            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                                        }
+
+                                        #btn-system:active {
+                                            transform: scale(0.98);
+                                        }
+                                    </style>
                                     <button onclick="window.sendToSystem()" id="btn-system"
-                                        style="background-color: #1f2937; color: #ffffff; min-width: 200px;"
-                                        class="group font-bold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform active:scale-[0.98] flex items-center justify-center gap-3 text-sm uppercase tracking-wide">
+                                        class="group font-bold py-3 px-8 rounded-lg shadow-md flex items-center justify-center gap-3 text-sm uppercase tracking-wide">
                                         <i
                                             class="fas fa-paper-plane transition-transform duration-500 group-hover:-translate-y-1 group-hover:translate-x-1"></i>
                                         <span>Confirmar Pedido</span>
