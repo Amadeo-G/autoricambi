@@ -241,22 +241,24 @@ const renderCart = () => {
 
                     <!-- Quantity & Actions -->
                     <div class="flex md:flex-col items-center md:items-end justify-between md:justify-center gap-4 md:gap-6 border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6">
-                        <!-- Quantity Control -->
-                        <div class="flex flex-col items-center gap-2">
-                            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Cantidad</span>
-                            <div class="inline-flex items-center bg-gray-50 rounded-xl p-1.5 border-2 border-gray-200 hover:border-brand-blue transition-all shadow-sm">
+                        <!-- Quantity Control - Diseño Premium -->
+                        <div class="flex flex-col items-center gap-3">
+                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cantidad</span>
+                            <div class="inline-flex items-center bg-white rounded-lg border-2 border-gray-200 hover:border-brand-blue transition-all shadow-sm hover:shadow-md">
                                 <button onclick="window.updateQty(${item.id}, -1)" 
-                                        class="w-9 h-9 rounded-lg hover:bg-white text-gray-400 hover:text-brand-blue transition-all flex items-center justify-center active:scale-95 font-bold">
-                                    <i class="fas fa-minus"></i>
+                                        class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-l-md group">
+                                    <i class="fas fa-minus text-sm group-hover:scale-110 transition-transform"></i>
                                 </button>
-                                <input type="number" 
-                                       value="${item.quantity}" 
-                                       min="1" 
-                                       onchange="window.setQty(${item.id}, this.value)"
-                                       class="w-14 text-center font-black bg-transparent border-0 focus:ring-0 outline-none no-spin text-brand-dark text-xl">
+                                <div class="relative">
+                                    <input type="number" 
+                                           value="${item.quantity}" 
+                                           min="1" 
+                                           onchange="window.setQty(${item.id}, this.value)"
+                                           class="w-16 h-10 text-center font-black bg-gray-50 border-0 focus:ring-0 focus:bg-blue-50 outline-none no-spin text-brand-dark text-xl transition-colors">
+                                </div>
                                 <button onclick="window.updateQty(${item.id}, 1)" 
-                                        class="w-9 h-9 rounded-lg hover:bg-white text-gray-400 hover:text-brand-blue transition-all flex items-center justify-center active:scale-95 font-bold">
-                                    <i class="fas fa-plus"></i>
+                                        class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-r-md group">
+                                    <i class="fas fa-plus text-sm group-hover:scale-110 transition-transform"></i>
                                 </button>
                             </div>
                         </div>
