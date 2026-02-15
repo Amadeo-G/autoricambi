@@ -167,17 +167,23 @@
                                             transform: scale(0.98);
                                         }
 
-                                        /* Icon Animation */
+                                        /* Icon Animation - Fly Out */
+                                        #btn-system {
+                                            overflow: visible !important;
+                                            position: relative;
+                                        }
+
                                         #btn-system i {
-                                            transition: transform 0.3s ease;
+                                            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
                                         }
 
                                         #btn-system:hover i {
-                                            transform: translate(4px, -4px);
+                                            transform: translate(60px, -60px) rotate(15deg);
+                                            opacity: 0;
                                         }
                                     </style>
                                     <button onclick="window.sendToSystem()" id="btn-system"
-                                        class="group font-bold py-3 px-8 rounded-lg shadow-md flex items-center justify-center gap-3 text-sm uppercase tracking-wide">
+                                        class="group font-bold py-3 px-8 rounded-lg shadow-md flex items-center justify-center gap-3 text-sm uppercase tracking-wide overflow-visible">
                                         <i class="fas fa-paper-plane"></i>
                                         <span>Confirmar Pedido</span>
                                     </button>
