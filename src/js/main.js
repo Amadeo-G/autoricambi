@@ -254,7 +254,7 @@ const renderCart = () => {
                                            value="${item.quantity}" 
                                            min="1" 
                                            onchange="window.setQty(${item.id}, this.value)"
-                                           class="w-16 h-10 text-center font-black bg-gray-50 border-0 focus:ring-0 focus:bg-blue-50 outline-none no-spin text-brand-dark text-xl transition-colors">
+                                           class="w-20 h-10 text-center font-black bg-gray-50 border-0 focus:ring-0 focus:bg-blue-50 outline-none no-spin text-brand-dark text-xl transition-colors">
                                 </div>
                                 <button onclick="window.updateQty(${item.id}, 1)" 
                                         class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-r-md group">
