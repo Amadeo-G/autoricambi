@@ -195,27 +195,27 @@ const renderCart = () => {
         const itemTotal = unitPrice * item.quantity;
         subtotal += itemTotal;
         return `
-            <tr class="border-b border-gray-50 last:border-0 hover:bg-slate-50/80 transition-all duration-300 group">
-                <td class="p-6">
-                    <div class="flex items-start space-x-5">
+            <tr class="border-b border-gray-100 last:border-0 hover:bg-slate-50/50 transition-all duration-300 group">
+                <td class="p-6" data-label="Producto">
+                    <div class="flex items-center space-x-6">
                         <div class="relative flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
                             <img src="${item.image}" 
                                  onerror="window.cartImgError(this, '${item.sku}')" 
-                                 class="w-24 h-24 object-cover rounded-xl shadow-sm border border-gray-100 bg-white">
+                                 class="w-28 h-28 object-contain rounded-2xl shadow-sm border border-gray-100 bg-white p-1">
                         </div>
-                        <div class="pt-1">
-                            <div class="font-extrabold text-brand-dark text-lg leading-tight mb-2 group-hover:text-brand-blue transition-colors">${item.name}</div>
-                            <div class="inline-flex items-center space-x-2">
-                                <span class="px-2.5 py-1 bg-gray-100 text-gray-500 font-mono text-[10px] rounded-md uppercase tracking-wider font-bold border border-gray-200">${item.sku}</span>
+                        <div class="flex-grow min-w-0">
+                            <div class="font-black text-brand-dark text-lg leading-tight mb-1.5 group-hover:text-brand-blue transition-colors truncate" title="${item.name}">${item.name}</div>
+                            <div class="inline-flex items-center">
+                                <span class="px-2.5 py-1 bg-gray-50 text-gray-500 font-mono text-[10px] rounded-md uppercase tracking-wider font-bold border border-gray-200">${item.sku}</span>
                             </div>
                         </div>
                     </div>
                 </td>
-                <td class="p-6 text-right align-middle">
-                    <div class="text-gray-400 font-medium text-sm">Unitario</div>
+                <td class="p-6 text-right align-middle" data-label="Precio">
+                    <div class="text-gray-400 font-medium text-[10px] uppercase tracking-widest mb-1 md:hidden">Unitario</div>
                     <div class="text-gray-700 font-bold">${formatPrice(unitPrice)}</div>
                 </td>
-                <td class="p-6 align-middle">
+                <td class="p-6 align-middle" data-label="Cantidad">
                     <div class="flex items-center justify-center">
                         <div class="inline-flex items-center bg-white rounded-lg p-1 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                              <button onclick="window.updateQty(${item.id}, -1)" class="w-8 h-8 rounded-md hover:bg-gray-50 text-gray-400 hover:text-brand-blue transition-colors flex items-center justify-center active:scale-95"><i class="fas fa-minus text-xs"></i></button>
@@ -228,11 +228,12 @@ const renderCart = () => {
                         </div>
                     </div>
                 </td>
-                <td class="p-6 text-right align-middle">
+                <td class="p-6 text-right align-middle" data-label="Subtotal">
+                    <div class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 md:hidden">Total Ítem</div>
                     <div class="text-2xl font-black text-brand-dark tracking-tight">${formatPrice(itemTotal)}</div>
                 </td>
-                <td class="p-6 text-center align-middle">
-                    <button onclick="window.removeFromCart(${item.id})" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100 transform hover:scale-110" title="Eliminar del carrito">
+                <td class="p-6 text-center align-middle" data-label="Acción">
+                    <button onclick="window.removeFromCart(${item.id})" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-100 md:opacity-0 group-hover:opacity-100 transform hover:scale-110" title="Eliminar del carrito">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </td>
@@ -249,7 +250,7 @@ const renderCart = () => {
 window.cartImgError = (img, sku) => {
     const cleanSku = sku ? sku.toLowerCase().trim() : '';
     if (!cleanSku) {
-        img.src = 'https://placehold.co/100?text=S/D';
+        img.src = 'https://placehold.co/200?text=S/D';
         img.onerror = null;
         return;
     }
@@ -286,7 +287,7 @@ window.cartImgError = (img, sku) => {
     }
 
     // Fallback final
-    img.src = 'https://placehold.co/100?text=S/D';
+    img.src = 'https://placehold.co/200?text=S/D';
     img.onerror = null;
 };
 
@@ -398,7 +399,8 @@ window.sendToSystem = async () => {
                 cantidad: i.quantity || i.qty || 1,
                 precio_unitario: formatPrice(unitPrice),
                 subtotal: formatPrice(itemSubtotal),
-                total: formatPrice(itemSubtotal * 1.21)
+                total: formatPrice(itemSubtotal * 1.21),
+                imagen: i.image || ''
             };
         });
 
@@ -515,36 +517,54 @@ window.renderOrderHistory = () => {
     let html = '';
     history.forEach((order, idx) => {
         html += `
-        <div class="bg-white border border-gray-200 rounded-xl mb-6 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <div class="bg-gray-50/50 px-6 py-4 flex justify-between items-center border-b border-gray-100">
-                <div class="flex items-center space-x-4">
-                    <div class="bg-brand-blue/10 p-2 rounded-lg text-brand-blue">
-                        <i class="fas fa-calendar-alt"></i>
+        <div class="bg-white border border-gray-200 rounded-2xl mb-8 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+            <div class="bg-gray-50/80 px-8 py-5 flex justify-between items-center border-b border-gray-100">
+                <div class="flex items-center space-x-5">
+                    <div class="bg-brand-blue/10 p-3 rounded-xl text-brand-blue shadow-inner">
+                        <i class="fas fa-calendar-check text-xl"></i>
                     </div>
                     <div>
-                        <div class="font-bold text-gray-800">${order.date}</div>
-                        <div class="text-xs font-semibold text-brand-nav uppercase tracking-wider">${order.items.length} producto(s)</div>
+                        <div class="text-[10px] font-black text-brand-blue uppercase tracking-widest mb-0.5">Fecha del Pedido</div>
+                        <div class="font-bold text-gray-900 text-lg">${order.date}</div>
                     </div>
                 </div>
-                <button onclick="window.deleteOrder(${idx})" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all" title="Eliminar pedido">
-                    <i class="fas fa-trash-alt text-lg"></i>
-                </button>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right hidden sm:block">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Ítems</span>
+                        <span class="font-black text-gray-600">${order.items.length}</span>
+                    </div>
+                    <button onclick="window.deleteOrder(${idx})" class="w-11 h-11 rounded-full flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all border border-transparent hover:border-red-100" title="Eliminar del historial">
+                        <i class="fas fa-trash-alt text-lg"></i>
+                    </button>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="text-[10px] text-gray-400 uppercase bg-gray-50/30 border-b border-gray-100">
                         <tr>
-                            <th class="px-6 py-3 text-left font-bold tracking-widest">SKU</th>
-                            <th class="px-6 py-3 text-left font-bold tracking-widest">Descripción</th>
-                            <th class="px-6 py-3 text-center font-bold tracking-widest">Cantidad</th>
+                            <th class="px-8 py-4 text-left font-black tracking-widest">Producto</th>
+                            <th class="px-8 py-4 text-center font-black tracking-widest" width="100">Cantidad</th>
+                            <th class="px-8 py-4 text-right font-black tracking-widest" width="150">Precio</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         ${order.items.map(item => `
-                        <tr class="hover:bg-gray-50/50 transition-colors">
-                            <td class="px-6 py-3 font-mono text-xs text-brand-blue font-semibold">${item.codigo}</td>
-                            <td class="px-6 py-3 text-gray-700">${item.descripcion || '-'}</td>
-                            <td class="px-6 py-3 text-center font-bold text-gray-600">${item.cantidad}</td>
+                        <tr class="hover:bg-gray-50/30 transition-colors">
+                            <td class="px-8 py-4" data-label="Producto">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 flex-shrink-0 bg-white border border-gray-100 rounded-lg overflow-hidden p-0.5">
+                                        <img src="${item.imagen || 'https://placehold.co/100?text=S/D'}" 
+                                             onerror="window.cartImgError(this, '${item.codigo}')" 
+                                             class="w-full h-full object-contain">
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-gray-800 leading-tight">${item.descripcion}</div>
+                                        <div class="text-[10px] font-mono font-bold text-brand-blue uppercase tracking-wider mt-0.5">${item.codigo}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-8 py-4 text-center font-black text-gray-600 bg-gray-50/20" data-label="Cantidad">${item.cantidad}</td>
+                            <td class="px-8 py-4 text-right font-bold text-gray-800 bg-gray-50/20" data-label="Precio">${item.precio_unitario || '-'}</td>
                         </tr>`).join('')}
                     </tbody>
                 </table>
