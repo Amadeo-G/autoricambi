@@ -130,6 +130,22 @@ async function fetchData(initialCode = null) {
         const cachedLastModified = await dbHelper.get('lastModified');
         const cachedData = await dbHelper.get('rawData'); // Raw JSON rows
 
+        // SESSION CACHE OPTIMIZATION:
+        // If we have verified the data *during this session*, we skip the network HEAD check entirely.
+        const isSessionSynced = sessionStorage.getItem('catalog_synced');
+
+        if (isSessionSynced && cachedData) {
+            console.log("⚡ Session synced. Loading immediately from local cache (No Server Check).");
+            if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-circle-notch fa-spin mr-2"></i>Recuperando datos...</td></tr>`;
+
+            excelWorker.postMessage({
+                type: 'PROCESS_JSON',
+                data: cachedData,
+                userDiscount: userDiscount
+            });
+            return;
+        }
+
         // 2. Perform a HEAD request to check the server version
         try {
             const headResponse = await fetch(EXCEL_FILE_PATH, { method: 'HEAD' });
@@ -139,8 +155,9 @@ async function fetchData(initialCode = null) {
         }
 
         if (cachedData && currentServerLastModified && cachedLastModified === currentServerLastModified) {
-            console.log("🚀 Loading catalog from IndexedDB Cache (Background Process)...");
-            // Process cached JSON in background
+            console.log("🚀 Server verified. Loading from IndexedDB Cache (Background Process)...");
+            sessionStorage.setItem('catalog_synced', 'true'); // Mark as synced for this session
+
             if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-circle-notch fa-spin mr-2"></i>Procesando datos...</td></tr>`;
 
             excelWorker.postMessage({
@@ -158,6 +175,9 @@ async function fetchData(initialCode = null) {
         const response = await fetch(`${EXCEL_FILE_PATH}?t=${Date.now()}`);
         if (!response.ok) throw new Error("No se pudo cargar el catálogo.");
         const arrayBuffer = await response.arrayBuffer();
+
+        // Mark as synced after successful download
+        sessionStorage.setItem('catalog_synced', 'true');
 
         if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-cog fa-spin mr-2"></i>Procesando base de datos...</td></tr>`;
 
