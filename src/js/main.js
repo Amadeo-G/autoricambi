@@ -209,42 +209,40 @@ const renderCart = () => {
         }
 
         return `
-            <div class="cart-item-card bg-white rounded-xl shadow-sm border border-gray-100 p-3 hover:border-brand-blue/30 transition-all group">
-                <div class="flex flex-col md:flex-row items-center gap-4">
+            <div class="cart-item-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:border-brand-blue/30 transition-all group relative overflow-hidden">
+                <div class="flex flex-col md:flex-row items-center gap-6">
                     
                     <!-- 1. Imagen (Compacta) -->
                     <div class="relative flex-shrink-0">
-                        <div class="w-16 h-16 bg-white rounded-lg border border-gray-100 p-1 flex items-center justify-center overflow-hidden">
+                        <div class="w-20 h-20 bg-white rounded-lg border border-gray-100 p-2 flex items-center justify-center overflow-hidden">
                             <img src="${item.image}" 
                                  onerror="window.cartImgError(this, '${item.sku}')" 
-                                 class="max-w-full max-h-full object-contain">
+                                 class="max-w-full max-h-full object-contain transform group-hover:scale-110 transition-transform duration-500">
                         </div>
                         ${item.maxStock !== undefined ? `<div class="absolute -top-1 -left-1 w-3 h-3 ${stockBadgeColor} rounded-full border-2 border-white" title="${stockTitle}"></div>` : ''}
                     </div>
 
-                    <!-- 2. Info del Producto (Flexible) -->
-                    <div class="flex-1 text-center md:text-left w-full md:w-auto">
-                        <div class="flex flex-col">
-                            <h3 class="font-bold text-brand-dark text-sm md:text-base leading-tight mb-1 line-clamp-2" title="${item.name}">${item.name}</h3>
-                            <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 text-xs text-gray-500 mb-1">
-                                <span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-mono font-bold">${item.sku}</span>
-                                ${item.brand ? `<span>${item.brand}</span>` : ''}
-                            </div>
-                            <div class="flex items-center justify-center md:justify-start gap-1">
-                                <span class="text-xs text-gray-400">Unit:</span>
-                                <span class="text-xs font-bold text-gray-700">${formatPrice(unitPrice)}</span>
-                            </div>
+                    <!-- 2. Info del Producto (Flexible, Izquierda) -->
+                    <div class="flex-1 w-full text-center md:text-left">
+                        <h3 class="font-bold text-brand-dark text-base md:text-lg leading-tight mb-1.5">${item.name}</h3>
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 text-sm text-gray-500 mb-1.5">
+                            <span class="bg-gray-50 text-brand-blue font-mono font-bold px-2 py-0.5 rounded border border-gray-100 text-xs">${item.sku}</span>
+                            ${item.brand ? `<span class="font-medium">${item.brand}</span>` : ''}
+                        </div>
+                        <div class="text-sm font-medium text-gray-400">
+                             Unitario: <span class="text-gray-700 font-bold ml-1">${formatPrice(unitPrice)}</span>
                         </div>
                     </div>
 
-                    <!-- 3. Controles (Horizontal en Desktop) -->
-                    <div class="flex items-center justify-between w-full md:w-auto gap-6 border-t md:border-t-0 border-gray-100 pt-3 md:pt-0 mt-2 md:mt-0">
+                    <!-- 3. Controles (Derecha, Organizados) -->
+                    <div class="flex items-center justify-between w-full md:w-auto gap-8 pt-4 md:pt-0 border-t md:border-t-0 border-gray-50">
                         
-                        <!-- Cantidad -->
-                        <div class="flex flex-col items-center">
-                            <div class="flex items-center bg-gray-50 rounded-lg border border-gray-200">
+                        <!-- Columna Cantidad -->
+                        <div class="flex flex-col items-center md:items-end gap-1">
+                            <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Cantidad</span>
+                            <div class="flex items-center bg-white rounded-lg border-2 border-gray-100 shadow-sm">
                                 <button onclick="window.updateQty(${item.id}, -1)" 
-                                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-white rounded-l-lg transition-colors">
+                                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-gray-50 rounded-l-lg transition-colors border-r border-gray-100">
                                     <i class="fas fa-minus text-[10px]"></i>
                                 </button>
                                 <input type="number" 
@@ -253,22 +251,23 @@ const renderCart = () => {
                                        onchange="window.setQty(${item.id}, this.value)"
                                        class="w-12 h-8 text-center text-sm font-bold bg-transparent border-none focus:ring-0 p-0 text-gray-800 no-spin">
                                 <button onclick="window.updateQty(${item.id}, 1)" 
-                                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-white rounded-r-lg transition-colors">
+                                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-gray-50 rounded-r-lg transition-colors border-l border-gray-100">
                                     <i class="fas fa-plus text-[10px]"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Subtotal -->
-                        <div class="text-right" style="min-width: 90px;">
-                            <div class="font-bold text-brand-blue text-base">${formatPrice(itemTotal)}</div>
+                        <!-- Columna Subtotal -->
+                        <div class="flex flex-col items-end gap-1 min-w-[100px]">
+                            <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Subtotal</span>
+                            <div class="font-black text-brand-blue text-lg">${formatPrice(itemTotal)}</div>
                         </div>
 
-                        <!-- Eliminar -->
+                        <!-- Botón Eliminar -->
                         <button onclick="window.removeFromCart(${item.id})" 
-                                class="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
+                                class="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100 group-hover:bg-gray-50"
                                 title="Eliminar">
-                            <i class="fas fa-trash-alt text-sm"></i>
+                            <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
                 </div>
