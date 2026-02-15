@@ -394,34 +394,25 @@ function renderTable(q = '') {
         const codigoA = (a.codigo || '').toLowerCase();
         const codigoB = (b.codigo || '').toLowerCase();
 
-        // Si hay una búsqueda activa, ordenar por relevancia
+        // Si hay una búsqueda activa, ordenar por relevancia + alfabético
         if (q && q.trim()) {
             const searchTerm = q.toLowerCase().trim();
 
-            // Calcular relevancia para cada código
-            const getRelevanceScore = (codigo) => {
-                // Puntuación base: 1000 (mayor = más relevante)
-                let score = 1000;
-
-                // 1. Coincidencia exacta completa (máxima prioridad)
+            // Calcular tipo de coincidencia (no score numérico, sino categoría)
+            const getMatchType = (codigo) => {
+                // 1. Coincidencia exacta completa
                 if (codigo === searchTerm) {
-                    return 10000;
+                    return 4;
                 }
 
-                // 2. Comienza con el término de búsqueda (alta prioridad)
+                // 2. Comienza con el término de búsqueda
                 if (codigo.startsWith(searchTerm)) {
-                    // Mientras más corto el código, más relevante
-                    // Penalizar por cada carácter extra después de la búsqueda
-                    const extraChars = codigo.length - searchTerm.length;
-                    return 5000 - extraChars;
+                    return 3;
                 }
 
-                // 3. Contiene el término de búsqueda (prioridad media)
-                const indexOfSearch = codigo.indexOf(searchTerm);
-                if (indexOfSearch !== -1) {
-                    // Mientras más cerca del inicio, más relevante
-                    // Mientras más corto el código, más relevante
-                    return 2000 - indexOfSearch - (codigo.length * 0.1);
+                // 3. Contiene el término de búsqueda
+                if (codigo.indexOf(searchTerm) !== -1) {
+                    return 2;
                 }
 
                 // 4. Coincidencia parcial de caracteres en orden
@@ -436,28 +427,34 @@ function renderTable(q = '') {
                 }
 
                 if (matchCount > 0) {
-                    return 1000 - (codigo.length - matchCount);
+                    return 1;
                 }
 
-                // 5. Sin coincidencia directa (menor prioridad)
+                // 5. Sin coincidencia
                 return 0;
             };
 
-            const scoreA = getRelevanceScore(codigoA);
-            const scoreB = getRelevanceScore(codigoB);
+            const typeA = getMatchType(codigoA);
+            const typeB = getMatchType(codigoB);
 
-            // Si tienen scores diferentes, ordenar por score
-            if (scoreA !== scoreB) {
-                return scoreB - scoreA;
+            // Si tienen diferente tipo de coincidencia, ordenar por tipo
+            if (typeA !== typeB) {
+                return typeB - typeA;
             }
 
-            // Si tienen el mismo score, ordenar alfabéticamente
-            // Esto mantiene juntos códigos como Bi372, Bi372 10, Bi372 20, etc.
-            return codigoA.localeCompare(codigoB, 'es', { sensitivity: 'base' });
+            // Si tienen el mismo tipo de coincidencia, ordenar alfabéticamente
+            // Esto mantiene Bi372, Bi372 10, Bi372 20 antes que Bi810
+            return codigoA.localeCompare(codigoB, 'es', {
+                sensitivity: 'base',
+                numeric: true  // Esto maneja números correctamente (Bi372 10 < Bi372 20)
+            });
         }
 
         // Si no hay búsqueda, ordenar alfabéticamente
-        return codigoA.localeCompare(codigoB, 'es', { sensitivity: 'base' });
+        return codigoA.localeCompare(codigoB, 'es', {
+            sensitivity: 'base',
+            numeric: true
+        });
     });
 
     const fragment = document.createDocumentFragment();
