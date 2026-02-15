@@ -244,7 +244,7 @@ const renderCart = () => {
                     <div class="flex items-center gap-3 md:gap-4 ml-auto">
                         <!-- Quantity Control -->
                         <div class="flex flex-col items-center gap-2">
-                            <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Cantidad</span>
+                            <span class="text-xs text-gray-500 font-semibold">Cantidad</span>
                             <div class="flex flex-row items-center bg-white rounded-lg border-2 border-gray-200 hover:border-brand-blue transition-all shadow-sm hover:shadow-md">
                                 <button onclick="window.updateQty(${item.id}, -1)" 
                                         class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-l-md group">
@@ -254,7 +254,7 @@ const renderCart = () => {
                                        value="${item.quantity}" 
                                        min="1" 
                                        onchange="window.setQty(${item.id}, this.value)"
-                                       class="w-16 h-9 text-center font-black bg-gray-50 border-0 focus:ring-0 focus:bg-blue-50 outline-none no-spin text-brand-dark text-lg transition-colors">
+                                       class="w-16 h-9 text-center font-bold bg-gray-50 border-0 focus:ring-0 focus:bg-blue-50 outline-none no-spin text-gray-800 text-sm md:text-base transition-colors">
                                 <button onclick="window.updateQty(${item.id}, 1)" 
                                         class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-r-md group">
                                     <i class="fas fa-plus text-xs group-hover:scale-110 transition-transform"></i>
@@ -264,8 +264,8 @@ const renderCart = () => {
 
                         <!-- Subtotal -->
                         <div class="flex flex-col items-end gap-2">
-                            <span class="text-[9px] font-black text-gray-400 uppercase tracking-widest whitespace-nowrap">Subtotal</span>
-                            <span class="text-xl md:text-2xl font-black text-brand-blue tabular-nums whitespace-nowrap">${formatPrice(itemTotal)}</span>
+                            <span class="text-xs text-gray-500 font-semibold">Subtotal</span>
+                            <span class="text-sm md:text-base font-bold text-brand-blue tabular-nums whitespace-nowrap">${formatPrice(itemTotal)}</span>
                         </div>
 
                         <!-- Remove Button -->
