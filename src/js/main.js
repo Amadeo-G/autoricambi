@@ -244,18 +244,16 @@ const renderCart = () => {
                         <!-- Quantity Control - Diseño Premium -->
                         <div class="flex flex-col items-center gap-3">
                             <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cantidad</span>
-                            <div class="inline-flex items-center bg-white rounded-lg border-2 border-gray-200 hover:border-brand-blue transition-all shadow-sm hover:shadow-md">
+                            <div class="flex flex-row items-center bg-white rounded-lg border-2 border-gray-200 hover:border-brand-blue transition-all shadow-sm hover:shadow-md">
                                 <button onclick="window.updateQty(${item.id}, -1)" 
                                         class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-l-md group">
                                     <i class="fas fa-minus text-sm group-hover:scale-110 transition-transform"></i>
                                 </button>
-                                <div class="relative">
-                                    <input type="number" 
-                                           value="${item.quantity}" 
-                                           min="1" 
-                                           onchange="window.setQty(${item.id}, this.value)"
-                                           class="w-20 h-10 text-center font-black bg-gray-50 border-0 focus:ring-0 focus:bg-blue-50 outline-none no-spin text-brand-dark text-xl transition-colors">
-                                </div>
+                                <input type="number" 
+                                       value="${item.quantity}" 
+                                       min="1" 
+                                       onchange="window.setQty(${item.id}, this.value)"
+                                       class="w-20 h-10 text-center font-black bg-gray-50 border-0 focus:ring-0 focus:bg-blue-50 outline-none no-spin text-brand-dark text-xl transition-colors">
                                 <button onclick="window.updateQty(${item.id}, 1)" 
                                         class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-r-md group">
                                     <i class="fas fa-plus text-sm group-hover:scale-110 transition-transform"></i>
