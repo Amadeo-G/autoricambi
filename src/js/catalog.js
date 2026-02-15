@@ -446,13 +446,17 @@ function renderTable(q = '') {
             const scoreA = getRelevanceScore(codigoA);
             const scoreB = getRelevanceScore(codigoB);
 
-            // Ordenar por score descendente (mayor score = más relevante)
+            // Si tienen scores diferentes, ordenar por score
             if (scoreA !== scoreB) {
                 return scoreB - scoreA;
             }
+
+            // Si tienen el mismo score, ordenar alfabéticamente
+            // Esto mantiene juntos códigos como Bi372, Bi372 10, Bi372 20, etc.
+            return codigoA.localeCompare(codigoB, 'es', { sensitivity: 'base' });
         }
 
-        // Si no hay búsqueda o tienen el mismo score, ordenar alfabéticamente
+        // Si no hay búsqueda, ordenar alfabéticamente
         return codigoA.localeCompare(codigoB, 'es', { sensitivity: 'base' });
     });
 
