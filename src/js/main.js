@@ -209,67 +209,69 @@ const renderCart = () => {
         }
 
         return `
-            <div class="cart-item-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:border-brand-blue/30 transition-all group relative overflow-hidden">
-                <div class="flex flex-col md:flex-row items-center gap-6">
+            <div class="cart-item-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:border-brand-blue/30 transition-all group relative">
+                <!-- Desktop Layout: 70% Info | 15% Quantity | 15% Subtotal -->
+                <div class="flex flex-col md:flex-row items-center md:items-center gap-4 md:gap-0">
                     
-                    <!-- 1. Imagen (Compacta) -->
-                    <div class="relative flex-shrink-0">
-                        <div class="w-20 h-20 bg-white rounded-lg border border-gray-100 p-2 flex items-center justify-center overflow-hidden">
-                            <img src="${item.image}" 
-                                 onerror="window.cartImgError(this, '${item.sku}')" 
-                                 class="max-w-full max-h-full object-contain transform group-hover:scale-110 transition-transform duration-500">
+                    <!-- 1. PRODUCTO (70%) -->
+                    <div class="w-full md:w-[70%] flex items-center gap-4">
+                        <!-- Imagen -->
+                        <div class="relative flex-shrink-0">
+                            <div class="w-20 h-20 bg-white rounded-lg border border-gray-100 p-2 flex items-center justify-center overflow-hidden">
+                                <img src="${item.image}" 
+                                     onerror="window.cartImgError(this, '${item.sku}')" 
+                                     class="max-w-full max-h-full object-contain transform group-hover:scale-110 transition-transform duration-500">
+                            </div>
+                            ${item.maxStock !== undefined ? `<div class="absolute -top-1 -left-1 w-3 h-3 ${stockBadgeColor} rounded-full border-2 border-white" title="${stockTitle}"></div>` : ''}
                         </div>
-                        ${item.maxStock !== undefined ? `<div class="absolute -top-1 -left-1 w-3 h-3 ${stockBadgeColor} rounded-full border-2 border-white" title="${stockTitle}"></div>` : ''}
-                    </div>
-
-                    <!-- 2. Info del Producto (Flexible, Izquierda) -->
-                    <div class="flex-1 w-full text-center md:text-left">
-                        <h3 class="font-bold text-brand-dark text-base md:text-lg leading-tight mb-1.5">${item.name}</h3>
-                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 text-sm text-gray-500 mb-1.5">
-                            <span class="bg-gray-50 text-brand-blue font-mono font-bold px-2 py-0.5 rounded border border-gray-100 text-xs">${item.sku}</span>
-                            ${item.brand ? `<span class="font-medium">${item.brand}</span>` : ''}
-                        </div>
-                        <div class="text-sm font-medium text-gray-400">
-                             Unitario: <span class="text-gray-700 font-bold ml-1">${formatPrice(unitPrice)}</span>
-                        </div>
-                    </div>
-
-                    <!-- 3. Controles (Derecha, Organizados) -->
-                    <div class="flex items-center justify-between w-full md:w-auto gap-8 pt-4 md:pt-0 border-t md:border-t-0 border-gray-50">
                         
-                        <!-- Columna Cantidad -->
-                        <div class="flex flex-col items-center md:items-end gap-1">
-                            <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Cantidad</span>
-                            <div class="flex items-center bg-white rounded-lg border-2 border-gray-100 shadow-sm">
-                                <button onclick="window.updateQty(${item.id}, -1)" 
-                                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-gray-50 rounded-l-lg transition-colors border-r border-gray-100">
-                                    <i class="fas fa-minus text-[10px]"></i>
-                                </button>
-                                <input type="number" 
-                                       value="${item.quantity}" 
-                                       min="1" 
-                                       onchange="window.setQty(${item.id}, this.value)"
-                                       class="w-12 h-8 text-center text-sm font-bold bg-transparent border-none focus:ring-0 p-0 text-gray-800 no-spin">
-                                <button onclick="window.updateQty(${item.id}, 1)" 
-                                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-gray-50 rounded-r-lg transition-colors border-l border-gray-100">
-                                    <i class="fas fa-plus text-[10px]"></i>
-                                </button>
+                        <!-- Descripción -->
+                        <div class="flex-1 min-w-0 pr-4">
+                            <h3 class="font-bold text-brand-dark text-base md:text-lg leading-tight mb-2">${item.name}</h3>
+                            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500">
+                                <span class="bg-gray-50 text-brand-blue font-mono font-bold px-2 py-0.5 rounded border border-gray-100 text-xs">${item.sku}</span>
+                                ${item.brand ? `<span class="font-medium px-2 py-0.5 bg-gray-50 rounded border border-gray-100 text-xs">${item.brand}</span>` : ''}
+                                <span class="hidden md:inline text-gray-300">|</span>
+                                <span class="font-medium">Unitario: <span class="text-gray-700 font-bold">${formatPrice(unitPrice)}</span></span>
                             </div>
                         </div>
-
-                        <!-- Columna Subtotal -->
-                        <div class="flex flex-col items-end gap-1 min-w-[100px]">
-                            <span class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">Subtotal</span>
-                            <div class="font-black text-brand-blue text-lg">${formatPrice(itemTotal)}</div>
-                        </div>
-
-                        <!-- Botón Eliminar -->
-                        <button onclick="window.removeFromCart(${item.id})" 
-                                class="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100 group-hover:bg-gray-50"
-                                title="Eliminar">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
                     </div>
+
+                    <!-- 2. CANTIDAD (15%) -->
+                    <div class="w-full md:w-[15%] flex flex-col items-center justify-center border-t md:border-t-0 border-gray-50 pt-3 md:pt-0 mt-2 md:mt-0">
+                        <span class="md:hidden text-xs font-bold text-gray-400 mb-1">CANTIDAD</span>
+                        <div class="flex items-center bg-white rounded-lg border-2 border-gray-100 shadow-sm w-fit">
+                            <button onclick="window.updateQty(${item.id}, -1)" 
+                                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-gray-50 rounded-l-lg transition-colors border-r border-gray-100">
+                                <i class="fas fa-minus text-[10px]"></i>
+                            </button>
+                            <input type="number" 
+                                   value="${item.quantity}" 
+                                   min="1" 
+                                   onchange="window.setQty(${item.id}, this.value)"
+                                   class="w-12 h-8 text-center text-sm font-bold bg-transparent border-none focus:ring-0 p-0 text-gray-800 no-spin">
+                            <button onclick="window.updateQty(${item.id}, 1)" 
+                                    class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:bg-gray-50 rounded-r-lg transition-colors border-l border-gray-100">
+                                <i class="fas fa-plus text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3. SUBTOTAL (15%) -->
+                    <div class="w-full md:w-[15%] flex items-center justify-between md:justify-end gap-2 border-t md:border-t-0 border-gray-50 pt-3 md:pt-0 mt-2 md:mt-0">
+                        <span class="md:hidden text-xs font-bold text-gray-400">SUBTOTAL</span>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <div class="font-black text-brand-blue text-lg">${formatPrice(itemTotal)}</div>
+                            </div>
+                             <button onclick="window.removeFromCart(${item.id})" 
+                                    class="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all border border-transparent hover:border-red-100"
+                                    title="Eliminar">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         `;
