@@ -71,9 +71,9 @@
         </div>
     </header>
 
-    <main class="flex-grow container-custom py-8 md:py-12">
+    <main class="flex-grow py-8 md:py-12">
         <!-- Page Header -->
-        <div class="mb-8 md:mb-12">
+        <div class="container-custom mb-8 md:mb-12">
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-3xl md:text-5xl font-black text-brand-dark flex items-center gap-3 mb-2">
@@ -90,129 +90,134 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-            <!-- Cart Items Section (8 cols) -->
-            <div class="lg:col-span-8 space-y-4">
-                <!-- Cart Items Container -->
-                <div id="cart-items-wrapper" class="space-y-4">
-                    <!-- Items Injected Here by JS -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+        <div class="container-custom">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+                <!-- Cart Items Section (8 cols) - Ancho Completo -->
+                <div class="lg:col-span-8 space-y-4">
+                    <!-- Cart Items Container -->
+                    <div id="cart-items-wrapper" class="space-y-4">
+                        <!-- Items Injected Here by JS -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+                            <i class="fas fa-circle-notch fa-spin text-3xl mb-4 text-brand-blue"></i>
+                            <p class="text-gray-400 font-medium">Cargando carrito...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Sidebar (4 cols) -->
+                <div class="lg:col-span-4">
+                    <div class="sticky top-24 space-y-6">
+                        <!-- Summary Card -->
+                        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                            <!-- Header -->
+                            <div class="bg-gradient-to-r from-brand-blue to-blue-600 px-6 py-5">
+                                <h3 class="text-xl font-black text-white flex items-center gap-3">
+                                    <i class="fas fa-receipt"></i>
+                                    Resumen del Pedido
+                                </h3>
+                            </div>
+
+                            <!-- Content -->
+                            <div class="p-6 space-y-6">
+                                <!-- Subtotal -->
+                                <div class="flex justify-between items-center pb-4 border-b border-gray-100">
+                                    <span class="text-gray-600 font-medium">Subtotal (s/IVA)</span>
+                                    <span id="cart-subtotal" class="font-mono font-bold text-gray-800 text-lg">$
+                                        0,00</span>
+                                </div>
+
+                                <!-- IVA Info -->
+                                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                                    <div class="flex items-start gap-3">
+                                        <i class="fas fa-info-circle text-brand-blue mt-0.5"></i>
+                                        <div class="flex-1">
+                                            <p class="text-xs font-bold text-brand-blue uppercase tracking-wider mb-1">
+                                                IVA
+                                                Incluido</p>
+                                            <p class="text-xs text-gray-600">El precio final incluye el 21% de IVA</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Total -->
+                                <div
+                                    class="bg-gradient-to-br from-gray-50 to-blue-50/50 rounded-xl p-6 border border-gray-200">
+                                    <div class="flex justify-between items-end">
+                                        <div>
+                                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">
+                                                Total
+                                                Final</p>
+                                            <p class="text-2xl md:text-3xl font-black text-brand-blue leading-none"
+                                                id="cart-total">$ 0,00</p>
+                                        </div>
+                                        <i class="fas fa-check-circle text-green-500 text-3xl opacity-50"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Confirm Button -->
+                                <button onclick="window.sendToSystem()" id="btn-system"
+                                    class="group w-full bg-gradient-to-r from-brand-blue to-blue-600 hover:from-blue-700 hover:to-brand-dark text-white py-4 rounded-xl font-black text-lg shadow-lg shadow-brand-blue/30 hover:shadow-xl hover:shadow-brand-blue/40 transition-all duration-300 transform active:scale-95 flex items-center justify-center relative overflow-hidden">
+                                    <span
+                                        class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></span>
+                                    <span class="relative z-10 flex items-center gap-3">
+                                        <i class="fas fa-paper-plane"></i>
+                                        CONFIRMAR PEDIDO
+                                        <i
+                                            class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                                    </span>
+                                </button>
+
+                                <!-- Security Badge -->
+                                <div
+                                    class="flex items-center justify-center gap-2 text-xs text-gray-500 bg-green-50 border border-green-100 rounded-lg p-3">
+                                    <i class="fas fa-shield-alt text-green-600"></i>
+                                    <span class="font-semibold">Compra 100% Segura y Verificada</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Help Card -->
+                        <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-xl p-6 text-white">
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-headset text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg mb-1">¿Necesitas ayuda?</h4>
+                                    <p class="text-sm text-gray-300 mb-3">Estamos aquí para asistirte</p>
+                                    <a href="https://wa.me/5493516861092" target="_blank"
+                                        class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm transition-all">
+                                        <i class="fab fa-whatsapp"></i>
+                                        Contactar por WhatsApp
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order History Section -->
+            <div class="mt-16 md:mt-24 pt-12 border-t-2 border-gray-200">
+                <div class="mb-8">
+                    <h2 class="text-2xl md:text-4xl font-black text-brand-dark flex items-center gap-4 mb-2">
+                        <div
+                            class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center shadow-lg">
+                            <i class="fas fa-history text-white text-lg md:text-xl"></i>
+                        </div>
+                        Historial de Pedidos
+                    </h2>
+                    <p class="text-gray-500 text-sm md:text-base ml-14 md:ml-16">Tus pedidos anteriores</p>
+                </div>
+                <div id="order-history" class="space-y-6">
+                    <!-- Rendered dynamically by main.js -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center text-gray-400">
                         <i class="fas fa-circle-notch fa-spin text-3xl mb-4 text-brand-blue"></i>
-                        <p class="text-gray-400 font-medium">Cargando carrito...</p>
+                        <p class="font-medium">Cargando historial de pedidos...</p>
                     </div>
                 </div>
             </div>
-
-            <!-- Summary Sidebar (4 cols) -->
-            <div class="lg:col-span-4">
-                <div class="sticky top-24 space-y-6">
-                    <!-- Summary Card -->
-                    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-                        <!-- Header -->
-                        <div class="bg-gradient-to-r from-brand-blue to-blue-600 px-6 py-5">
-                            <h3 class="text-xl font-black text-white flex items-center gap-3">
-                                <i class="fas fa-receipt"></i>
-                                Resumen del Pedido
-                            </h3>
-                        </div>
-
-                        <!-- Content -->
-                        <div class="p-6 space-y-6">
-                            <!-- Subtotal -->
-                            <div class="flex justify-between items-center pb-4 border-b border-gray-100">
-                                <span class="text-gray-600 font-medium">Subtotal (s/IVA)</span>
-                                <span id="cart-subtotal" class="font-mono font-bold text-gray-800 text-lg">$ 0,00</span>
-                            </div>
-
-                            <!-- IVA Info -->
-                            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                                <div class="flex items-start gap-3">
-                                    <i class="fas fa-info-circle text-brand-blue mt-0.5"></i>
-                                    <div class="flex-1">
-                                        <p class="text-xs font-bold text-brand-blue uppercase tracking-wider mb-1">IVA
-                                            Incluido</p>
-                                        <p class="text-xs text-gray-600">El precio final incluye el 21% de IVA</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Total -->
-                            <div
-                                class="bg-gradient-to-br from-gray-50 to-blue-50/50 rounded-xl p-6 border border-gray-200">
-                                <div class="flex justify-between items-end">
-                                    <div>
-                                        <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-1">Total
-                                            Final</p>
-                                        <p class="text-2xl md:text-3xl font-black text-brand-blue leading-none"
-                                            id="cart-total">$ 0,00</p>
-                                    </div>
-                                    <i class="fas fa-check-circle text-green-500 text-3xl opacity-50"></i>
-                                </div>
-                            </div>
-
-                            <!-- Confirm Button -->
-                            <button onclick="window.sendToSystem()" id="btn-system"
-                                class="group w-full bg-gradient-to-r from-brand-blue to-blue-600 hover:from-blue-700 hover:to-brand-dark text-white py-4 rounded-xl font-black text-lg shadow-lg shadow-brand-blue/30 hover:shadow-xl hover:shadow-brand-blue/40 transition-all duration-300 transform active:scale-95 flex items-center justify-center relative overflow-hidden">
-                                <span
-                                    class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity"></span>
-                                <span class="relative z-10 flex items-center gap-3">
-                                    <i class="fas fa-paper-plane"></i>
-                                    CONFIRMAR PEDIDO
-                                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                                </span>
-                            </button>
-
-                            <!-- Security Badge -->
-                            <div
-                                class="flex items-center justify-center gap-2 text-xs text-gray-500 bg-green-50 border border-green-100 rounded-lg p-3">
-                                <i class="fas fa-shield-alt text-green-600"></i>
-                                <span class="font-semibold">Compra 100% Segura y Verificada</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Help Card -->
-                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl shadow-xl p-6 text-white">
-                        <div class="flex items-start gap-4">
-                            <div
-                                class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-headset text-2xl"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg mb-1">¿Necesitas ayuda?</h4>
-                                <p class="text-sm text-gray-300 mb-3">Estamos aquí para asistirte</p>
-                                <a href="https://wa.me/5493516861092" target="_blank"
-                                    class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-sm transition-all">
-                                    <i class="fab fa-whatsapp"></i>
-                                    Contactar por WhatsApp
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Order History Section -->
-        <div class="mt-16 md:mt-24 pt-12 border-t-2 border-gray-200">
-            <div class="mb-8">
-                <h2 class="text-2xl md:text-4xl font-black text-brand-dark flex items-center gap-4 mb-2">
-                    <div
-                        class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-gray-700 to-gray-900 rounded-xl flex items-center justify-center shadow-lg">
-                        <i class="fas fa-history text-white text-lg md:text-xl"></i>
-                    </div>
-                    Historial de Pedidos
-                </h2>
-                <p class="text-gray-500 text-sm md:text-base ml-14 md:ml-16">Tus pedidos anteriores</p>
-            </div>
-            <div id="order-history" class="space-y-6">
-                <!-- Rendered dynamically by main.js -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center text-gray-400">
-                    <i class="fas fa-circle-notch fa-spin text-3xl mb-4 text-brand-blue"></i>
-                    <p class="font-medium">Cargando historial de pedidos...</p>
-                </div>
-            </div>
-        </div>
     </main>
 
     <!-- Footer -->

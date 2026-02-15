@@ -240,38 +240,38 @@ const renderCart = () => {
                         </div>
                     </div>
 
-                    <!-- Quantity, Subtotal & Actions - Grid Compacto -->
-                    <div class="grid grid-cols-[auto_auto_auto] md:grid-cols-[110px_130px_44px] gap-2 md:gap-3 items-start ml-auto">
-                        <!-- Quantity Control - Columna 110px -->
+                    <!-- Quantity, Subtotal & Actions - Grid Optimizado -->
+                    <div class="grid grid-cols-[auto_auto_auto] md:grid-cols-[120px_150px_48px] gap-3 md:gap-4 items-start ml-auto">
+                        <!-- Quantity Control - Columna 120px -->
                         <div class="flex flex-col items-center md:items-end gap-2">
                             <span class="text-xs text-gray-500 font-semibold whitespace-nowrap">Cantidad</span>
                             <div class="flex flex-row items-center bg-white rounded-lg border-2 border-gray-200 hover:border-brand-blue transition-all shadow-sm hover:shadow-md">
                                 <button onclick="window.updateQty(${item.id}, -1)" 
-                                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-l-md group">
+                                        class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-l-md group">
                                     <i class="fas fa-minus text-xs group-hover:scale-110 transition-transform"></i>
                                 </button>
                                 <input type="number" 
                                        value="${item.quantity}" 
                                        min="1" 
                                        onchange="window.setQty(${item.id}, this.value)"
-                                       class="w-14 h-8 text-center font-bold bg-gray-50 border-0 focus:ring-0 focus:bg-blue-50 outline-none no-spin text-gray-800 text-sm transition-colors">
+                                       class="w-16 h-9 text-center font-bold bg-gray-50 border-0 focus:ring-0 focus:bg-blue-50 outline-none no-spin text-gray-800 text-sm md:text-base transition-colors">
                                 <button onclick="window.updateQty(${item.id}, 1)" 
-                                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-r-md group">
+                                        class="w-9 h-9 flex items-center justify-center text-gray-400 hover:text-white hover:bg-brand-blue transition-all active:scale-90 rounded-r-md group">
                                     <i class="fas fa-plus text-xs group-hover:scale-110 transition-transform"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Subtotal - Columna 130px -->
+                        <!-- Subtotal - Columna 150px -->
                         <div class="flex flex-col items-end gap-2">
                             <span class="text-xs text-gray-500 font-semibold whitespace-nowrap">Subtotal</span>
-                            <span class="text-sm font-bold text-brand-blue tabular-nums whitespace-nowrap">${formatPrice(itemTotal)}</span>
+                            <span class="text-sm md:text-base font-bold text-brand-blue tabular-nums whitespace-nowrap">${formatPrice(itemTotal)}</span>
                         </div>
 
-                        <!-- Remove Button - Columna 44px -->
+                        <!-- Remove Button - Columna 48px -->
                         <div class="flex items-end justify-center h-full pt-6">
                             <button onclick="window.removeFromCart(${item.id})" 
-                                    class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 border-2 border-transparent hover:border-red-200 transition-all transform hover:scale-110 active:scale-95" 
+                                    class="w-10 h-10 rounded-lg flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-red-50 border-2 border-transparent hover:border-red-200 transition-all transform hover:scale-110 active:scale-95" 
                                     title="Eliminar del carrito">
                                 <i class="fas fa-trash-alt text-sm"></i>
                             </button>
