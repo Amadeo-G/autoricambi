@@ -571,7 +571,7 @@ window.renderOrderHistory = () => {
                     </div>
                     <div>
                         <div class="text-[10px] font-black text-brand-blue uppercase tracking-widest mb-0.5">Fecha del Pedido</div>
-                        <div class="font-bold text-gray-900 text-lg">${order.date}</div>
+                        <div class="font-bold text-gray-900 text-lg">${order.date.split(',')[0]}</div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -590,27 +590,18 @@ window.renderOrderHistory = () => {
                         <tr>
                             <th class="px-8 py-4 text-left font-black tracking-widest">Producto</th>
                             <th class="px-8 py-4 text-center font-black tracking-widest" width="100">Cantidad</th>
-                            <th class="px-8 py-4 text-right font-black tracking-widest" width="150">Precio</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         ${order.items.map(item => `
                         <tr class="hover:bg-gray-50/30 transition-colors">
                             <td class="px-8 py-4" data-label="Producto">
-                                <div class="flex items-center space-x-4">
-                                    <div class="w-12 h-12 flex-shrink-0 bg-white border border-gray-100 rounded-lg overflow-hidden p-0.5">
-                                        <img src="${item.imagen || 'https://placehold.co/100?text=S/D'}" 
-                                             onerror="window.cartImgError(this, '${item.codigo}')" 
-                                             class="w-full h-full object-contain">
-                                    </div>
-                                    <div>
-                                        <div class="font-bold text-gray-800 leading-tight">${item.descripcion}</div>
-                                        <div class="text-[10px] font-mono font-bold text-brand-blue uppercase tracking-wider mt-0.5">${item.codigo}</div>
-                                    </div>
+                                <div class="flex flex-col">
+                                    <div class="font-bold text-gray-800 leading-tight">${item.descripcion}</div>
+                                    <div class="text-[10px] font-mono font-bold text-brand-blue uppercase tracking-wider mt-0.5">${item.codigo}</div>
                                 </div>
                             </td>
                             <td class="px-8 py-4 text-center font-black text-gray-600 bg-gray-50/20" data-label="Cantidad">${item.cantidad}</td>
-                            <td class="px-8 py-4 text-right font-bold text-gray-800 bg-gray-50/20" data-label="Precio">${item.precio_unitario || '-'}</td>
                         </tr>`).join('')}
                     </tbody>
                 </table>
