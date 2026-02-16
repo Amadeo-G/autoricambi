@@ -319,36 +319,37 @@
 
     <!-- Sticky Product Footer (Hidden by default, slides up on selection) -->
     <div id="stickyFooter"
-        class="fixed bottom-0 left-0 w-full bg-white shadow-[0_-5px_30px_rgba(0,0,0,0.1)] z-[90] transform translate-y-full transition-transform duration-500 ease-in-out border-t border-gray-200 hidden md:flex h-[250px]">
+        class="fixed bottom-0 left-0 w-full bg-white shadow-[0_-5px_30px_rgba(0,0,0,0.1)] z-[90] transform translate-y-full transition-transform duration-500 ease-in-out border-t border-gray-200 hidden md:flex h-[200px] items-center">
         <div class="container-custom flex w-full h-full">
 
-            <!-- Left: Image (25%) -->
+            <!-- Left: Image (25%) - Max 150x150 constraint -->
             <div
                 class="w-1/4 h-full p-4 flex items-center justify-center bg-gray-50 border-r border-gray-100 relative group overflow-hidden">
-                <img id="stickyImg" src="" alt="Producto"
-                    class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105">
-                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none">
+                <div
+                    class="w-[150px] h-[150px] flex items-center justify-center bg-white rounded-lg shadow-sm border border-gray-100 p-2">
+                    <img id="stickyImg" src="" alt="Producto"
+                        class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105">
                 </div>
             </div>
 
             <!-- Center: Characteristics & Equivalences (50%) -->
-            <div class="w-2/4 h-full p-6 overflow-y-auto custom-scrollbar">
-                <div class="mb-4">
+            <div class="w-2/4 h-full p-6 overflow-y-auto custom-scrollbar flex flex-col justify-center">
+                <div class="mb-3">
                     <div class="flex items-center gap-2 mb-1">
                         <span id="stickyCode"
                             class="font-mono font-bold text-white bg-brand-blue px-2 py-0.5 rounded text-sm shadow-sm tracking-wide"></span>
                         <span id="stickyBrand"
                             class="text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-200 px-2 py-0.5 rounded bg-gray-50"></span>
                     </div>
-                    <h3 id="stickyDesc" class="text-xl font-bold text-gray-800 leading-tight">Seleccione un producto
+                    <h3 id="stickyDesc" class="text-lg font-bold text-gray-800 leading-tight">Seleccione un producto
                     </h3>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-2">
                     <!-- Features -->
                     <div>
                         <h4
-                            class="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                            class="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
                             <i data-lucide="list" class="w-3 h-3"></i> Características
                         </h4>
                         <div id="stickyFeatures" class="flex flex-wrap gap-1.5">
@@ -359,7 +360,7 @@
                     <!-- Equivalences -->
                     <div>
                         <h4
-                            class="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                            class="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
                             <i data-lucide="shuffle" class="w-3 h-3"></i> Equivalencias
                         </h4>
                         <div id="stickyEquivs" class="flex flex-wrap gap-1.5">
@@ -371,30 +372,27 @@
 
             <!-- Right: Price & Actions (25%) -->
             <div
-                class="w-1/4 h-full p-6 bg-gradient-to-br from-white to-gray-50 border-l border-gray-100 flex flex-col justify-between">
+                class="w-1/4 h-full p-6 bg-gradient-to-br from-white to-gray-50 border-l border-gray-100 flex flex-col justify-center gap-4">
 
-                <div class="text-right space-y-1">
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Precio
+                <div class="text-right">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Precio
                         Venta</span>
-                    <div id="stickyPrice"
-                        class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight leading-none">$ 0</div>
+                    <div id="stickyPrice" class="text-3xl font-black text-gray-900 tracking-tight leading-none">$ 0
+                    </div>
                 </div>
 
-                <div class="text-right my-auto">
-                    <div class="inline-flex flex-col items-end group/cost cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                <div class="flex items-center justify-end gap-2">
+                    <div class="cursor-pointer px-3 py-1 rounded-lg hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200"
                         onclick="window.toggleStickyCost()">
-                        <span
-                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest group-hover/cost:text-brand-blue transition-colors">Costo</span>
-                        <div id="stickyCost"
-                            class="text-base font-bold text-gray-300 select-none group-hover/cost:text-gray-600">****
-                        </div>
+                        <div class="text-[9px] font-bold text-gray-400 uppercase text-right">Costo</div>
+                        <div id="stickyCost" class="text-sm font-bold text-gray-300 select-none text-right">****</div>
                     </div>
                 </div>
 
                 <button id="stickyBtnAdd"
-                    class="w-full py-3.5 bg-brand-blue hover:bg-brand-dark text-white font-bold rounded-xl shadow-lg hover:shadow-brand-blue/30 transition-all active:scale-95 flex items-center justify-center gap-2 group/btn">
+                    class="w-full px-6 py-3 bg-brand-blue text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-blue-700 transition flex items-center justify-center gap-2 group/btn active:scale-95">
                     <i data-lucide="shopping-cart"
-                        class="w-5 h-5 transition-transform group-hover/btn:-translate-y-0.5 group-hover/btn:rotate-[-10deg]"></i>
+                        class="w-4 h-4 transition-transform group-hover/btn:-translate-y-0.5 group-hover/btn:rotate-[-10deg]"></i>
                     <span>Agregar</span>
                 </button>
             </div>
