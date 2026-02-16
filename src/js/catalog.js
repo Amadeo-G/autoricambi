@@ -639,12 +639,20 @@ window.selectProductForSticky = function (codigo) {
     // 6. Show Footer with Animation
     footer.classList.remove('translate-y-full');
 
-    // Add active state styles to row if needed (optional implementation)
-    // document.querySelectorAll('tr').forEach(tr => tr.classList.remove('bg-blue-50'));
-    // (We would need a reference to the TR here)
-
-    // 7. Add padding to body so last items are not hidden
-    document.body.style.paddingBottom = "220px"; // Footer height (200px) + some buffer
+    // 7. Add spacer to prevent content from being hidden
+    let spacer = document.getElementById('stickySpacer');
+    if (!spacer) {
+        spacer = document.createElement('div');
+        spacer.id = 'stickySpacer';
+        spacer.style.height = '220px'; // Footer height + buffer
+        spacer.style.transition = 'height 0.3s ease';
+        // Insert after the table container or at the end of main
+        const main = document.querySelector('main');
+        if (main) main.appendChild(spacer);
+    } else {
+        spacer.style.height = '220px';
+        spacer.style.display = 'block';
+    }
 }
 
 window.toggleStickyCost = function () {
@@ -665,7 +673,12 @@ window.toggleStickyCost = function () {
 window.closeSticky = function () {
     const footer = document.getElementById('stickyFooter');
     if (footer) footer.classList.add('translate-y-full');
-    document.body.style.paddingBottom = "0"; // Reset padding
+
+    const spacer = document.getElementById('stickySpacer');
+    if (spacer) {
+        spacer.style.height = '0px';
+        // Optional: set display none after transition
+    }
 };
 
 // Event Listeners
