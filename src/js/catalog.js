@@ -12,6 +12,8 @@ let currentServerLastModified = null;
 
 // WEB WORKER INITIALIZATION
 const excelWorker = new Worker('/src/js/excel-worker.js');
+let currentStickyCost = 0; // Para almacenar el costo del item seleccionado
+let currentStickyCode = null; // Para saber qué item está seleccionado
 
 excelWorker.onmessage = async function (e) {
     const { type, data, error } = e.data;
@@ -478,11 +480,17 @@ function renderTable(q = '') {
     // Limit to 100 for performance
     sortedData.slice(0, 100).forEach(item => {
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 last:border-b-0";
+        // Add cursor-pointer and click handler to row
+        tr.className = "hover:bg-blue-50/50 cursor-pointer transition-colors duration-200 border-b border-gray-100 last:border-b-0 group/row";
+        tr.onclick = (e) => {
+            // Avoid triggering if clicked on action buttons
+            if (e.target.closest('button') || e.target.closest('.no-select')) return;
+            window.selectProductForSticky(item.codigo);
+        };
 
         tr.innerHTML = `
             <td class="p-4 font-bold text-sm text-gray-700" data-label="Código">
-                <span class="bg-white px-2 py-1 rounded border border-gray-200 shadow-sm inline-block">${highlightText(item.codigo, q)}</span>
+                <span class="bg-white px-2 py-1 rounded border border-gray-200 shadow-sm inline-block group-hover/row:border-blue-200 group-hover/row:text-brand-blue transition-colors">${highlightText(item.codigo, q)}</span>
             </td>
             <td class="p-4 text-sm text-gray-800" data-label="Descripción">
                 <div class="flex flex-col">
@@ -539,6 +547,114 @@ function getBadgeHtml(stock) {
 
     return `<div class="w-3 h-3 rounded-full ${colorClass} shadow-sm" ${colorStyle} title="${title}: ${stock}"></div>`;
 }
+
+// --- STICKY FOOTER LOGIC ---
+
+window.selectProductForSticky = function (codigo) {
+    const item = allData.find(d => d.codigo === codigo);
+    if (!item) return;
+
+    currentStickyCode = item.codigo;
+    currentStickyCost = item.costo;
+
+    const footer = document.getElementById('stickyFooter');
+    if (!footer) return;
+
+    // 1. Populate Info
+    document.getElementById('stickyCode').textContent = item.codigo;
+    document.getElementById('stickyBrand').textContent = item.marca || 'GENÉRICO';
+    document.getElementById('stickyDesc').textContent = item.descripcion;
+    document.getElementById('stickyPrice').textContent = `$ ${formatPrice(item.precio)}`;
+
+    // Reset Cost to hidden state
+    const costPageEl = document.getElementById('stickyCost');
+    if (costPageEl) {
+        costPageEl.textContent = '****';
+        costPageEl.classList.remove('text-brand-blue');
+        costPageEl.classList.add('text-gray-300');
+    }
+
+    // 2. Features
+    const featContainer = document.getElementById('stickyFeatures');
+    featContainer.innerHTML = '';
+    if (item.caracteristicas) {
+        const feats = item.caracteristicas.split(/[,\n]/).filter(f => f.trim());
+        feats.slice(0, 5).forEach(f => { // Limit to 5 for UI balance
+            const span = document.createElement('span');
+            span.className = "bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] border border-gray-200";
+            span.textContent = f;
+            featContainer.appendChild(span);
+        });
+        if (feats.length > 5) {
+            const more = document.createElement('span');
+            more.className = "text-[10px] text-gray-400 italic px-1";
+            more.textContent = `+${feats.length - 5} más`;
+            featContainer.appendChild(more);
+        }
+    } else {
+        featContainer.innerHTML = '<span class="text-gray-300 italic text-[10px]">Sin características</span>';
+    }
+
+    // 3. Equivalences
+    const equivContainer = document.getElementById('stickyEquivs');
+    equivContainer.innerHTML = '';
+    if (item.equivalentes) {
+        const codes = item.equivalentes.split(/[,\n]/).filter(c => c.trim());
+        codes.slice(0, 8).forEach(c => {
+            const span = document.createElement('span');
+            span.className = "font-mono text-[10px] bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-500";
+            span.textContent = c;
+            equivContainer.appendChild(span);
+        });
+    } else {
+        equivContainer.innerHTML = '<span class="text-gray-300 italic text-[10px]">N/A</span>';
+    }
+
+    // 4. Image
+    const imgEl = document.getElementById('stickyImg');
+    const codeLower = item.codigo.toLowerCase();
+    // Reset to R2 or placeholder logic
+    const trySetImage = (url) => {
+        imgEl.src = url;
+    };
+
+    // Chain: R2 -> Local -> Placeholder
+    imgEl.onload = null; // Clear prev handlers
+    imgEl.onerror = function () {
+        if (this.src.includes('r2.dev')) {
+            this.src = `/Imagenes/${codeLower}-1.webp`;
+        } else if (this.src.includes('/Imagenes/')) {
+            this.src = 'https://placehold.co/250x250/f3f4f6/cbd5e1?text=Sin+Imagen';
+        }
+    };
+    trySetImage(`${R2_BASE_URL}/${codeLower}-1.webp`);
+
+    // 5. Button Action
+    const btn = document.getElementById('stickyBtnAdd');
+    btn.onclick = (e) => window.addToCartFromCatalog(item.codigo, e);
+
+    // 6. Show Footer with Animation
+    footer.classList.remove('translate-y-full');
+
+    // Add active state styles to row if needed (optional implementation)
+    // document.querySelectorAll('tr').forEach(tr => tr.classList.remove('bg-blue-50'));
+    // (We would need a reference to the TR here)
+}
+
+window.toggleStickyCost = function () {
+    const el = document.getElementById('stickyCost');
+    if (!el) return;
+
+    if (el.textContent === '****') {
+        el.textContent = `$ ${formatPrice(currentStickyCost)}`;
+        el.classList.remove('text-gray-300');
+        el.classList.add('text-brand-blue');
+    } else {
+        el.textContent = '****';
+        el.classList.remove('text-brand-blue');
+        el.classList.add('text-gray-300');
+    }
+};
 
 // Event Listeners
 // Event Listeners

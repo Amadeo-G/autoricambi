@@ -317,61 +317,89 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-300 py-12 mt-auto">
-        <div class="container-custom grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-                <div class="text-white text-2xl font-bold mb-4">Autoricambi</div>
-                <p class="text-sm mb-4">Somos una distribuidora de repuestos del automotor comprometidos con la calidad
-                    y la excelencia en el servicio al cliente.</p>
-                <div class="flex space-x-4">
-                    <a href="#"
-                        class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-brand-blue transition"><i
-                            class="fab fa-facebook-f"></i></a>
-                    <a href="#"
-                        class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-pink-600 transition"><i
-                            class="fab fa-instagram"></i></a>
-                    <a href="#"
-                        class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-green-500 transition"><i
-                            class="fab fa-whatsapp"></i></a>
+    <!-- Sticky Product Footer (Hidden by default, slides up on selection) -->
+    <div id="stickyFooter"
+        class="fixed bottom-0 left-0 w-full bg-white shadow-[0_-5px_30px_rgba(0,0,0,0.1)] z-[90] transform translate-y-full transition-transform duration-500 ease-in-out border-t border-gray-200 hidden md:flex h-[250px]">
+        <div class="container-custom flex w-full h-full">
+
+            <!-- Left: Image (25%) -->
+            <div
+                class="w-1/4 h-full p-4 flex items-center justify-center bg-gray-50 border-r border-gray-100 relative group overflow-hidden">
+                <img id="stickyImg" src="" alt="Producto"
+                    class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors pointer-events-none">
                 </div>
             </div>
-            <div>
-                <h4 class="text-white font-bold text-lg mb-4">Enlaces Rápidos</h4>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="index.htm" class="hover:text-white transition">Inicio</a></li>
-                    <li><a href="buscador.html" class="hover:text-white transition">Catálogo</a></li>
-                    <li><a href="#" class="hover:text-white transition">Cómo Comprar</a></li>
-                    <li><a href="#" class="hover:text-white transition">Zona Clientes</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-white font-bold text-lg mb-4" id="contacto">Contacto</h4>
-                <ul class="space-y-3 text-sm">
-                    <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-2 text-brand-accent"></i>
-                        Córdoba, Argentina</li>
-                    <li class="flex items-center"><i class="fas fa-phone-alt mr-2 text-brand-accent"></i> 351 686-1092
-                    </li>
-                    <li class="flex items-center"><i class="fas fa-envelope mr-2 text-brand-accent"></i>
-                        info@autoricambi.com.ar</li>
-                </ul>
-            </div>
-        </div>
-        <div class="container-custom border-t border-gray-800 mt-8 pt-8 text-center text-xs text-gray-500">
-            &copy; 2026 Autoricambi. Todos los derechos reservados.
-        </div>
-    </footer>
 
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/5493516861092?text=%C2%A1Hola%20Autoricambi!%20Quiero%20consultarles%20sobre..."
-        target="_blank" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;"
-        class="bg-green-500 hover:bg-green-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group">
-        <i class="fab fa-whatsapp text-3xl"></i>
-        <span
-            class="absolute right-full mr-3 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            ¡Chateá con nosotros!
-        </span>
-    </a>
+            <!-- Center: Characteristics & Equivalences (50%) -->
+            <div class="w-2/4 h-full p-6 overflow-y-auto custom-scrollbar">
+                <div class="mb-4">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span id="stickyCode"
+                            class="font-mono font-bold text-white bg-brand-blue px-2 py-0.5 rounded text-sm shadow-sm tracking-wide"></span>
+                        <span id="stickyBrand"
+                            class="text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-200 px-2 py-0.5 rounded bg-gray-50"></span>
+                    </div>
+                    <h3 id="stickyDesc" class="text-xl font-bold text-gray-800 leading-tight">Seleccione un producto
+                    </h3>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Features -->
+                    <div>
+                        <h4
+                            class="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                            <i data-lucide="list" class="w-3 h-3"></i> Características
+                        </h4>
+                        <div id="stickyFeatures" class="flex flex-wrap gap-1.5">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Equivalences -->
+                    <div>
+                        <h4
+                            class="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+                            <i data-lucide="shuffle" class="w-3 h-3"></i> Equivalencias
+                        </h4>
+                        <div id="stickyEquivs" class="flex flex-wrap gap-1.5">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Price & Actions (25%) -->
+            <div
+                class="w-1/4 h-full p-6 bg-gradient-to-br from-white to-gray-50 border-l border-gray-100 flex flex-col justify-between">
+
+                <div class="text-right space-y-1">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Precio
+                        Venta</span>
+                    <div id="stickyPrice"
+                        class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight leading-none">$ 0</div>
+                </div>
+
+                <div class="text-right my-auto">
+                    <div class="inline-flex flex-col items-end group/cost cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                        onclick="window.toggleStickyCost()">
+                        <span
+                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest group-hover/cost:text-brand-blue transition-colors">Costo</span>
+                        <div id="stickyCost"
+                            class="text-base font-bold text-gray-300 select-none group-hover/cost:text-gray-600">****
+                        </div>
+                    </div>
+                </div>
+
+                <button id="stickyBtnAdd"
+                    class="w-full py-3.5 bg-brand-blue hover:bg-brand-dark text-white font-bold rounded-xl shadow-lg hover:shadow-brand-blue/30 transition-all active:scale-95 flex items-center justify-center gap-2 group/btn">
+                    <i data-lucide="shopping-cart"
+                        class="w-5 h-5 transition-transform group-hover/btn:-translate-y-0.5 group-hover/btn:rotate-[-10deg]"></i>
+                    <span>Agregar</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Logic -->
     <script src="/src/js/catalog.js"></script>
