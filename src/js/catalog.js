@@ -642,6 +642,9 @@ window.selectProductForSticky = function (codigo) {
     // Add active state styles to row if needed (optional implementation)
     // document.querySelectorAll('tr').forEach(tr => tr.classList.remove('bg-blue-50'));
     // (We would need a reference to the TR here)
+
+    // 7. Add padding to body so last items are not hidden
+    document.body.style.paddingBottom = "220px"; // Footer height (200px) + some buffer
 }
 
 window.toggleStickyCost = function () {
@@ -657,6 +660,12 @@ window.toggleStickyCost = function () {
         el.classList.remove('text-brand-blue');
         el.classList.add('text-gray-300');
     }
+};
+
+window.closeSticky = function () {
+    const footer = document.getElementById('stickyFooter');
+    if (footer) footer.classList.add('translate-y-full');
+    document.body.style.paddingBottom = "0"; // Reset padding
 };
 
 // Event Listeners
@@ -686,6 +695,9 @@ els.btnReset.addEventListener('click', () => {
 
     filteredData = [];
     showInitialMessage();
+
+    // Reset Sticky Footer state
+    if (window.closeSticky) window.closeSticky();
 
     // Animación del icono
     const icon = els.btnReset.querySelector('i');
