@@ -531,32 +531,39 @@ function renderTable(q = '') {
 
 // --- PREVIEW LOGIC (Sidebar) ---
 window.selectPreview = function (codigo, rowEl) {
+    console.log("Selecting preview for:", codigo); // Debug log
+
     // 1. Highlight Row Logic
-    // Remove previous highlight
     const prevRow = document.querySelector('tr.bg-blue-50.border-l-4');
     if (prevRow) {
         prevRow.classList.remove('bg-blue-50', 'border-l-4', 'border-brand-blue');
     }
 
-    // Add Highlight to current
     if (rowEl) {
         rowEl.classList.add('bg-blue-50', 'border-l-4', 'border-brand-blue');
     }
 
     // 2. Populate Preview Card
     const item = allData.find(d => d.codigo === codigo);
-    if (!item) return;
+    if (!item) {
+        console.error("Item not found in data:", codigo);
+        return;
+    }
 
     const cardEmpty = document.getElementById('previewEmpty');
     const cardContent = document.getElementById('previewContent');
     const imgEl = document.getElementById('previewImage');
     const btnAdd = document.getElementById('previewBtnAdd');
 
-    if (cardEmpty) cardEmpty.classList.add('hidden');
-    if (cardContent) {
-        cardContent.classList.remove('hidden');
-        cardContent.classList.add('flex');
+    if (!cardEmpty || !cardContent || !imgEl) {
+        console.error("Preview DOM elements missing");
+        return;
     }
+
+    // Toggle Visibility
+    cardEmpty.classList.add('hidden');
+    cardContent.classList.remove('hidden');
+    cardContent.classList.add('flex');
 
     // Update Text
     document.getElementById('previewTitle').textContent = item.descripcion;
@@ -565,37 +572,51 @@ window.selectPreview = function (codigo, rowEl) {
 
     // Update Button Action
     if (btnAdd) {
-        // Clone to remove old event listeners easily
         const newBtn = btnAdd.cloneNode(true);
         btnAdd.parentNode.replaceChild(newBtn, btnAdd);
         newBtn.onclick = (e) => window.addToCartFromCatalog(item.codigo, e);
     }
 
-    // Update Image with Fallback Chain
-    if (imgEl) {
-        const codeLower = item.codigo.toLowerCase();
+    // Update Image with Robust Fallback Chain
+    const codeLower = item.codigo.toLowerCase();
 
-        // Pre-load logic to avoid glitches
-        const tempImg = new Image();
-        const setSrc = (src) => { imgEl.src = src; };
+    // Reset image to avoid showing previous one while loading
+    // imgEl.src = ''; // Optional: creates blinking effect, maybe avoid
 
-        // 1. Try R2
-        const r2Src = `${R2_BASE_URL}/${codeLower}-1.webp`;
+    const r2Src = `${R2_BASE_URL}/${codeLower}-1.webp`;
+    const localSrc = `/Imagenes/${codeLower}-1.webp`;
+    const placeholderSrc = 'https://placehold.co/600x400/f3f4f6/cbd5e1?text=Sin+Imagen';
 
-        imgEl.onerror = function () {
-            // 2. Fallback to Local
-            if (this.src === r2Src) {
-                this.src = `/Imagenes/${codeLower}-1.webp`;
-            }
-            // 3. Fallback to Placeholder
-            else {
-                this.src = 'https://placehold.co/600x400/f3f4f6/cbd5e1?text=Sin+Imagen';
-                this.onerror = null; // Stop looping
-            }
-        };
+    imgEl.onload = function () {
+        // Image loaded successfully
+        console.log("Image loaded:", this.src);
+    };
 
-        imgEl.src = r2Src;
-    }
+    imgEl.onerror = function () {
+        console.warn("Image load failed:", this.src);
+        const currentSrc = this.src;
+
+        // 1. If R2 failed, try Local
+        // Check if the FAILED src contains the R2 domain
+        if (currentSrc.includes('r2.dev')) {
+            console.log("Falling back to local:", localSrc);
+            this.src = localSrc;
+            return;
+        }
+
+        // 2. If Local failed (or didn't match R2), show Placeholder
+        if (!currentSrc.includes('placehold.co')) {
+            console.log("Falling back to placeholder");
+            this.src = placeholderSrc;
+        }
+
+        // Stop invalid looping
+        this.onerror = null;
+    };
+
+    // Start with R2
+    console.log("Trying R2 image:", r2Src);
+    imgEl.src = r2Src;
 };
 
 function getBadgeHtml(stock) {
