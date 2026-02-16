@@ -529,9 +529,20 @@ function renderTable(q = '') {
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-// --- PREVIEW LOGIC (Sidebar) ---
+// --- PREVIEW LOGIC (Bottom Panel) ---
+const panelEls = {
+    container: document.getElementById('bottomPanel'),
+    image: document.getElementById('panelImage'),
+    features: document.getElementById('panelFeatures'),
+    equivalents: document.getElementById('panelEquivalents'),
+    price: document.getElementById('panelPrice'),
+    cost: document.getElementById('panelCost'),
+    stock: document.getElementById('panelStock'),
+    btnAdd: document.getElementById('panelBtnAdd')
+};
+
 window.selectPreview = function (codigo, rowEl) {
-    console.log("Selecting preview for:", codigo); // Debug log
+    console.log("Selecting preview for:", codigo);
 
     // 1. Highlight Row Logic
     const prevRow = document.querySelector('tr.bg-blue-50.border-l-4');
@@ -539,84 +550,115 @@ window.selectPreview = function (codigo, rowEl) {
         prevRow.classList.remove('bg-blue-50', 'border-l-4', 'border-brand-blue');
     }
 
+    // Toggle logic: If clicking the same row, deselect?
+    // Let's decide to always select for now, unless we want a toggle behavior.
+
     if (rowEl) {
         rowEl.classList.add('bg-blue-50', 'border-l-4', 'border-brand-blue');
     }
 
-    // 2. Populate Preview Card
+    // 2. Fetch Data
     const item = allData.find(d => d.codigo === codigo);
     if (!item) {
-        console.error("Item not found in data:", codigo);
+        console.error("Item not found:", codigo);
         return;
     }
 
-    const cardEmpty = document.getElementById('previewEmpty');
-    const cardContent = document.getElementById('previewContent');
-    const imgEl = document.getElementById('previewImage');
-    const btnAdd = document.getElementById('previewBtnAdd');
-
-    if (!cardEmpty || !cardContent || !imgEl) {
-        console.error("Preview DOM elements missing");
-        return;
+    // 3. Show Panel (Slide Up)
+    if (panelEls.container) {
+        panelEls.container.classList.remove('translate-y-full');
     }
 
-    // Toggle Visibility
-    cardEmpty.classList.add('hidden');
-    cardContent.classList.remove('hidden');
-    cardContent.classList.add('flex');
+    // 4. Populate Data
 
-    // Update Text
-    document.getElementById('previewTitle').textContent = item.descripcion;
-    document.getElementById('previewCode').textContent = item.codigo;
-    document.getElementById('previewPrice').textContent = `$ ${item.precio}`;
+    // Features
+    if (panelEls.features) {
+        panelEls.features.textContent = item.caracteristicas || "Sin características especificadas.";
+    }
 
-    // Update Button Action
-    if (btnAdd) {
-        const newBtn = btnAdd.cloneNode(true);
-        btnAdd.parentNode.replaceChild(newBtn, btnAdd);
+    // Equivalents
+    if (panelEls.equivalents) {
+        panelEls.equivalents.innerHTML = '';
+        if (item.equivalentes) {
+            const codes = item.equivalentes.split(/[,\n]/).filter(c => c.trim());
+            codes.forEach(c => {
+                const span = document.createElement('span');
+                span.className = "font-mono text-[10px] bg-white border border-gray-300 px-1.5 py-0.5 rounded text-gray-600 select-all shadow-sm";
+                span.textContent = c;
+                panelEls.equivalents.appendChild(span);
+            });
+        } else {
+            panelEls.equivalents.innerHTML = '<span class="text-xs text-gray-400 italic">N/A</span>';
+        }
+    }
+
+    // Pricing
+    if (panelEls.price) panelEls.price.textContent = `$ ${item.precio}`;
+
+    // Cost (Hidden/Blurred by default logic handled by CSS classes, just set values)
+    if (panelEls.cost) {
+        // We store exact numeric value if needed, or just formatted
+        panelEls.cost.textContent = `$ ${item.costo}`;
+        panelEls.cost.dataset.raw = item.costo;
+    }
+
+    // Stock
+    if (panelEls.stock) {
+        panelEls.stock.innerHTML = getBadgeHtml(item.stock); // Use existing badge logic or text
+        // Or simply text:
+        // panelEls.stock.textContent = item.stock > 0 ? 'Disponible' : 'Sin Stock';
+    }
+
+    // Add Button Action
+    if (panelEls.btnAdd) {
+        const newBtn = panelEls.btnAdd.cloneNode(true);
+        panelEls.btnAdd.parentNode.replaceChild(newBtn, panelEls.btnAdd);
         newBtn.onclick = (e) => window.addToCartFromCatalog(item.codigo, e);
+
+        // Disable if no stock? Or let global logic handle it
+        if (item.stock <= 0 && item.stock > -1) { // 0 but not negative (diferido)
+            // newBtn.disabled = true;
+            // newBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
     }
 
-    // Update Image with Robust Fallback Chain
-    const codeLower = item.codigo.toLowerCase();
+    // Image Loading (Robust)
+    if (panelEls.image) {
+        const codeLower = item.codigo.toLowerCase();
+        const r2Src = `${R2_BASE_URL}/${codeLower}-1.webp`;
+        const localSrc = `/Imagenes/${codeLower}-1.webp`;
+        const placeholderSrc = 'https://placehold.co/150x150/f3f4f6/cbd5e1?text=Sin+Imagen'; // Smaller size
 
-    // Reset image to avoid showing previous one while loading
-    // imgEl.src = ''; // Optional: creates blinking effect, maybe avoid
+        panelEls.image.onload = null; // Clear prev handlers
 
-    const r2Src = `${R2_BASE_URL}/${codeLower}-1.webp`;
-    const localSrc = `/Imagenes/${codeLower}-1.webp`;
-    const placeholderSrc = 'https://placehold.co/600x400/f3f4f6/cbd5e1?text=Sin+Imagen';
+        panelEls.image.onerror = function () {
+            console.warn("Panel Image failed:", this.src);
+            if (this.src.includes('r2.dev')) {
+                this.src = localSrc;
+            } else if (!this.src.includes('placehold.co')) {
+                this.src = placeholderSrc;
+            }
+            this.onerror = null;
+        };
 
-    imgEl.onload = function () {
-        // Image loaded successfully
-        console.log("Image loaded:", this.src);
-    };
+        panelEls.image.src = r2Src;
+    }
+};
 
-    imgEl.onerror = function () {
-        console.warn("Image load failed:", this.src);
-        const currentSrc = this.src;
+window.togglePanelCost = function () {
+    const costEl = document.getElementById('panelCost');
+    const icon = document.getElementById('panelCostIcon');
+    if (!costEl) return;
 
-        // 1. If R2 failed, try Local
-        // Check if the FAILED src contains the R2 domain
-        if (currentSrc.includes('r2.dev')) {
-            console.log("Falling back to local:", localSrc);
-            this.src = localSrc;
-            return;
-        }
-
-        // 2. If Local failed (or didn't match R2), show Placeholder
-        if (!currentSrc.includes('placehold.co')) {
-            console.log("Falling back to placeholder");
-            this.src = placeholderSrc;
-        }
-
-        // Stop invalid looping
-        this.onerror = null;
-    };
-
-    // Start with R2
-    console.log("Trying R2 image:", r2Src);
-    imgEl.src = r2Src;
+    // Toggle blur class
+    if (costEl.classList.contains('blur-sm')) {
+        costEl.classList.remove('blur-sm');
+        if (icon) icon.setAttribute('data-lucide', 'eye');
+    } else {
+        costEl.classList.add('blur-sm');
+        if (icon) icon.setAttribute('data-lucide', 'eye-off');
+    }
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 };
 
 function getBadgeHtml(stock) {
