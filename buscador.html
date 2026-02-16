@@ -74,122 +74,184 @@
         </div>
     </header>
 
-    <!-- Main Content: Search Interface -->
+    <!-- Main Content: Search Interface & Preview -->
     <main class="flex-grow container-custom py-8">
 
-        <!-- Search & Filters Container -->
-        <div class="bg-gray-100 rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
-            <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
-                <i data-lucide="sliders-horizontal" class="text-brand-blue"></i>
-                <h2 class="text-xl font-bold text-gray-800">Buscador Inteligente</h2>
-            </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            <!-- Filters Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+            <!-- Left Column: Search & Results (Occupies 9/12 on large screens) -->
+            <div class="lg:col-span-9 space-y-6">
 
-                <!-- Main Search Input -->
-                <div class="md:col-span-4 lg:col-span-1 mb-4 lg:mb-0">
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1 mb-2 block">Búsqueda
-                        Rápida</label>
-                    <div class="relative group">
-                        <input type="text" id="globalSearch"
-                            class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all shadow-sm group-hover:border-brand-blue/50 placeholder:text-brand-blue placeholder:opacity-60 bg-blue-50/30"
-                            placeholder="Ej: cojinete biela corsa...">
-                        <i data-lucide="search"
-                            class="absolute left-3 top-3.5 text-brand-blue/40 w-5 h-5 group-focus-within:text-brand-blue"></i>
+                <!-- Search & Filters Container -->
+                <div class="bg-gray-100 rounded-xl shadow-lg border border-gray-200 p-6">
+                    <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                        <i data-lucide="sliders-horizontal" class="text-brand-blue"></i>
+                        <h2 class="text-xl font-bold text-gray-800">Buscador Inteligente</h2>
                     </div>
-                </div>
 
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Rubro</label>
-                    <div class="relative">
-                        <select id="filterRubro"
-                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer hover:bg-white transition-colors appearance-none">
-                            <option value="">Cargando...</option>
-                        </select>
-                        <i data-lucide="chevron-down"
-                            class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Sub rubro</label>
-                    <div class="relative">
-                        <select id="filterSubrubro" disabled=""
-                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed appearance-none">
-                            <option value="">Selecciona Rubro</option>
-                        </select>
-                        <i data-lucide="chevron-down"
-                            class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Marca</label>
-                    <div class="relative">
-                        <select id="filterMarca" disabled=""
-                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed appearance-none">
-                            <option value="">Selecciona Sub rubro</option>
-                        </select>
-                        <i data-lucide="chevron-down"
-                            class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="hidden md:flex gap-2 justify-end w-full md:col-span-4 mt-2">
-                    <button id="btnSearch"
-                        class="px-6 py-3 bg-brand-blue text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-blue-700 transition flex items-center gap-2">
-                        <i data-lucide="search" class="w-4 h-4"></i> Buscar
-                    </button>
-                    <button id="btnReset"
-                        class="px-6 py-3 bg-white text-gray-600 font-bold rounded-full border border-gray-200 hover:bg-gray-50 transition flex items-center gap-2">
-                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Limpiar
-                    </button>
-                </div>
-            </div>
-
-            <!-- Mobile Search Button -->
-            <button id="btnSearchMobile" onclick="document.getElementById('btnSearch').click()"
-                class="md:hidden w-full mt-4 bg-brand-blue text-white py-3 rounded-xl font-bold shadow-lg">
-                Buscar Productos
-            </button>
-        </div>
-
-        <!-- Results Info -->
-        <div class="flex justify-between items-center mb-4 px-2">
-            <div id="resultCount" class="text-sm font-bold text-brand-blue"></div>
-            <div id="statusMessage" class="hidden text-sm text-gray-500 italic">No se encontraron resultados.</div>
-        </div>
-
-        <!-- Results Table -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-            <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
-                    <tr>
-                        <th class="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">Código
-                        </th>
-                        <th class="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-2/6">
-                            Descripción</th>
-                        <th class="p-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
-                            Precio de Vta</th>
-                        <th class="p-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">Costo
-                        </th>
-                        <th class="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
-                            Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody" class="divide-y divide-gray-100">
-                    <tr>
-                        <td colspan="2" class="p-12 text-center text-gray-400">
-                            <div class="flex flex-col items-center">
-                                <i data-lucide="search" class="w-12 h-12 mb-4 opacity-20"></i>
-                                <p>Cargando base de datos...</p>
+                    <!-- Filters Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                        <!-- Main Search Input -->
+                        <div class="md:col-span-4 lg:col-span-1 mb-4 lg:mb-0">
+                            <label
+                                class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1 mb-2 block">Búsqueda
+                                Rápida</label>
+                            <div class="relative group">
+                                <input type="text" id="globalSearch"
+                                    class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all shadow-sm group-hover:border-brand-blue/50 placeholder:text-brand-blue placeholder:opacity-60 bg-blue-50/30"
+                                    placeholder="Ej: cojinete biela corsa...">
+                                <i data-lucide="search"
+                                    class="absolute left-3 top-3.5 text-brand-blue/40 w-5 h-5 group-focus-within:text-brand-blue"></i>
                             </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Rubro</label>
+                            <div class="relative">
+                                <select id="filterRubro"
+                                    class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer hover:bg-white transition-colors appearance-none">
+                                    <option value="">Cargando...</option>
+                                </select>
+                                <i data-lucide="chevron-down"
+                                    class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Sub
+                                rubro</label>
+                            <div class="relative">
+                                <select id="filterSubrubro" disabled=""
+                                    class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed appearance-none">
+                                    <option value="">Selecciona Rubro</option>
+                                </select>
+                                <i data-lucide="chevron-down"
+                                    class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Marca</label>
+                            <div class="relative">
+                                <select id="filterMarca" disabled=""
+                                    class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed appearance-none">
+                                    <option value="">Selecciona Sub rubro</option>
+                                </select>
+                                <i data-lucide="chevron-down"
+                                    class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="hidden md:flex gap-2 justify-end w-full md:col-span-4 mt-2">
+                            <button id="btnSearch"
+                                class="px-6 py-3 bg-brand-blue text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-blue-700 transition flex items-center gap-2">
+                                <i data-lucide="search" class="w-4 h-4"></i> Buscar
+                            </button>
+                            <button id="btnReset"
+                                class="px-6 py-3 bg-white text-gray-600 font-bold rounded-full border border-gray-200 hover:bg-gray-50 transition flex items-center gap-2">
+                                <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Limpiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Search Button -->
+                    <button id="btnSearchMobile" onclick="document.getElementById('btnSearch').click()"
+                        class="md:hidden w-full mt-4 bg-brand-blue text-white py-3 rounded-xl font-bold shadow-lg">
+                        Buscar Productos
+                    </button>
+                </div>
+
+                <!-- Results Info -->
+                <div class="flex justify-between items-center px-2">
+                    <div id="resultCount" class="text-sm font-bold text-brand-blue"></div>
+                    <div id="statusMessage" class="hidden text-sm text-gray-500 italic">No se encontraron resultados.
+                    </div>
+                </div>
+
+                <!-- Results Table -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
+                            <tr>
+                                <th
+                                    class="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                                    Código
+                                </th>
+                                <th
+                                    class="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-2/6">
+                                    Descripción</th>
+                                <th
+                                    class="p-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                                    Precio de Vta</th>
+                                <th
+                                    class="p-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                                    Costo
+                                </th>
+                                <th
+                                    class="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                                    Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="divide-y divide-gray-100">
+                            <tr>
+                                <td colspan="2" class="p-12 text-center text-gray-400">
+                                    <div class="flex flex-col items-center">
+                                        <i data-lucide="search" class="w-12 h-12 mb-4 opacity-20"></i>
+                                        <p>Cargando base de datos...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Column: Product Preview (Occupies 3/12, Sticky) -->
+            <div class="hidden lg:block lg:col-span-3">
+                <div class="sticky top-24">
+                    <div id="previewCard"
+                        class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 flex flex-col items-center text-center transition-all duration-300 min-h-[300px]">
+
+                        <!-- Empty State -->
+                        <div id="previewEmpty"
+                            class="flex flex-col items-center justify-center h-full py-10 opacity-50">
+                            <i data-lucide="mouse-pointer-click" class="w-16 h-16 text-gray-300 mb-4"></i>
+                            <p class="text-sm text-gray-500 font-medium">Selecciona un producto<br>para ver su imagen
+                            </p>
+                        </div>
+
+                        <!-- Active State (Hidden by default) -->
+                        <div id="previewContent" class="hidden w-full flex-col items-center animate-fade-in">
+                            <div
+                                class="w-full aspect-square bg-gray-50 rounded-xl mb-4 flex items-center justify-center overflow-hidden border border-gray-100 relative group">
+                                <img id="previewImage" src="" alt="Vista Previa"
+                                    class="w-full h-full object-contain p-2 mix-blend-multiply transition-transform duration-300 group-hover:scale-110">
+                                <div
+                                    class="absolute inset-0 border-2 border-transparent group-hover:border-brand-blue/10 rounded-xl transition-colors pointer-events-none">
+                                </div>
+                            </div>
+
+                            <h3 id="previewTitle" class="text-sm font-bold text-gray-800 mb-1 line-clamp-2">Producto
+                            </h3>
+                            <span id="previewCode"
+                                class="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded mb-3 select-all">CODE</span>
+
+                            <div class="w-full mt-auto">
+                                <div class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-1">Precio</div>
+                                <div id="previewPrice" class="text-2xl font-black text-brand-blue mb-4">$ 0.00</div>
+
+                                <button id="previewBtnAdd"
+                                    class="w-full py-2 bg-brand-blue text-white font-bold rounded-lg shadow-md hover:bg-brand-dark transition active:scale-95 flex items-center justify-center gap-2">
+                                    <i data-lucide="shopping-cart" class="w-4 h-4"></i> Agregar
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </main>

@@ -478,11 +478,20 @@ function renderTable(q = '') {
     // Limit to 100 for performance
     sortedData.slice(0, 100).forEach(item => {
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 last:border-b-0";
+        tr.className = "group hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 last:border-b-0 cursor-pointer";
+
+        // Click en la fila -> Vista Previa
+        tr.onclick = (e) => {
+            // Si el clic fue en un botón o su icono, no cambiamos la selección (opcional)
+            // O mejor, permitimos que seleccione también para feedback visual.
+            // Pero evitemos conflictos si hay modales.
+            if (e.target.closest('button')) return;
+            window.selectPreview(item.codigo, tr);
+        };
 
         tr.innerHTML = `
             <td class="p-4 font-bold text-sm text-gray-700" data-label="Código">
-                <span class="bg-white px-2 py-1 rounded border border-gray-200 shadow-sm inline-block">${highlightText(item.codigo, q)}</span>
+                <span class="bg-white px-2 py-1 rounded border border-gray-200 shadow-sm inline-block group-hover:border-brand-blue/30 transition-colors">${highlightText(item.codigo, q)}</span>
             </td>
             <td class="p-4 text-sm text-gray-800" data-label="Descripción">
                 <div class="flex flex-col">
@@ -496,17 +505,17 @@ function renderTable(q = '') {
             <td class="p-4 text-right font-bold text-gray-400" data-label="Costo">
                 <span id="cost-${item.codigo}" 
                       class="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded transition-all select-none"
-                      onclick="window.toggleTableCost('${item.codigo}', ${item.costo})">***</span>
+                      onclick="event.stopPropagation(); window.toggleTableCost('${item.codigo}', ${item.costo})">***</span>
             </td>
             <td class="p-4 text-center" data-label="Acción">
                 <div class="flex items-center justify-center gap-2">
                     <button onclick="window.addToCartFromCatalog('${item.codigo}', event)" 
-                            class="p-2 bg-brand-blue text-white rounded-lg hover:bg-blue-700 transition shadow-sm active:scale-95" 
+                            class="p-2 bg-brand-blue text-white rounded-lg hover:bg-blue-700 transition shadow-sm active:scale-95 z-10 relative" 
                             title="Agregar al carrito">
                         <i data-lucide="shopping-cart" class="w-4 h-4"></i>
                     </button>
-                    <button onclick="window.openProductDetail('${item.codigo}')" 
-                            class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-brand-blue hover:text-white transition shadow-sm active:scale-95" 
+                    <button onclick="event.stopPropagation(); window.openProductDetail('${item.codigo}')" 
+                            class="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-brand-blue hover:text-white transition shadow-sm active:scale-95 z-10 relative" 
                             title="Ver detalles">
                         <i data-lucide="eye" class="w-4 h-4"></i>
                     </button>
@@ -519,6 +528,75 @@ function renderTable(q = '') {
     els.tbody.appendChild(fragment);
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
+
+// --- PREVIEW LOGIC (Sidebar) ---
+window.selectPreview = function (codigo, rowEl) {
+    // 1. Highlight Row Logic
+    // Remove previous highlight
+    const prevRow = document.querySelector('tr.bg-blue-50.border-l-4');
+    if (prevRow) {
+        prevRow.classList.remove('bg-blue-50', 'border-l-4', 'border-brand-blue');
+    }
+
+    // Add Highlight to current
+    if (rowEl) {
+        rowEl.classList.add('bg-blue-50', 'border-l-4', 'border-brand-blue');
+    }
+
+    // 2. Populate Preview Card
+    const item = allData.find(d => d.codigo === codigo);
+    if (!item) return;
+
+    const cardEmpty = document.getElementById('previewEmpty');
+    const cardContent = document.getElementById('previewContent');
+    const imgEl = document.getElementById('previewImage');
+    const btnAdd = document.getElementById('previewBtnAdd');
+
+    if (cardEmpty) cardEmpty.classList.add('hidden');
+    if (cardContent) {
+        cardContent.classList.remove('hidden');
+        cardContent.classList.add('flex');
+    }
+
+    // Update Text
+    document.getElementById('previewTitle').textContent = item.descripcion;
+    document.getElementById('previewCode').textContent = item.codigo;
+    document.getElementById('previewPrice').textContent = `$ ${item.precio}`;
+
+    // Update Button Action
+    if (btnAdd) {
+        // Clone to remove old event listeners easily
+        const newBtn = btnAdd.cloneNode(true);
+        btnAdd.parentNode.replaceChild(newBtn, btnAdd);
+        newBtn.onclick = (e) => window.addToCartFromCatalog(item.codigo, e);
+    }
+
+    // Update Image with Fallback Chain
+    if (imgEl) {
+        const codeLower = item.codigo.toLowerCase();
+
+        // Pre-load logic to avoid glitches
+        const tempImg = new Image();
+        const setSrc = (src) => { imgEl.src = src; };
+
+        // 1. Try R2
+        const r2Src = `${R2_BASE_URL}/${codeLower}-1.webp`;
+
+        imgEl.onerror = function () {
+            // 2. Fallback to Local
+            if (this.src === r2Src) {
+                this.src = `/Imagenes/${codeLower}-1.webp`;
+            }
+            // 3. Fallback to Placeholder
+            else {
+                this.src = 'https://placehold.co/600x400/f3f4f6/cbd5e1?text=Sin+Imagen';
+                this.onerror = null; // Stop looping
+            }
+        };
+
+        imgEl.src = r2Src;
+    }
+};
 
 function getBadgeHtml(stock) {
     let colorStyle = '';
