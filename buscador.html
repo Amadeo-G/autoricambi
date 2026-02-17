@@ -4,75 +4,512 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autoricambi | Catálogo Mayorista</title>
+    <title>Autoricambi | Distribuidor Mayorista</title>
+    <!-- Tailwind -->
     <link href="/src/output.css" rel="stylesheet">
+    <!-- Fonts & Icons -->
     <link rel="stylesheet" href="/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <!-- Lucide Icons (Used by Search Component) -->
     <script src="/lucide@0.562.0/dist/umd/lucide.min.js"></script>
+
+    <!-- SheetJS for Excel Reading -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-    <style>
-        .selected-row { border-left: 4px solid #1e40af; background-color: #eff6ff !important; }
-        #tech-footer { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .show-footer { transform: translateY(0) !important; }
-        .side-panel-sticky { position: sticky; top: 1.5rem; }
-    </style>
+    <!-- Auth Guard -->
+    <script type="module">
+        import { auth } from '/src/js/auth.js';
+        auth.checkAuth();
+    </script>
 </head>
 
-<body class="bg-gray-50 pb-32">
-    <main class="container mx-auto mt-6 px-4">
-        <div class="flex flex-col lg:flex-row gap-6">
-            
-            <div class="w-full lg:w-3/4">
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-gray-100 text-gray-600 uppercase text-xs font-bold">
-                            <tr>
-                                <th class="px-4 py-3">Código</th>
-                                <th class="px-4 py-3">Descripción</th>
-                                <th class="px-4 py-3">Marca</th>
-                                <th class="px-4 py-3 text-right">Precio</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody" class="divide-y divide-gray-100">
-                            </tbody>
-                    </table>
-                </div>
-            </div>
+<body class="bg-gray-50 text-brand-dark font-sans flex flex-col min-h-screen">
 
-            <div class="hidden lg:block lg:w-1/4">
-                <div class="side-panel-sticky p-4 bg-white rounded-xl shadow-lg border border-gray-200 text-center">
-                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-4">Vista Previa Técnica</span>
-                    <div id="side-image-container" class="aspect-square bg-gray-50 rounded-lg border border-dashed border-gray-300 flex items-center justify-center overflow-hidden mb-4">
-                        <img id="side-image" src="https://via.placeholder.com/400?text=Seleccione+Producto" class="max-w-full max-h-full object-contain transition-opacity duration-300">
-                    </div>
-                    <h4 id="side-title" class="font-bold text-gray-800 text-sm leading-tight">---</h4>
-                    <p id="side-code" class="text-blue-600 font-bold text-xs mt-2">---</p>
+    <!-- Header -->
+    <header class="bg-brand-nav shadow-md sticky top-0 z-50">
+        <div class="container-custom py-2">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="/index.html" class="flex items-center">
+                    <img src="/src/img/logo.png" alt="Autoricambi" class="h-10 md:h-12 object-contain">
+                </a>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex flex-1 mx-12 justify-center">
+                </nav>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-6 text-white">
+                    <a href="login.html"
+                        class="hidden md:flex items-center space-x-2 hover:text-brand-accent transition">
+                        <i class="fas fa-user-circle text-2xl"></i>
+                        <span class="font-medium text-base">Iniciar Sesión</span>
+                    </a>
+
+                    <a href="cart.html" class="relative hover:text-brand-accent transition">
+                        <i class="fas fa-shopping-cart text-2xl"></i>
+                        <span
+                            class="cart-count absolute -top-2 -right-2 bg-brand-red text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-brand-blue">0</span>
+                    </a>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" class="md:hidden text-2xl focus:outline-none">
+                        <i class="fas fa-bars"></i>
+                    </button>
                 </div>
             </div>
         </div>
+
+        <!-- Mobile Menu (Hidden) -->
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-nav border-t border-white/10 p-4">
+            <a href="login.html" class="block py-2 text-white hover:text-brand-accent"><i class="fas fa-user mr-2"></i>
+                Iniciar Sesión</a>
+            <a href="buscador.html" class="block py-2 text-white hover:text-brand-accent"><i
+                    class="fas fa-book-open mr-2"></i> Catálogo</a>
+            <a href="#contacto" class="block py-2 text-white hover:text-brand-accent"><i
+                    class="fas fa-envelope mr-2"></i> Contacto</a>
+        </div>
+    </header>
+
+    <!-- Main Content: Search Interface -->
+    <main class="flex-grow container-custom py-8">
+
+        <!-- Search & Filters Container -->
+        <div class="bg-gray-100 rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
+            <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                <i data-lucide="sliders-horizontal" class="text-brand-blue"></i>
+                <h2 class="text-xl font-bold text-gray-800">Buscador Inteligente</h2>
+            </div>
+
+            <!-- Filters Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+
+                <!-- Main Search Input -->
+                <div class="md:col-span-4 lg:col-span-1 mb-4 lg:mb-0">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1 mb-2 block">Búsqueda
+                        Rápida</label>
+                    <div class="relative group">
+                        <input type="text" id="globalSearch"
+                            class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all shadow-sm group-hover:border-brand-blue/50 placeholder:text-brand-blue placeholder:opacity-60 bg-blue-50/30"
+                            placeholder="Ej: cojinete biela corsa...">
+                        <i data-lucide="search"
+                            class="absolute left-3 top-3.5 text-brand-blue/40 w-5 h-5 group-focus-within:text-brand-blue"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Rubro</label>
+                    <div class="relative">
+                        <select id="filterRubro"
+                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer hover:bg-white transition-colors appearance-none">
+                            <option value="">Cargando...</option>
+                        </select>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Sub rubro</label>
+                    <div class="relative">
+                        <select id="filterSubrubro" disabled=""
+                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed appearance-none">
+                            <option value="">Selecciona Rubro</option>
+                        </select>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Marca</label>
+                    <div class="relative">
+                        <select id="filterMarca" disabled=""
+                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed appearance-none">
+                            <option value="">Selecciona Sub rubro</option>
+                        </select>
+                        <i data-lucide="chevron-down"
+                            class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="hidden md:flex gap-2 justify-end w-full md:col-span-4 mt-2">
+                    <button id="btnSearch"
+                        class="px-6 py-3 bg-brand-blue text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-blue-700 transition flex items-center gap-2">
+                        <i data-lucide="search" class="w-4 h-4"></i> Buscar
+                    </button>
+                    <button id="btnReset"
+                        class="px-6 py-3 bg-white text-gray-600 font-bold rounded-full border border-gray-200 hover:bg-gray-50 transition flex items-center gap-2">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Search Button -->
+            <button id="btnSearchMobile" onclick="document.getElementById('btnSearch').click()"
+                class="md:hidden w-full mt-4 bg-brand-blue text-white py-3 rounded-xl font-bold shadow-lg">
+                Buscar Productos
+            </button>
+        </div>
+
+        <!-- Results Info -->
+        <div class="flex justify-between items-center mb-4 px-2">
+            <div id="resultCount" class="text-sm font-bold text-brand-blue"></div>
+            <div id="statusMessage" class="hidden text-sm text-gray-500 italic">No se encontraron resultados.</div>
+        </div>
+
+        <!-- Results Table -->
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+            <table class="w-full">
+                <thead class="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
+                    <tr>
+                        <th class="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">Código
+                        </th>
+                        <th class="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-2/6">
+                            Descripción</th>
+                        <th class="p-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                            Precio de Vta</th>
+                        <th class="p-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">Costo
+                        </th>
+                        <th class="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                            Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-gray-100">
+                    <tr>
+                        <td colspan="2" class="p-12 text-center text-gray-400">
+                            <div class="flex flex-col items-center">
+                                <i data-lucide="search" class="w-12 h-12 mb-4 opacity-20"></i>
+                                <p>Cargando base de datos...</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
     </main>
 
-    <footer id="tech-footer" class="fixed bottom-0 left-0 w-full bg-slate-900 text-white p-5 shadow-2xl z-50 transform translate-y-full border-t-4 border-blue-600">
-        <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+    <!-- Product Details Modal -->
+    <div id="productModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div
+            class="relative bg-white rounded-3xl shadow-2xl w-full md:w-11/12 max-w-6xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row animate-fade-in-up">
+
+            <button onclick="closeModal()"
+                class="absolute top-4 right-4 z-20 bg-white/80 p-2 rounded-full hover:bg-white text-gray-500 hover:text-red-500 transition shadow-sm">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <!-- Image Section -->
+            <div
+                class="w-full md:w-1/2 bg-white flex items-center justify-center p-4 relative min-h-[300px] overflow-hidden group">
+                <div id="modalImageContainer"
+                    class="relative w-full h-full flex items-center justify-center p-6 overflow-hidden">
+                    <img id="modalImg1" src=""
+                        class="max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-200 ease-out will-change-transform"
+                        style="display:block">
+                    <img id="modalImg2" src=""
+                        class="max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-200 ease-out will-change-transform"
+                        style="display:none">
+                    <img id="modalImg3" src=""
+                        class="max-h-full max-w-full object-contain drop-shadow-md transition-transform duration-200 ease-out will-change-transform"
+                        style="display:none">
+                </div>
+                <!-- Controls -->
+                <div class="absolute bottom-6 flex gap-2">
+                    <div id="dot1" onclick="setSlide(1)"
+                        class="w-6 h-2 bg-brand-blue rounded-full cursor-pointer transition-all"></div>
+                    <div id="dot2" onclick="setSlide(2)"
+                        class="w-2 h-2 bg-gray-300 rounded-full cursor-pointer transition-all"></div>
+                    <div id="dot3" onclick="setSlide(3)"
+                        class="w-2 h-2 bg-gray-300 rounded-full cursor-pointer transition-all"></div>
+                </div>
+                <button onclick="nextSlide(-1)"
+                    class="absolute left-4 bg-white/50 hover:bg-white p-2 rounded-full cursor-pointer"><i
+                        data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                <button onclick="nextSlide(1)"
+                    class="absolute right-4 bg-white/50 hover:bg-white p-2 rounded-full cursor-pointer"><i
+                        data-lucide="chevron-right" class="w-5 h-5"></i></button>
+            </div>
+
+            <!-- Content Section -->
+            <div class="w-full md:w-1/2 p-6 md:p-8 overflow-y-auto bg-gray-50 flex flex-col relative">
+
+                <!-- Header: Breadcrumbs & Brand -->
+                <div class="flex items-center gap-2 mb-3 flex-wrap">
+                    <span id="modalRubro"
+                        class="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-white px-2 py-1 rounded-md border border-gray-200 shadow-sm">Rubro
+                        > Sub</span>
+                    <span class="text-gray-300">|</span>
+                    <span id="modalMarca"
+                        class="text-[10px] font-bold text-brand-blue uppercase bg-blue-50 px-2 py-1 rounded-md border border-blue-100 shadow-sm">Marca</span>
+                </div>
+
+                <!-- Title & Code -->
+                <div class="mb-6">
+                    <h2 id="modalTitle"
+                        class="text-2xl md:text-3xl font-bold text-gray-800 leading-tight mb-2 font-sans">Descripción
+                        del Producto</h2>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wide">SKU:</span>
+                        <span id="modalCodigo"
+                            class="font-mono font-bold text-gray-600 text-lg tracking-wide select-all">CODE123</span>
+                    </div>
+                </div>
+
+                <!-- Hero Action Card (Price + Add Button) -->
+                <div
+                    class="bg-white rounded-2xl p-6 shadow-md border border-gray-100 mb-8 flex flex-col gap-6 items-center text-center transition-transform hover:scale-[1.01] duration-300 relative overflow-hidden group/card">
+                    <div
+                        class="absolute top-0 right-0 w-24 h-24 bg-brand-blue/5 rounded-bl-full -mr-10 -mt-10 transition-all group-hover/card:bg-brand-blue/10">
+                    </div>
+
+                    <div class="relative z-10 w-full">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Precio
+                            Final</span>
+                        <span id="modalPrecio"
+                            class="text-2xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight leading-tight break-words">
+                            $ 0
+                        </span>
+                    </div>
+                </div>
+
+                <div class="space-y-5">
+                    <div>
+                        <h3
+                            class="text-xs font-bold text-gray-900 uppercase tracking-widest mb-2 flex items-center gap-2">
+                            <i data-lucide="list" class="w-4 h-4 text-brand-blue"></i> Características
+                        </h3>
+                        <div id="modalFeatures" class="flex flex-wrap gap-2">
+                            <!-- Injected JS -->
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3
+                            class="text-xs font-bold text-gray-900 uppercase tracking-widest mb-2 flex items-center gap-2">
+                            <i data-lucide="shuffle" class="w-4 h-4 text-brand-blue"></i> Equivalencias
+                        </h3>
+                        <div id="modalEquivalents" class="flex flex-wrap gap-2">
+                            <!-- Injected JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="mt-6 pt-6 border-t border-gray-200 flex gap-4">
+                    <button onclick="closeModal()"
+                        class="flex-1 py-3 bg-white border border-gray-200 text-gray-500 hover:text-gray-800 hover:border-gray-300 hover:bg-gray-50 font-bold rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                        <span>Cerrar</span>
+                    </button>
+                    <button id="modalBtnAddFooter"
+                        class="flex-1 py-3 bg-brand-blue hover:bg-brand-dark text-white font-bold rounded-xl shadow-lg hover:shadow-brand-blue/30 transition-all duration-200 flex items-center justify-center gap-2 active:scale-95">
+                        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                        <span>Agregar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-auto">
+        <div class="container-custom grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-                <h6 class="text-blue-400 text-[10px] font-bold uppercase mb-2">Especificaciones</h6>
-                <p id="tech-specs" class="text-xs text-gray-300 leading-relaxed italic">---</p>
+                <div class="text-white text-2xl font-bold mb-4">Autoricambi</div>
+                <p class="text-sm mb-4">Somos una distribuidora de repuestos del automotor comprometidos con la calidad
+                    y la excelencia en el servicio al cliente.</p>
+                <div class="flex space-x-4">
+                    <a href="#"
+                        class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-brand-blue transition"><i
+                            class="fab fa-facebook-f"></i></a>
+                    <a href="#"
+                        class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-pink-600 transition"><i
+                            class="fab fa-instagram"></i></a>
+                    <a href="#"
+                        class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-green-500 transition"><i
+                            class="fab fa-whatsapp"></i></a>
+                </div>
             </div>
             <div>
-                <h6 class="text-blue-400 text-[10px] font-bold uppercase mb-2">Equivalencias</h6>
-                <p id="tech-equiv" class="text-xs text-gray-300 leading-relaxed">---</p>
+                <h4 class="text-white font-bold text-lg mb-4">Enlaces Rápidos</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="index.htm" class="hover:text-white transition">Inicio</a></li>
+                    <li><a href="buscador.html" class="hover:text-white transition">Catálogo</a></li>
+                    <li><a href="#" class="hover:text-white transition">Cómo Comprar</a></li>
+                    <li><a href="#" class="hover:text-white transition">Zona Clientes</a></li>
+                </ul>
             </div>
             <div>
-                <h6 class="text-blue-400 text-[10px] font-bold uppercase mb-2">Rubro / Aplicación</h6>
-                <p id="tech-app" class="text-xs text-gray-300">---</p>
+                <h4 class="text-white font-bold text-lg mb-4" id="contacto">Contacto</h4>
+                <ul class="space-y-3 text-sm">
+                    <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-2 text-brand-accent"></i>
+                        Córdoba, Argentina</li>
+                    <li class="flex items-center"><i class="fas fa-phone-alt mr-2 text-brand-accent"></i> 351 686-1092
+                    </li>
+                    <li class="flex items-center"><i class="fas fa-envelope mr-2 text-brand-accent"></i>
+                        info@autoricambi.com.ar</li>
+                </ul>
             </div>
-            <div class="text-right">
-                <span class="text-gray-400 text-[10px] uppercase block">Precio Público Sugerido</span>
-                <span id="tech-price" class="text-3xl font-black text-green-400 tracking-tighter">$ 0,00</span>
-            </div>
+        </div>
+        <div class="container-custom border-t border-gray-800 mt-8 pt-8 text-center text-xs text-gray-500">
+            &copy; 2026 Autoricambi. Todos los derechos reservados.
         </div>
     </footer>
 
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/5493516861092?text=%C2%A1Hola%20Autoricambi!%20Quiero%20consultarles%20sobre..."
+        target="_blank" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;"
+        class="bg-green-500 hover:bg-green-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group">
+        <i class="fab fa-whatsapp text-3xl"></i>
+        <span
+            class="absolute right-full mr-3 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+            ¡Chateá con nosotros!
+        </span>
+    </a>
+
+    <!-- Main Logic -->
     <script src="/src/js/catalog.js"></script>
+    <script type="module" src="/src/js/main.js"></script>
+
+    <!-- Animations & Parallax -->
+    <style>
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Simple Parallax for Background Pattern */
+        body {
+            background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-attachment: fixed;
+        }
+
+        /* Responsive Table for Mobile */
+        @media (max-width: 768px) {
+            #tableBody tr {
+                display: block;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                background: #fdfdfd;
+                border: 1px solid #e5e7eb;
+                border-radius: 1rem;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            }
+
+            #tableBody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.5rem 0;
+                border: none;
+                width: 100%;
+                text-align: right;
+            }
+
+            #tableBody td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                text-transform: uppercase;
+                font-size: 0.7rem;
+                color: #64748b;
+                text-align: left;
+                margin-right: 1rem;
+            }
+
+            #tableBody td[data-label="Descripción"] {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+                border-bottom: 1px solid #f1f5f9;
+                margin-bottom: 0.5rem;
+                padding-bottom: 0.75rem;
+            }
+
+            #tableBody td[data-label="Descripción"]::before {
+                margin-bottom: 0.25rem;
+            }
+
+            #tableBody td[data-label="Código"] {
+                border-bottom: 1px solid #f1f5f9;
+                margin-bottom: 0.5rem;
+            }
+
+            #tableBody td[data-label="Acción"] {
+                justify-content: center;
+                gap: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #f1f5f9;
+                margin-top: 0.5rem;
+            }
+
+            #tableBody td[data-label="Acción"]::before {
+                display: none;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Options for the observer (which parts of the element are visible)
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            // Intersection Observer callback
+            const observerCallback = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); // Stop observing once revealed
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+            // 1. Static Elements: Select and observe
+            // Exclude input/selects and things inside the modal to avoid janky behavior
+            const staticSelectors = 'h2:not(#productModal *), h3:not(#productModal *), p:not(#productModal *), .bg-white:not(#productModal *), .shadow-xl:not(#productModal *), footer';
+            document.querySelectorAll(staticSelectors).forEach(el => {
+                el.classList.add('reveal');
+                observer.observe(el);
+            });
+
+            // 2. Dynamic Table Rows
+            const targetNode = document.getElementById('tableBody');
+            if (targetNode) {
+                const config = { childList: true };
+                const callback = function (mutationsList) {
+                    for (const mutation of mutationsList) {
+                        if (mutation.type === 'childList') {
+                            mutation.addedNodes.forEach(node => {
+                                if (node.nodeType === 1 && node.tagName === 'TR') { // Ensure it's a table row
+                                    node.classList.add('reveal');
+                                    observer.observe(node); // Observe it so it animates when in view
+                                }
+                            });
+                        }
+                    }
+                };
+                const mutationObserver = new MutationObserver(callback);
+                mutationObserver.observe(targetNode, config);
+            }
+        });
+    </script>
 </body>
+
 </html>
