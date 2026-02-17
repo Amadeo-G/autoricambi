@@ -346,82 +346,75 @@
         }
     </style>
     <!-- Sticky Product Footer (Moved here and enforced bottom) -->
+    <!-- Sticky Product Footer (Compact Version) -->
     <div id="stickyFooter" style="position: fixed; bottom: 0; left: 0; right: 0; top: auto;"
-        class="w-full bg-white shadow-[0_-5px_30px_rgba(0,0,0,0.1)] z-[90] transform translate-y-full transition-transform duration-500 ease-in-out border-t border-gray-200 hidden md:flex h-[200px] items-center">
-        <div class="container-custom flex w-full h-full">
+        class="w-full bg-white shadow-[0_-5px_30px_rgba(0,0,0,0.15)] z-[90] transform translate-y-full transition-transform duration-300 ease-in-out border-t border-gray-200 hidden md:flex h-[140px] items-center">
 
-            <!-- Left: Image (25%) - Max 150x150 constraint -->
+        <div class="container-custom flex items-center w-full h-full gap-6 px-4">
+
+            <!-- 1. Imagen (Compacta y sin bordes excesivos) -->
             <div
-                class="w-1/4 h-full p-4 flex items-center justify-center bg-gray-50 border-r border-gray-100 relative group overflow-hidden">
-                <div
-                    class="w-[150px] h-[150px] flex items-center justify-center bg-white rounded-lg shadow-sm border border-gray-100 p-2">
-                    <img id="stickyImg" src="" alt="Producto"
-                        class="max-h-full max-w-full object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105">
-                </div>
+                class="h-28 w-28 flex-shrink-0 bg-white border border-gray-100 rounded-lg p-1 flex items-center justify-center shadow-sm">
+                <img id="stickyImg" src="" alt="Producto"
+                    class="max-h-full max-w-full object-contain mix-blend-multiply">
             </div>
 
-            <!-- Center: Characteristics & Equivalences (50%) -->
-            <div class="w-2/4 h-full p-6 overflow-y-auto custom-scrollbar flex flex-col justify-center">
-                <div class="mb-3">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span id="stickyCode"
-                            class="font-mono font-bold text-white bg-brand-blue px-2 py-0.5 rounded text-sm shadow-sm tracking-wide"></span>
-                        <span id="stickyBrand"
-                            class="text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-200 px-2 py-0.5 rounded bg-gray-50"></span>
-                    </div>
-                    <h3 id="stickyDesc" class="text-lg font-bold text-gray-800 leading-tight">Seleccione un producto
-                    </h3>
+            <!-- 2. Información Central (Jerarquía horizontal) -->
+            <div class="flex-1 min-w-0 flex flex-col justify-center h-full py-3 gap-2">
+
+                <!-- Encabezado: Código | Marca | Descripción -->
+                <div class="flex items-center gap-3 border-b border-gray-100 pb-2">
+                    <span id="stickyCode"
+                        class="font-mono font-bold text-white bg-brand-blue px-2 py-0.5 rounded text-xs shadow-sm"></span>
+                    <span id="stickyBrand"
+                        class="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-gray-50 border border-gray-200 px-2 py-0.5 rounded"></span>
+                    <h3 id="stickyDesc" class="font-bold text-gray-700 text-sm truncate flex-1"
+                        title="Descripción completa">Seleccione un producto</h3>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-2">
-                    <!-- Features -->
-                    <div>
-                        <h4
-                            class="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
+                <!-- Detalles: Grid de 2 columnas para aprovechar el ancho -->
+                <div class="flex gap-6 h-full overflow-hidden">
+                    <!-- Características -->
+                    <div class="flex-1 min-w-0 flex flex-col justify-center">
+                        <span
+                            class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-1">
                             <i data-lucide="list" class="w-3 h-3"></i> Características
-                        </h4>
-                        <div id="stickyFeatures" class="flex flex-wrap gap-1.5">
-                            <!-- Injected by JS -->
+                        </span>
+                        <div id="stickyFeatures" class="flex flex-wrap gap-1.5 content-start">
+                            <!-- JS Injected -->
                         </div>
                     </div>
 
-                    <!-- Equivalences -->
-                    <div>
-                        <h4
-                            class="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">
+                    <!-- Equivalencias -->
+                    <div class="flex-1 min-w-0 flex flex-col justify-center border-l border-gray-100 pl-6">
+                        <span
+                            class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-1">
                             <i data-lucide="shuffle" class="w-3 h-3"></i> Equivalencias
-                        </h4>
-                        <div id="stickyEquivs" class="flex flex-wrap gap-1.5">
-                            <!-- Injected by JS -->
+                        </span>
+                        <div id="stickyEquivs" class="flex flex-wrap gap-1.5 content-start">
+                            <!-- JS Injected -->
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Right: Price & Actions (25%) -->
-            <div
-                class="w-1/4 h-full p-6 bg-gradient-to-br from-white to-gray-50 border-l border-gray-100 flex flex-col justify-center gap-4">
+            <!-- 3. Precio y Acción (Vertical compacto) -->
+            <div class="flex flex-col items-end justify-center gap-2 min-w-[160px] border-l border-gray-100 pl-6 h-3/4">
 
                 <div class="text-right">
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Precio
-                        Venta</span>
-                    <div id="stickyPrice" class="text-3xl font-black text-gray-900 tracking-tight leading-none">$ 0
+                    <div id="stickyPrice" class="text-3xl font-black text-gray-900 leading-none tracking-tight">$ 0
                     </div>
-                </div>
-
-                <div class="flex items-center justify-end gap-2">
-                    <div class="cursor-pointer px-3 py-1 rounded-lg hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200"
+                    <div class="cursor-pointer flex items-center justify-end gap-1 mt-1 group"
                         onclick="window.toggleStickyCost()">
-                        <div class="text-[9px] font-bold text-gray-400 uppercase text-right">Costo</div>
-                        <div id="stickyCost" class="text-sm font-bold text-gray-300 select-none text-right">****
-                        </div>
+                        <span
+                            class="text-[10px] text-gray-400 font-bold uppercase group-hover:text-brand-blue transition-colors">Costo:</span>
+                        <span id="stickyCost" class="text-xs font-bold text-gray-300 select-none">****</span>
                     </div>
                 </div>
 
                 <button id="stickyBtnAdd"
-                    class="w-full px-6 py-3 bg-brand-blue text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-blue-700 transition flex items-center justify-center gap-2 group/btn active:scale-95">
-                    <i data-lucide="shopping-cart"
-                        class="w-4 h-4 transition-transform group-hover/btn:-translate-y-0.5 group-hover/btn:rotate-[-10deg]"></i>
+                    class="w-full py-2 bg-brand-blue text-white font-bold rounded-full shadow-md hover:shadow-lg hover:bg-blue-700 transition flex items-center justify-center gap-2 active:scale-95 text-sm">
+                    <i data-lucide="shopping-cart" class="w-4 h-4"></i>
                     <span>Agregar</span>
                 </button>
             </div>

@@ -644,13 +644,13 @@ window.selectProductForSticky = function (codigo) {
     if (!spacer) {
         spacer = document.createElement('div');
         spacer.id = 'stickySpacer';
-        spacer.style.height = '220px'; // Footer height + buffer
+        spacer.style.height = '160px'; // New Compact Footer height (140px) + buffer
         spacer.style.transition = 'height 0.3s ease';
         // Insert after the table container or at the end of main
         const main = document.querySelector('main');
         if (main) main.appendChild(spacer);
     } else {
-        spacer.style.height = '220px';
+        spacer.style.height = '160px';
         spacer.style.display = 'block';
     }
 }
