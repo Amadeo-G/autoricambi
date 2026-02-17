@@ -12,8 +12,6 @@ let currentServerLastModified = null;
 
 // WEB WORKER INITIALIZATION
 const excelWorker = new Worker('/src/js/excel-worker.js');
-let currentStickyCost = 0; // Para almacenar el costo del item seleccionado
-let currentStickyCode = null; // Para saber qué item está seleccionado
 
 excelWorker.onmessage = async function (e) {
     const { type, data, error } = e.data;
@@ -106,12 +104,9 @@ window.addEventListener('popstate', (event) => {
     const code = match ? match[2] : null;
 
     if (code) {
-        // Redirigir al sticky
-        window.selectProductForSticky(code);
+        window.openProductDetail(code, false); // false to not push state again
     } else {
-        // Cerrar sticky si fuese necesario (opcional)
-        const footer = document.getElementById('stickyFooter');
-        if (footer) footer.classList.add('translate-y-full');
+        window.closeModal(false);
     }
 });
 
@@ -217,7 +212,7 @@ function handleInitialCode(initialCode) {
         if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue font-bold italic">Buscando producto: ${initialCode}...</td></tr>`;
         const exactMatch = allData.find(d => d.codigo.toLowerCase() === cleanCode);
         if (exactMatch) {
-            setTimeout(() => window.selectProductForSticky(exactMatch.codigo), 500);
+            setTimeout(() => window.openProductDetail(exactMatch.codigo, false), 500);
         } else {
             els.search.value = initialCode;
             applyFilters();
@@ -483,17 +478,11 @@ function renderTable(q = '') {
     // Limit to 100 for performance
     sortedData.slice(0, 100).forEach(item => {
         const tr = document.createElement('tr');
-        // Add cursor-pointer and click handler to row
-        tr.className = "hover:bg-blue-50/50 cursor-pointer transition-colors duration-200 border-b border-gray-100 last:border-b-0 group/row";
-        tr.onclick = (e) => {
-            // Avoid triggering if clicked on action buttons
-            if (e.target.closest('button') || e.target.closest('.no-select')) return;
-            window.selectProductForSticky(item.codigo);
-        };
+        tr.className = "hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 last:border-b-0";
 
         tr.innerHTML = `
             <td class="p-4 font-bold text-sm text-gray-700" data-label="Código">
-                <span class="bg-white px-2 py-1 rounded border border-gray-200 shadow-sm inline-block group-hover/row:border-blue-200 group-hover/row:text-brand-blue transition-colors">${highlightText(item.codigo, q)}</span>
+                <span class="bg-white px-2 py-1 rounded border border-gray-200 shadow-sm inline-block">${highlightText(item.codigo, q)}</span>
             </td>
             <td class="p-4 text-sm text-gray-800" data-label="Descripción">
                 <div class="flex flex-col">
@@ -551,136 +540,6 @@ function getBadgeHtml(stock) {
     return `<div class="w-3 h-3 rounded-full ${colorClass} shadow-sm" ${colorStyle} title="${title}: ${stock}"></div>`;
 }
 
-// --- STICKY FOOTER LOGIC ---
-
-window.selectProductForSticky = function (codigo) {
-    const item = allData.find(d => d.codigo === codigo);
-    if (!item) return;
-
-    currentStickyCode = item.codigo;
-    currentStickyCost = item.costo;
-
-    const footer = document.getElementById('stickyFooter');
-    if (!footer) return;
-
-    // 1. Populate Info
-    document.getElementById('stickyCode').textContent = item.codigo;
-    document.getElementById('stickyBrand').textContent = item.marca || 'GENÉRICO';
-    document.getElementById('stickyDesc').textContent = item.descripcion;
-    document.getElementById('stickyPrice').textContent = `$ ${formatPrice(item.precio)}`;
-
-    // Reset Cost to hidden state
-    const costPageEl = document.getElementById('stickyCost');
-    if (costPageEl) {
-        costPageEl.textContent = '****';
-        costPageEl.classList.remove('text-brand-blue');
-        costPageEl.classList.add('text-gray-300');
-    }
-
-    // 2. Features
-    const featContainer = document.getElementById('stickyFeatures');
-    featContainer.innerHTML = '';
-    if (item.caracteristicas) {
-        const feats = item.caracteristicas.split(/[,\n]/).filter(f => f.trim());
-        feats.slice(0, 5).forEach(f => { // Limit to 5 for UI balance
-            const span = document.createElement('span');
-            span.className = "bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-[10px] border border-gray-200";
-            span.textContent = f;
-            featContainer.appendChild(span);
-        });
-        if (feats.length > 5) {
-            const more = document.createElement('span');
-            more.className = "text-[10px] text-gray-400 italic px-1";
-            more.textContent = `+${feats.length - 5} más`;
-            featContainer.appendChild(more);
-        }
-    } else {
-        featContainer.innerHTML = '<span class="text-gray-300 italic text-[10px]">Sin características</span>';
-    }
-
-    // 3. Equivalences
-    const equivContainer = document.getElementById('stickyEquivs');
-    equivContainer.innerHTML = '';
-    if (item.equivalentes) {
-        const codes = item.equivalentes.split(/[,\n]/).filter(c => c.trim());
-        codes.slice(0, 8).forEach(c => {
-            const span = document.createElement('span');
-            span.className = "font-mono text-[10px] bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-500";
-            span.textContent = c;
-            equivContainer.appendChild(span);
-        });
-    } else {
-        equivContainer.innerHTML = '<span class="text-gray-300 italic text-[10px]">N/A</span>';
-    }
-
-    // 4. Image
-    const imgEl = document.getElementById('stickyImg');
-    const codeLower = item.codigo.toLowerCase();
-    // Reset to R2 or placeholder logic
-    const trySetImage = (url) => {
-        imgEl.src = url;
-    };
-
-    // Chain: R2 -> Local -> Placeholder
-    imgEl.onload = null; // Clear prev handlers
-    imgEl.onerror = function () {
-        if (this.src.includes('r2.dev')) {
-            this.src = `/Imagenes/${codeLower}-1.webp`;
-        } else if (this.src.includes('/Imagenes/')) {
-            this.src = 'https://placehold.co/250x250/f3f4f6/cbd5e1?text=Sin+Imagen';
-        }
-    };
-    trySetImage(`${R2_BASE_URL}/${codeLower}-1.webp`);
-
-    // 5. Button Action
-    const btn = document.getElementById('stickyBtnAdd');
-    btn.onclick = (e) => window.addToCartFromCatalog(item.codigo, e);
-
-    // 6. Show Footer with Animation
-    footer.classList.remove('translate-y-full');
-
-    // 7. Add spacer to prevent content from being hidden
-    let spacer = document.getElementById('stickySpacer');
-    if (!spacer) {
-        spacer = document.createElement('div');
-        spacer.id = 'stickySpacer';
-        spacer.style.height = '160px'; // New Compact Footer height (140px) + buffer
-        spacer.style.transition = 'height 0.3s ease';
-        // Insert after the table container or at the end of main
-        const main = document.querySelector('main');
-        if (main) main.appendChild(spacer);
-    } else {
-        spacer.style.height = '160px';
-        spacer.style.display = 'block';
-    }
-}
-
-window.toggleStickyCost = function () {
-    const el = document.getElementById('stickyCost');
-    if (!el) return;
-
-    if (el.textContent === '****') {
-        el.textContent = `$ ${formatPrice(currentStickyCost)}`;
-        el.classList.remove('text-gray-300');
-        el.classList.add('text-brand-blue');
-    } else {
-        el.textContent = '****';
-        el.classList.remove('text-brand-blue');
-        el.classList.add('text-gray-300');
-    }
-};
-
-window.closeSticky = function () {
-    const footer = document.getElementById('stickyFooter');
-    if (footer) footer.classList.add('translate-y-full');
-
-    const spacer = document.getElementById('stickySpacer');
-    if (spacer) {
-        spacer.style.height = '0px';
-        // Optional: set display none after transition
-    }
-};
-
 // Event Listeners
 // Event Listeners
 if (els.btnSearch) els.btnSearch.addEventListener('click', applyFilters);
@@ -697,40 +556,27 @@ if (els.search) {
     // Also capture Enter for immediate search
     els.search.addEventListener('keypress', e => e.key === 'Enter' && applyFilters());
 }
-// 4. Reset Logic (Updated for new UI)
-// Wire up the new inline 'X' button or any other reset trigger
-document.addEventListener('click', (e) => {
-    if (e.target.closest('#btnResetInline') || e.target.closest('#btnReset')) {
-        els.search.value = '';
-        if (els.rubro) els.rubro.value = '';
-        if (els.subrubro) els.subrubro.value = '';
-        if (els.marca) els.marca.value = '';
+els.btnReset.addEventListener('click', () => {
+    els.search.value = '';
+    if (els.rubro) els.rubro.value = '';
+    if (els.subrubro) els.subrubro.value = '';
+    if (els.marca) els.marca.value = '';
 
-        // Re-habilitar y poblar todos los filtros originales
-        initFilters();
+    // Re-habilitar y poblar todos los filtros originales
+    initFilters();
 
-        filteredData = [];
-        showInitialMessage();
+    filteredData = [];
+    showInitialMessage();
 
-        // Check/Hide the X button
-        const btnX = document.getElementById('btnResetInline');
-        if (btnX) btnX.classList.add('hidden');
-
-        // Reset Sticky Footer state
-        if (window.closeSticky) window.closeSticky();
+    // Animación del icono
+    const icon = els.btnReset.querySelector('i');
+    if (icon) {
+        icon.classList.add('animate-spin');
+        setTimeout(() => icon.classList.remove('animate-spin'), 500);
     }
 });
 
-// Show/Hide X button on input
-if (els.search) {
-    els.search.addEventListener('input', () => {
-        const btnX = document.getElementById('btnResetInline');
-        if (btnX) {
-            if (els.search.value.length > 0) btnX.classList.remove('hidden');
-            else btnX.classList.add('hidden');
-        }
-    });
-}
+document.getElementById('btnResetInline')?.addEventListener('click', () => els.btnReset.click());
 
 function showInitialMessage() {
     if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="2" class="p-12 text-center text-gray-400 italic">Selecciona filtros o escribe un código para buscar.</td></tr>`;
@@ -739,34 +585,146 @@ function showInitialMessage() {
 }
 
 // --- MODAL LOGIC (Exposed globally) ---
-// --- STICKY REDIRECT (Formerly Modal) ---
 window.openProductDetail = function (codigo, pushState = true) {
-    // Redirect legacy calls to the sticky footer
-    window.selectProductForSticky(codigo);
+    const item = allData.find(d => d.codigo.toLowerCase() === codigo.toLowerCase());
+    if (!item) return;
 
     // Update URL if requested
     if (pushState) {
-        const item = allData.find(d => d.codigo.toLowerCase() === codigo.toLowerCase());
-        if (item) {
-            const newPath = `/buscador/${item.codigo}`;
-            history.pushState({ codigo: item.codigo }, '', newPath);
+        // Clean paths: /buscador/RGU477
+        const newPath = `/buscador/${item.codigo}`;
+        history.pushState({ codigo: item.codigo }, '', newPath);
+    }
+
+    // Populate Data
+    document.getElementById('modalTitle').textContent = item.descripcion;
+    document.getElementById('modalCodigo').textContent = item.codigo;
+    document.getElementById('modalMarca').textContent = item.marca || 'Genérico';
+    document.getElementById('modalRubro').textContent = `${item.rubro || '-'} > ${item.subrubro || '-'}`;
+
+    // Display Price
+    const priceEl = document.getElementById('modalPrecio');
+    if (priceEl) priceEl.textContent = `$ ${item.precio}`;
+
+
+
+
+    // Features
+    const featContainer = document.getElementById('modalFeatures');
+    featContainer.innerHTML = '';
+    if (item.caracteristicas) {
+        const feats = item.caracteristicas.split(/[,\n]/).filter(f => f.trim());
+        feats.forEach(f => {
+            const span = document.createElement('span');
+            span.className = "bg-white text-gray-700 px-2 py-1 rounded text-xs border border-gray-200 shadow-sm";
+            span.textContent = f;
+            featContainer.appendChild(span);
+        });
+    } else {
+        featContainer.innerHTML = '<span class="text-gray-400 italic text-xs">Sin detalles adicionales</span>';
+    }
+
+    // Equivalents
+    const equivContainer = document.getElementById('modalEquivalents');
+    equivContainer.innerHTML = '';
+    if (item.equivalentes) {
+        const codes = item.equivalentes.split(/[,\n]/).filter(c => c.trim());
+        codes.forEach(c => {
+            const span = document.createElement('span');
+            span.className = "font-mono text-xs bg-white border border-gray-200 px-2 py-1 rounded text-gray-500 select-all shadow-sm";
+            span.textContent = c;
+            equivContainer.appendChild(span);
+        });
+    } else {
+        equivContainer.innerHTML = '<span class="text-gray-400 italic text-xs">N/A</span>';
+    }
+
+    // Images Carousel Logic (R2 with fallback)
+    const codeLower = item.codigo.toLowerCase();
+
+    for (let i = 1; i <= 3; i++) {
+        const imgEl = document.getElementById(`modalImg${i}`);
+        if (imgEl) {
+            // Fallback logic chain: R2 (.jpg) -> Local (.webp) -> Placeholder
+            imgEl.onerror = function () {
+                const currentSrc = this.src;
+
+                // If failed R2 JPG, try local WebP (legacy)
+                if (currentSrc.includes('r2.dev')) {
+                    this.src = `/Imagenes/${codeLower}-${i}.webp`;
+                    return;
+                }
+
+                // If failed local or other, show placeholder
+                this.src = 'https://placehold.co/600x400/f3f4f6/a3a3a3?text=Sin+Imagen';
+                this.onerror = null; // Stop chain
+            };
+
+            // Try R2 first (assuming .webp for uploads based on user request)
+            imgEl.src = `${R2_BASE_URL}/${codeLower}-${i}.webp`;
         }
+    }
+
+    // Show Modal
+    const modal = document.getElementById('productModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex'); // Ensure flex display
+
+    // Setup Add to Cart Button Logic (Footer)
+    const btnAddFooter = document.getElementById('modalBtnAddFooter');
+    if (btnAddFooter) {
+        const newBtnFooter = btnAddFooter.cloneNode(true);
+        btnAddFooter.parentNode.replaceChild(newBtnFooter, btnAddFooter);
+        newBtnFooter.onclick = (e) => window.addToCartFromCatalog(item.codigo, e);
+    }
+
+
+    // Reset Carousel to slide 1 (simple visibility toggle needed if implementing full carousel)
+    showSlide(1);
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+};
+
+window.closeModal = function (pushState = true) {
+    const modal = document.getElementById('productModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+
+    // Restore URL
+    if (pushState) {
+        history.pushState(null, '', '/buscador');
     }
 };
 
-window.closeModal = function () {
-    // Legacy support: Just close the sticky footer if needed
-    const footer = document.getElementById('stickyFooter');
-    if (footer) footer.classList.add('translate-y-full');
-    history.pushState(null, '', '/buscador');
-};
+// Carousel Helpers
+let currentSlide = 1;
+function showSlide(n) {
+    const slides = [1, 2, 3]; // Indices
+    slides.forEach(i => {
+        const el = document.getElementById(`modalImg${i}`);
+        if (el) {
+            el.style.display = (i === n) ? 'block' : 'none';
+        }
+    });
+    // Update dots
+    slides.forEach(i => {
+        const dot = document.getElementById(`dot${i}`);
+        if (dot) {
+            dot.classList.toggle('bg-brand-blue', i === n);
+            dot.classList.toggle('bg-gray-300', i !== n);
+            dot.classList.toggle('w-6', i === n);
+            dot.classList.toggle('w-2', i !== n);
+        }
+    });
+    currentSlide = n;
+}
 
-// Deprecated Carousel Logic Removed
-// Deprecated Carousel Logic Removed
-window.setSlide = function () { };
-window.nextSlide = function () { };
-
-// --- RESTORED FUNCTIONS ---
+window.setSlide = function (n) { showSlide(n); }
+window.nextSlide = function (d) {
+    let n = currentSlide + d;
+    if (n > 3) n = 1;
+    if (n < 1) n = 3;
+    showSlide(n);
+}
 
 window.toggleTableCost = function (codigo, costo) {
     const el = document.getElementById(`cost-${codigo}`);
@@ -844,5 +802,42 @@ window.addToCartFromCatalog = function (codigo, event) {
     }
 };
 
-// Zoom logic no longer needed as modal is removed
-function initZoom() { }
+// --- ZOOM LOGIC (2x) ---
+function initZoom() {
+    const container = document.getElementById('modalImageContainer');
+    if (!container) return;
+
+    // Add magnifying glass cursor on hover
+    container.addEventListener('mouseenter', () => {
+        container.style.cursor = 'zoom-in';
+    });
+
+    container.addEventListener('mousemove', (e) => {
+        // Find visible image
+        const img = Array.from(container.querySelectorAll('img')).find(el => el.style.display !== 'none');
+        if (!img) return;
+
+        const rect = container.getBoundingClientRect();
+
+        // Calculate mouse position as percentage within the container
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Use percentages for transform-origin to properly center the zoom on cursor
+        const xPercent = (x / rect.width) * 100;
+        const yPercent = (y / rect.height) * 100;
+
+        img.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+        img.style.transform = "scale(2)"; // 2x Zoom
+    });
+
+    container.addEventListener('mouseleave', () => {
+        const img = Array.from(container.querySelectorAll('img')).find(el => el.style.display !== 'none');
+        if (!img) return;
+
+        // Reset
+        img.style.transformOrigin = "center center";
+        img.style.transform = "scale(1)";
+        container.style.cursor = '';
+    });
+}
