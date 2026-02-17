@@ -74,60 +74,59 @@
         </div>
     </header>
 
-    <!-- Main Content: Search Interface -->
-    <main class="flex-grow container-custom pb-4 pt-[130px]">
+    <!-- Search & Filters Fixed Container -->
+    <div class="fixed top-[56px] md:top-[64px] left-0 right-0 z-40 bg-brand-blue shadow-md py-3 transition-all duration-300"
+        id="searchHeader">
+        <div class="container-custom">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 items-center">
 
-        <!-- Search & Filters Fixed Container -->
-        <div class="fixed top-[56px] md:top-[64px] left-0 right-0 z-40 bg-brand-blue shadow-md py-3 transition-all duration-300"
-            id="searchHeader">
-            <div class="container-custom">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 items-center">
+                <!-- Main Search Input -->
+                <div class="col-span-2 md:col-span-1">
+                    <div class="relative group">
+                        <input type="text" id="globalSearch"
+                            class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue focus:border-brand-blue transition-all shadow-sm group-hover:border-brand-blue/50 placeholder:text-gray-400 bg-white"
+                            placeholder="Buscar código o descripción...">
 
-                    <!-- Main Search Input -->
-                    <div class="col-span-2 md:col-span-1">
-                        <div class="relative group">
-                            <input type="text" id="globalSearch"
-                                class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue focus:border-brand-blue transition-all shadow-sm group-hover:border-brand-blue/50 placeholder:text-gray-400 bg-white"
-                                placeholder="Buscar código o descripción...">
-
-                            <!-- Clear Search X (Visible when typing) -->
-                            <button id="btnResetInline"
-                                class="absolute right-2 top-2 text-gray-400 hover:text-brand-red hidden"
-                                title="Limpiar búsqueda">
-                                <i data-lucide="x" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Filters (Compact) -->
-                    <div class="relative">
-                        <select id="filterRubro"
-                            class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer hover:border-brand-blue/50 transition-colors truncate">
-                            <option value="">Rubro</option>
-                        </select>
-                    </div>
-
-                    <div class="relative">
-                        <select id="filterSubrubro" disabled=""
-                            class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:border-brand-blue/50 truncate">
-                            <option value="">Sub rubro</option>
-                        </select>
-                    </div>
-
-                    <div class="relative">
-                        <select id="filterMarca" disabled=""
-                            class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:border-brand-blue/50 truncate">
-                            <option value="">Marca</option>
-                        </select>
+                        <!-- Clear Search X (Visible when typing) -->
+                        <button id="btnResetInline"
+                            class="absolute right-2 top-2 text-gray-400 hover:text-brand-red hidden"
+                            title="Limpiar búsqueda">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Hidden buttons needed for JS logic compatibility -->
-                <button id="btnSearch" class="hidden"></button>
-                <button id="btnReset" class="hidden"></button>
+                <!-- Filters (Compact) -->
+                <div class="relative">
+                    <select id="filterRubro"
+                        class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer hover:border-brand-blue/50 transition-colors truncate">
+                        <option value="">Rubro</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <select id="filterSubrubro" disabled=""
+                        class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:border-brand-blue/50 truncate">
+                        <option value="">Sub rubro</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <select id="filterMarca" disabled=""
+                        class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:border-brand-blue/50 truncate">
+                        <option value="">Marca</option>
+                    </select>
+                </div>
             </div>
+
+            <!-- Hidden buttons needed for JS logic compatibility -->
+            <button id="btnSearch" class="hidden"></button>
+            <button id="btnReset" class="hidden"></button>
         </div>
-        </div>
+    </div>
+
+    <!-- Main Content: Search Interface -->
+    <main class="flex-grow container-custom pb-4 pt-[130px]">
 
         <!-- Results Info -->
         <div class="flex justify-between items-center mb-4 px-2 pt-4">
