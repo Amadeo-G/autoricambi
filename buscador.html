@@ -315,7 +315,8 @@
                 observer.observe(el);
             });
 
-            // 2. Dynamic Table Rows
+            // 2. Dynamic Table Rows - Animation Disabled to prevent visibility issues
+            /*
             const targetNode = document.getElementById('tableBody');
             if (targetNode) {
                 const config = { childList: true };
@@ -323,19 +324,27 @@
                     for (const mutation of mutationsList) {
                         if (mutation.type === 'childList') {
                             mutation.addedNodes.forEach(node => {
-                                if (node.nodeType === 1 && node.tagName === 'TR') { // Ensure it's a table row
-                                    node.classList.add('reveal');
-                                    observer.observe(node); // Observe it so it animates when in view
+                                if (node.nodeType === 1 && node.tagName === 'TR') { 
+                                    // node.classList.add('reveal');
+                                    // observer.observe(node); 
                                 }
                             });
                         }
                     }
                 };
                 const mutationObserver = new MutationObserver(callback);
-                mutationObserver.observe(targetNode, config);
+                // mutationObserver.observe(targetNode, config);
             }
+            */
         });
     </script>
+    <style>
+        html,
+        body {
+            overflow-y: auto !important;
+            height: auto !important;
+        }
+    </style>
     <!-- Sticky Product Footer (Moved here and enforced bottom) -->
     <div id="stickyFooter" style="position: fixed; bottom: 0; left: 0; right: 0; top: auto;"
         class="w-full bg-white shadow-[0_-5px_30px_rgba(0,0,0,0.1)] z-[90] transform translate-y-full transition-transform duration-500 ease-in-out border-t border-gray-200 hidden md:flex h-[200px] items-center">
