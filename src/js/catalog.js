@@ -697,30 +697,40 @@ if (els.search) {
     // Also capture Enter for immediate search
     els.search.addEventListener('keypress', e => e.key === 'Enter' && applyFilters());
 }
-els.btnReset.addEventListener('click', () => {
-    els.search.value = '';
-    if (els.rubro) els.rubro.value = '';
-    if (els.subrubro) els.subrubro.value = '';
-    if (els.marca) els.marca.value = '';
+// 4. Reset Logic (Updated for new UI)
+// Wire up the new inline 'X' button or any other reset trigger
+document.addEventListener('click', (e) => {
+    if (e.target.closest('#btnResetInline') || e.target.closest('#btnReset')) {
+        els.search.value = '';
+        if (els.rubro) els.rubro.value = '';
+        if (els.subrubro) els.subrubro.value = '';
+        if (els.marca) els.marca.value = '';
 
-    // Re-habilitar y poblar todos los filtros originales
-    initFilters();
+        // Re-habilitar y poblar todos los filtros originales
+        initFilters();
 
-    filteredData = [];
-    showInitialMessage();
+        filteredData = [];
+        showInitialMessage();
 
-    // Reset Sticky Footer state
-    if (window.closeSticky) window.closeSticky();
+        // Check/Hide the X button
+        const btnX = document.getElementById('btnResetInline');
+        if (btnX) btnX.classList.add('hidden');
 
-    // Animación del icono
-    const icon = els.btnReset.querySelector('i');
-    if (icon) {
-        icon.classList.add('animate-spin');
-        setTimeout(() => icon.classList.remove('animate-spin'), 500);
+        // Reset Sticky Footer state
+        if (window.closeSticky) window.closeSticky();
     }
 });
 
-document.getElementById('btnResetInline')?.addEventListener('click', () => els.btnReset.click());
+// Show/Hide X button on input
+if (els.search) {
+    els.search.addEventListener('input', () => {
+        const btnX = document.getElementById('btnResetInline');
+        if (btnX) {
+            if (els.search.value.length > 0) btnX.classList.remove('hidden');
+            else btnX.classList.add('hidden');
+        }
+    });
+}
 
 function showInitialMessage() {
     if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="2" class="p-12 text-center text-gray-400 italic">Selecciona filtros o escribe un código para buscar.</td></tr>`;

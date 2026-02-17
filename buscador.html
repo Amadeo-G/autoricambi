@@ -75,85 +75,62 @@
     </header>
 
     <!-- Main Content: Search Interface -->
-    <main class="flex-grow container-custom py-8">
+    <main class="flex-grow container-custom py-4">
 
-        <!-- Search & Filters Container -->
-        <div class="bg-gray-100 rounded-xl shadow-lg border border-gray-200 p-6 mb-8">
-            <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
-                <i data-lucide="sliders-horizontal" class="text-brand-blue"></i>
-                <h2 class="text-xl font-bold text-gray-800">Buscador Inteligente</h2>
-            </div>
-
-            <!-- Filters Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+        <!-- Search & Filters Sticky Container -->
+        <div class="sticky top-[60px] md:top-[64px] z-40 bg-gray-50/95 backdrop-blur-sm shadow-sm border-b border-gray-200 py-3 mb-6 -mx-4 px-4 md:mx-0 md:px-0 md:rounded-b-xl transition-all duration-300"
+            id="searchHeader">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 items-center">
 
                 <!-- Main Search Input -->
-                <div class="md:col-span-4 lg:col-span-1 mb-4 lg:mb-0">
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1 mb-2 block">Búsqueda
-                        Rápida</label>
+                <div class="col-span-2 md:col-span-1">
                     <div class="relative group">
                         <input type="text" id="globalSearch"
-                            class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-blue focus:border-brand-blue transition-all shadow-sm group-hover:border-brand-blue/50 placeholder:text-brand-blue placeholder:opacity-60 bg-blue-50/30"
-                            placeholder="Ej: cojinete biela corsa...">
+                            class="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue focus:border-brand-blue transition-all shadow-sm group-hover:border-brand-blue/50 placeholder:text-gray-400 bg-white"
+                            placeholder="Buscar código o descripción...">
                         <i data-lucide="search"
-                            class="absolute left-3 top-3.5 text-brand-blue/40 w-5 h-5 group-focus-within:text-brand-blue"></i>
+                            class="absolute left-3 top-2.5 text-gray-400 w-4 h-4 group-focus-within:text-brand-blue"></i>
+                        <!-- Clear Search X (Visible when typing) -->
+                        <button id="btnResetInline"
+                            class="absolute right-2 top-2 text-gray-400 hover:text-brand-red hidden"
+                            title="Limpiar búsqueda">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
                     </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Rubro</label>
-                    <div class="relative">
-                        <select id="filterRubro"
-                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer hover:bg-white transition-colors appearance-none">
-                            <option value="">Cargando...</option>
-                        </select>
-                        <i data-lucide="chevron-down"
-                            class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                    </div>
+                <!-- Filters (Compact) -->
+                <div class="relative">
+                    <select id="filterRubro"
+                        class="w-full pl-3 pr-8 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer hover:border-brand-blue/50 transition-colors appearance-none truncate">
+                        <option value="">Rubro</option>
+                    </select>
+                    <i data-lucide="chevron-down"
+                        class="absolute right-2.5 top-2.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Sub rubro</label>
-                    <div class="relative">
-                        <select id="filterSubrubro" disabled=""
-                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed appearance-none">
-                            <option value="">Selecciona Rubro</option>
-                        </select>
-                        <i data-lucide="chevron-down"
-                            class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                    </div>
+                <div class="relative">
+                    <select id="filterSubrubro" disabled=""
+                        class="w-full pl-3 pr-8 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:border-brand-blue/50 appearance-none truncate">
+                        <option value="">Sub rubro</option>
+                    </select>
+                    <i data-lucide="chevron-down"
+                        class="absolute right-2.5 top-2.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Marca</label>
-                    <div class="relative">
-                        <select id="filterMarca" disabled=""
-                            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed appearance-none">
-                            <option value="">Selecciona Sub rubro</option>
-                        </select>
-                        <i data-lucide="chevron-down"
-                            class="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="hidden md:flex gap-2 justify-end w-full md:col-span-4 mt-2">
-                    <button id="btnSearch"
-                        class="px-6 py-3 bg-brand-blue text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-blue-700 transition flex items-center gap-2">
-                        <i data-lucide="search" class="w-4 h-4"></i> Buscar
-                    </button>
-                    <button id="btnReset"
-                        class="px-6 py-3 bg-white text-gray-600 font-bold rounded-full border border-gray-200 hover:bg-gray-50 transition flex items-center gap-2">
-                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Limpiar
-                    </button>
+                <div class="relative">
+                    <select id="filterMarca" disabled=""
+                        class="w-full pl-3 pr-8 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:border-brand-blue/50 appearance-none truncate">
+                        <option value="">Marca</option>
+                    </select>
+                    <i data-lucide="chevron-down"
+                        class="absolute right-2.5 top-2.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
                 </div>
             </div>
 
-            <!-- Mobile Search Button -->
-            <button id="btnSearchMobile" onclick="document.getElementById('btnSearch').click()"
-                class="md:hidden w-full mt-4 bg-brand-blue text-white py-3 rounded-xl font-bold shadow-lg">
-                Buscar Productos
-            </button>
+            <!-- Hidden buttons needed for JS logic compatibility -->
+            <button id="btnSearch" class="hidden"></button>
+            <button id="btnReset" class="hidden"></button>
         </div>
 
         <!-- Results Info -->
