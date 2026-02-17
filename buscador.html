@@ -29,11 +29,11 @@
 <body class="bg-brand-blue text-brand-dark font-sans flex flex-col min-h-screen">
 
     <!-- Header -->
-    <header class="bg-brand-nav shadow-md fixed top-0 left-0 right-0 w-full z-[100] h-[56px] md:h-[64px]">
+    <header class="bg-[#003366] shadow-xl fixed top-0 left-0 right-0 w-full z-[100] h-[64px] flex items-center">
 
         <!-- Search & Filters Fixed Container -->
-        <div class="fixed top-[56px] md:top-[64px] left-0 right-0 w-full z-[40] bg-brand-blue shadow-md py-3 transition-all duration-300 border-t border-brand-blue/10"
-            id="searchHeader">
+        <div class="fixed left-0 right-0 w-full z-[90] bg-[#0055aa] shadow-md py-3 border-t border-white/10"
+            style="top: 64px;" id="searchHeader">
             <div class="container-custom">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 items-center">
 
@@ -83,7 +83,7 @@
         </div>
 
         <!-- Main Content: Search Interface -->
-        <main class="flex-grow container-custom pb-4 pt-[180px] md:pt-[220px]">
+        <main class="flex-grow container-custom pb-4" style="margin-top: 160px;">
 
             <!-- Results Info -->
             <div class="flex justify-between items-center mb-4 px-2 pt-4">
@@ -274,13 +274,7 @@
                 */
             });
         </script>
-        <style>
-            html,
-            body {
-                overflow-y: auto !important;
-                height: auto !important;
-            }
-        </style>
+
         <!-- Sticky Product Footer (Moved here and enforced bottom) -->
         <!-- Sticky Product Footer (Compact Version) -->
         <div id="stickyFooter" style="position: fixed; bottom: 0; left: 0; right: 0; top: auto;"
