@@ -29,9 +29,9 @@
 <body class="bg-brand-blue text-brand-dark font-sans flex flex-col min-h-screen">
 
     <!-- Header -->
-    <header class="bg-brand-nav shadow-md sticky top-0 z-50">
-        <div class="container-custom py-2">
-            <div class="flex items-center justify-between">
+    <header class="bg-brand-nav shadow-md fixed top-0 left-0 right-0 w-full z-50 h-[56px] md:h-[64px]">
+        <div class="container-custom py-2 h-full">
+            <div class="flex items-center justify-between h-full">
                 <!-- Logo -->
                 <a href="/index.html" class="flex items-center">
                     <img src="/src/img/logo.png" alt="Autoricambi" class="h-10 md:h-12 object-contain">
@@ -75,7 +75,7 @@
     </header>
 
     <!-- Main Content: Search Interface -->
-    <main class="flex-grow container-custom pb-4 pt-[80px]">
+    <main class="flex-grow container-custom pb-4 pt-[130px]">
 
         <!-- Search & Filters Fixed Container -->
         <div class="fixed top-[56px] md:top-[64px] left-0 right-0 z-40 bg-brand-blue shadow-md py-3 transition-all duration-300"
@@ -140,20 +140,22 @@
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
                     <tr>
-                        <th class="py-2 px-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                        <th
+                            class="sticky top-[100px] md:top-[125px] z-30 bg-gray-50 py-2 px-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
                             Código
                         </th>
-                        <th class="py-2 px-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-2/6">
+                        <th
+                            class="sticky top-[100px] md:top-[125px] z-30 bg-gray-50 py-2 px-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-2/6">
                             Descripción</th>
                         <th
-                            class="py-2 px-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                            class="sticky top-[100px] md:top-[125px] z-30 bg-gray-50 py-2 px-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
                             Precio de Vta</th>
                         <th
-                            class="py-2 px-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                            class="sticky top-[100px] md:top-[125px] z-30 bg-gray-50 py-2 px-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
                             Costo
                         </th>
                         <th
-                            class="py-2 px-4 text-center text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                            class="sticky top-[100px] md:top-[125px] z-30 bg-gray-50 py-2 px-4 text-center text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
                             Acción</th>
                     </tr>
                 </thead>
