@@ -44,25 +44,14 @@ export const products = [
         stock: false
     },
     {
-        id: 5,
-        name: "Bujía de Encendido NGK",
-        sku: "IGN-SPK-004",
-        category: "Encendido",
-        brand: "NGK",
-        price: 3500,
-        image: "https://via.placeholder.com/300?text=Bujia+NGK",
-        description: "Bujía de encendido estándar para múltiples vehículos.",
-        stock: true
-    },
-    {
         id: 6,
-        name: "Kit Distribución Renault K4M",
+        name: "Kit Distribución K4M",
         sku: "ENG-KIT-012",
         category: "Motor",
         brand: "SKF",
         price: 45600,
         image: "https://via.placeholder.com/300?text=Kit+Distribucion",
-        description: "Kit de distribución completo (correa + tensores) para motores Renault K4M.",
+        description: "Kit de distribución completo (correa + tensores) para motores K4M.",
         stock: true
     }
 ];

@@ -54,6 +54,12 @@ function processExcel(arrayBuffer, userDiscount) {
 function processRawData(dataRows, userDiscount) {
     const multiplier = (100 - (userDiscount || 42)) / 100;
 
+    // Marcas excluidas (según requerimiento del usuario)
+    const EXCLUDED_BRANDS = [
+        'BB', 'BOSCH', 'MARELLI', 'SAGEM', 'RENAULT',
+        'NGK', 'MOTORCRAFT', 'INDIEL', 'CHAMPION', 'DELPHI'
+    ];
+
     // Filter and Map
     // Skip header (slice 1)
     const processedData = dataRows.slice(1).map((row) => {
@@ -61,6 +67,11 @@ function processRawData(dataRows, userDiscount) {
 
         const pvVal = parsePrice(row[2]);
         const costVal = pvVal * multiplier;
+        const brand = (row[13] || '').toString().trim();
+
+        // Verificar si la marca está en la lista de excluidas (case-insensitive)
+        const isExcluded = EXCLUDED_BRANDS.some(b => b.toUpperCase() === brand.toUpperCase());
+        if (isExcluded) return null;
 
         return {
             codigo: (row[0] || '').toString().trim(),
@@ -69,7 +80,7 @@ function processRawData(dataRows, userDiscount) {
             precio: formatPrice(pvVal),
             priceRaw: pvVal,
             subrubro: (row[8] || '').toString().trim(),
-            marca: (row[13] || '').toString().trim(),
+            marca: brand,
             rubro: (row[14] || '').toString().trim(),
             caracteristicas: '',
             equivalentes: '',
