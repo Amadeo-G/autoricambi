@@ -78,7 +78,7 @@
     <main class="flex-grow container-custom py-4">
 
         <!-- Search & Filters Sticky Container -->
-        <div class="sticky top-[60px] md:top-[64px] z-40 bg-gray-50/95 backdrop-blur-sm shadow-sm border-b border-gray-200 py-3 mb-6 -mx-4 px-4 md:mx-0 md:px-0 md:rounded-b-xl transition-all duration-300"
+        <div class="sticky top-[60px] md:top-[64px] z-40 bg-brand-blue shadow-md border-b border-blue-900 py-3 mb-6 -mx-4 px-4 md:mx-0 md:px-0 md:rounded-b-xl transition-all duration-300"
             id="searchHeader">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 items-center">
 
@@ -86,10 +86,9 @@
                 <div class="col-span-2 md:col-span-1">
                     <div class="relative group">
                         <input type="text" id="globalSearch"
-                            class="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue focus:border-brand-blue transition-all shadow-sm group-hover:border-brand-blue/50 placeholder:text-gray-400 bg-white"
+                            class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-1 focus:ring-brand-blue focus:border-brand-blue transition-all shadow-sm group-hover:border-brand-blue/50 placeholder:text-gray-400 bg-white"
                             placeholder="Buscar código o descripción...">
-                        <i data-lucide="search"
-                            class="absolute left-3 top-2.5 text-gray-400 w-4 h-4 group-focus-within:text-brand-blue"></i>
+
                         <!-- Clear Search X (Visible when typing) -->
                         <button id="btnResetInline"
                             class="absolute right-2 top-2 text-gray-400 hover:text-brand-red hidden"
@@ -102,29 +101,23 @@
                 <!-- Filters (Compact) -->
                 <div class="relative">
                     <select id="filterRubro"
-                        class="w-full pl-3 pr-8 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer hover:border-brand-blue/50 transition-colors appearance-none truncate">
+                        class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer hover:border-brand-blue/50 transition-colors truncate">
                         <option value="">Rubro</option>
                     </select>
-                    <i data-lucide="chevron-down"
-                        class="absolute right-2.5 top-2.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
                 </div>
 
                 <div class="relative">
                     <select id="filterSubrubro" disabled=""
-                        class="w-full pl-3 pr-8 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:border-brand-blue/50 appearance-none truncate">
+                        class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:border-brand-blue/50 truncate">
                         <option value="">Sub rubro</option>
                     </select>
-                    <i data-lucide="chevron-down"
-                        class="absolute right-2.5 top-2.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
                 </div>
 
                 <div class="relative">
                     <select id="filterMarca" disabled=""
-                        class="w-full pl-3 pr-8 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:border-brand-blue/50 appearance-none truncate">
+                        class="w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-lg focus:ring-1 focus:ring-brand-blue outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:border-brand-blue/50 truncate">
                         <option value="">Marca</option>
                     </select>
-                    <i data-lucide="chevron-down"
-                        class="absolute right-2.5 top-2.5 w-4 h-4 text-gray-400 pointer-events-none"></i>
                 </div>
             </div>
 
@@ -144,15 +137,20 @@
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-200 hidden md:table-header-group">
                     <tr>
-                        <th class="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">Código
+                        <th class="py-2 px-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                            Código
                         </th>
-                        <th class="p-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-2/6">
+                        <th class="py-2 px-4 text-left text-xs font-bold text-gray-500 uppercase tracking-widest w-2/6">
                             Descripción</th>
-                        <th class="p-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                        <th
+                            class="py-2 px-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
                             Precio de Vta</th>
-                        <th class="p-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">Costo
+                        <th
+                            class="py-2 px-4 text-right text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                            Costo
                         </th>
-                        <th class="p-4 text-center text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
+                        <th
+                            class="py-2 px-4 text-center text-xs font-bold text-gray-500 uppercase tracking-widest w-1/6">
                             Acción</th>
                     </tr>
                 </thead>
