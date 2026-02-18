@@ -54,10 +54,13 @@ function processExcel(arrayBuffer, userDiscount) {
 function processRawData(dataRows, userDiscount) {
     const multiplier = (100 - (userDiscount || 42)) / 100;
 
-    // Marcas excluidas (según requerimiento del usuario)
-    const EXCLUDED_BRANDS = [
-        'BB', 'BOSCH', 'MARELLI', 'SAGEM', 'RENAULT',
-        'NGK', 'MOTORCRAFT', 'INDIEL', 'CHAMPION', 'DELPHI'
+    // Marcas excluidas: Solo NGK permanece oculta.
+    const EXCLUDED_BRANDS = ['NGK'];
+
+    // Marcas con nombre en blanco (pero visibles):
+    const BLANK_NAME_BRANDS = [
+        'BB', 'BOSCH', 'CHAMPION', 'CHAMPIONS', 'DELPHI',
+        'INDIEL', 'MARELLI', 'SAGEM', 'RENAULT', 'MOTORCRAFT'
     ];
 
     // Filter and Map
@@ -67,11 +70,16 @@ function processRawData(dataRows, userDiscount) {
 
         const pvVal = parsePrice(row[2]);
         const costVal = pvVal * multiplier;
-        const brand = (row[13] || '').toString().trim();
+        let brand = (row[13] || '').toString().trim();
+        const brandUpper = brand.toUpperCase();
 
-        // Verificar si la marca está en la lista de excluidas (case-insensitive)
-        const isExcluded = EXCLUDED_BRANDS.some(b => b.toUpperCase() === brand.toUpperCase());
-        if (isExcluded) return null;
+        // Verificar si la marca debe estar oculta (solo NGK)
+        if (EXCLUDED_BRANDS.includes(brandUpper)) return null;
+
+        // Verificar si la marca debe mostrarse con nombre en blanco
+        if (BLANK_NAME_BRANDS.includes(brandUpper)) {
+            brand = ' ';
+        }
 
         return {
             codigo: (row[0] || '').toString().trim(),

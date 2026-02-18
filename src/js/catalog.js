@@ -487,7 +487,7 @@ function renderTable(q = '') {
             <td class="p-4 text-sm text-gray-800" data-label="Descripción">
                 <div class="flex flex-col">
                     <span class="font-medium">${highlightText(item.descripcion, q)}</span>
-                    <span class="text-[10px] text-gray-400 uppercase font-bold">${item.marca} | ${item.rubro}</span>
+                    <span class="text-[10px] text-gray-400 uppercase font-bold">${(item.marca && item.marca.trim()) ? item.marca + ' | ' : ''}${item.rubro}</span>
                 </div>
             </td>
             <td class="p-4 text-right font-bold text-gray-800" data-label="Precio">
@@ -599,7 +599,7 @@ window.openProductDetail = function (codigo, pushState = true) {
     // Populate Data
     document.getElementById('modalTitle').textContent = item.descripcion;
     document.getElementById('modalCodigo').textContent = item.codigo;
-    document.getElementById('modalMarca').textContent = item.marca || 'Genérico';
+    document.getElementById('modalMarca').textContent = (item.marca && item.marca.trim()) ? item.marca : ' ';
     document.getElementById('modalRubro').textContent = `${item.rubro || '-'} > ${item.subrubro || '-'}`;
 
     // Display Price

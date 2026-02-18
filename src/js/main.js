@@ -235,7 +235,7 @@ const renderCart = () => {
                             <h3 class="font-bold text-brand-dark text-base leading-snug mb-1 break-words">${item.name}</h3>
                             <div class="flex flex-wrap items-center gap-2 text-sm text-gray-500">
                                 <span class="bg-gray-50 text-brand-blue font-mono font-bold px-2 py-0.5 rounded border border-gray-100 text-xs"><i class="fas fa-barcode mr-2"></i>${item.sku}</span>
-                                ${item.brand ? `<span class="hidden md:inline text-gray-300">|</span><span class="font-medium text-xs">${item.brand}</span>` : ''}
+                                ${item.brand && item.brand.trim() ? `<span class="hidden md:inline text-gray-300">|</span><span class="font-medium text-xs">${item.brand}</span>` : ''}
                                 <span class="hidden md:inline text-gray-300">|</span>
                                 <span class="font-medium whitespace-nowrap text-xs md:text-sm">Precio unitario s/IVA: <span class="text-gray-900 font-bold">${formatPrice(unitPrice)}</span></span>
                             </div>
