@@ -20,6 +20,34 @@ const formatPrice = (val) => {
     });
 };
 
+// Helper: Fix corrupted encoding (Halfwidth Katakana range misused for Latin-1)
+const fixEncoding = (val) => {
+    if (!val) return '';
+    let s = val.toString().trim();
+    // Match chars in the Halfwidth Katakana range that are likely misused Latin-1
+    return s.replace(/[\uff60-\ufffd]/g, (char) => {
+        const code = char.charCodeAt(0);
+        const latin1Code = code - 0xff00;
+
+        // Windows-1252 characters in 0x80-0x9F range
+        const win1252Map = {
+            0x82: '\u201a', 0x83: '\u0192', 0x84: '\u201e', 0x85: '\u2026',
+            0x86: '\u2020', 0x87: '\u2021', 0x88: '\u02c6', 0x89: '\u2030',
+            0x8a: '\u0160', 0x8b: '\u2039', 0x8c: '\u0152', 0x8e: '\u017d',
+            0x91: '\u2018', 0x92: '\u2019', 0x93: '\u201c', 0x94: '\u201d',
+            0x95: '\u2022', 0x96: '\u2013', 0x97: '\u2014', 0x98: '\u02dc',
+            0x99: '\u2122', 0x9a: '\u0161', 0x9b: '\u203a', 0x9c: '\u0153',
+            0x9e: '\u017e', 0x9f: '\u0178'
+        };
+
+        if (win1252Map[latin1Code]) return win1252Map[latin1Code];
+        if (latin1Code >= 0x20 && latin1Code <= 0xFF) {
+            return String.fromCharCode(latin1Code);
+        }
+        return char;
+    });
+};
+
 self.onmessage = function (e) {
     const { type, data, userDiscount } = e.data;
 
@@ -70,7 +98,7 @@ function processRawData(dataRows, userDiscount) {
 
         const pvVal = parsePrice(row[2]);
         const costVal = pvVal * multiplier;
-        let brand = (row[13] || '').toString().trim();
+        let brand = fixEncoding(row[13]);
         const brandUpper = brand.toUpperCase();
 
         // Verificar si la marca debe estar oculta (solo NGK)
@@ -82,14 +110,14 @@ function processRawData(dataRows, userDiscount) {
         }
 
         return {
-            codigo: (row[0] || '').toString().trim(),
-            descripcion: (row[1] || '').toString().trim(),
+            codigo: fixEncoding(row[0]),
+            descripcion: fixEncoding(row[1]),
             costo: costVal,
             precio: formatPrice(pvVal),
             priceRaw: pvVal,
-            subrubro: (row[8] || '').toString().trim(),
+            subrubro: fixEncoding(row[8]),
             marca: brand,
-            rubro: (row[14] || '').toString().trim(),
+            rubro: fixEncoding(row[14]),
             caracteristicas: '',
             equivalentes: '',
             stock: (() => {
