@@ -1,7 +1,7 @@
 // catalog.js - Logic for the Dynamic Excel Catalog
 
 // CONFIGURATION
-const EXCEL_FILE_PATH = '/Filtros.xlsx';
+const EXCEL_FILE_PATH = '/Filtros.csv';
 const FIXED_DATA_PATH = '/Datos fijos.xlsx';
 const R2_BASE_URL = 'https://pub-4a74b73ccfa3493ebcfc17e92136dcf4.r2.dev';
 
@@ -36,8 +36,9 @@ excelWorker.onmessage = async function (e) {
 };
 
 // CACHE CONFIGURATION
-const CACHE_DB_NAME = 'AutoricambiCatalog';
+const CACHE_DB_NAME = 'AutoricambiCatalog_V3';
 const CACHE_STORE_NAME = 'catalog_cache';
+const CACHE_TTL_MS = 4 * 60 * 60 * 1000; // 4 horas en milisegundos
 
 const dbHelper = {
     open: () => new Promise((resolve) => {
@@ -127,50 +128,35 @@ async function fetchData(initialCode = null) {
     const userDiscount = (user.discount !== undefined && user.discount !== null) ? parseFloat(user.discount) : 42;
 
     try {
-        // 1. Check if we have a cached version and its timestamp
-        const cachedLastModified = await dbHelper.get('lastModified');
-        const cachedData = await dbHelper.get('rawData'); // Raw JSON rows
+        // 1. Check if we have cached data and when it was last downloaded
+        const cachedData = await dbHelper.get('rawData');
+        const cacheTimestamp = await dbHelper.get('cacheTimestamp');
+        const now = Date.now();
+        const cacheAge = cacheTimestamp ? (now - cacheTimestamp) : Infinity;
+        const isCacheValid = cachedData && cacheAge < CACHE_TTL_MS;
 
-        // SESSION CACHE OPTIMIZATION:
-        // If we have verified the data *during this session*, we skip the network HEAD check entirely.
+        // FAST PATH: If we already synced this session, skip all checks
         const isSessionSynced = sessionStorage.getItem('catalog_synced');
-
         if (isSessionSynced && cachedData) {
-            console.log("⚡ Session synced. Loading immediately from local cache (No Server Check).");
+            console.log("⚡ Sesión activa. Cargando desde caché local (sin verificación).");
             if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-circle-notch fa-spin mr-2"></i>Recuperando datos...</td></tr>`;
-
-            excelWorker.postMessage({
-                type: 'PROCESS_JSON',
-                data: cachedData,
-                userDiscount: userDiscount
-            });
+            excelWorker.postMessage({ type: 'PROCESS_JSON', data: cachedData, userDiscount });
             return;
         }
 
-        // 2. Perform a HEAD request to check the server version
-        try {
-            const headResponse = await fetch(EXCEL_FILE_PATH, { method: 'HEAD' });
-            currentServerLastModified = headResponse.headers.get('Last-Modified');
-        } catch (e) {
-            console.warn("Could not perform HEAD request for cache validation:", e);
-        }
-
-        if (cachedData && currentServerLastModified && cachedLastModified === currentServerLastModified) {
-            console.log("🚀 Server verified. Loading from IndexedDB Cache (Background Process)...");
-            sessionStorage.setItem('catalog_synced', 'true'); // Mark as synced for this session
-
+        // TTL PATH: Cache is still fresh (less than 4 hours old)
+        if (isCacheValid) {
+            const horasRestantes = ((CACHE_TTL_MS - cacheAge) / 3600000).toFixed(1);
+            console.log(`🚀 Caché válida (expira en ${horasRestantes}h). Cargando desde IndexedDB...`);
+            sessionStorage.setItem('catalog_synced', 'true');
             if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-circle-notch fa-spin mr-2"></i>Procesando datos...</td></tr>`;
-
-            excelWorker.postMessage({
-                type: 'PROCESS_JSON',
-                data: cachedData,
-                userDiscount: userDiscount
-            });
+            excelWorker.postMessage({ type: 'PROCESS_JSON', data: cachedData, userDiscount });
             return;
         }
 
-        // 3. If cache is invalid or missing, fetch both Excel files
-        console.log("📥 Cache miss or outdated. Fetching Excel files...");
+        // DOWNLOAD PATH: Cache is missing or expired (>4 hours)
+        const reason = !cachedData ? 'Sin caché' : `Caché expirada (${(cacheAge / 3600000).toFixed(1)}h de antigüedad)`;
+        console.log(`📥 ${reason}. Descargando archivos del servidor...`);
         if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-cloud-download-alt mr-2"></i>Descargando catálogo actualizado...</td></tr>`;
 
         const [respFiltros, respFijos] = await Promise.all([
@@ -185,31 +171,27 @@ async function fetchData(initialCode = null) {
             respFijos.ok ? respFijos.arrayBuffer() : Promise.resolve(null)
         ]);
 
-        // Mark as synced after successful download
+        // Save the download timestamp BEFORE sending to worker
+        await dbHelper.set('cacheTimestamp', Date.now());
         sessionStorage.setItem('catalog_synced', 'true');
 
         if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-cog fa-spin mr-2"></i>Procesando base de datos...</td></tr>`;
 
-        // Send ArrayBuffers to worker for parsing and processing
         excelWorker.postMessage({
             type: 'PARSE_DUAL',
             filtros: bufFiltros,
             fijos: bufFijos,
-            userDiscount: userDiscount
+            userDiscount
         });
 
     } catch (error) {
         console.error("Fetch Error:", error);
-        // Fallback: try to use cache even if HEAD request failed (offline)
+        // Fallback: use cached data even if expired (offline mode)
         const offlineData = await dbHelper.get('rawData');
         if (offlineData) {
-            console.warn("⚠️ Using offline cache due to fetch error.");
+            console.warn("⚠️ Usando caché offline por error de red.");
             document.title = "[OFFLINE] " + document.title;
-            excelWorker.postMessage({
-                type: 'PROCESS_JSON',
-                data: offlineData,
-                userDiscount: userDiscount
-            });
+            excelWorker.postMessage({ type: 'PROCESS_JSON', data: offlineData, userDiscount });
         } else if (els.tbody) {
             els.tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-red-500">Error: ${error.message}</td></tr>`;
         }

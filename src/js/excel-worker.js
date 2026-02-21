@@ -3,17 +3,42 @@
 
 importScripts('https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js');
 
-// Helper: Parse Argentinian price "1.678,73" -> 1678.73
+// Helper: Parse any numeric string or number into a valid float
 const parsePrice = (val) => {
-    if (!val) return 0;
+    if (val === undefined || val === null || val === '') return 0;
+
+    // If it's already a number, we return it. 
+    // However, if we suspect it was parsed incorrectly (e.g. 100x larger by SheetJS), 
+    // there's no easy way to know here without context. 
+    // But with 'raw: true' below, we should always get strings for CSV/Excel data.
+    if (typeof val === 'number') return val;
+
     let s = val.toString().trim();
-    s = s.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
-    let num = parseFloat(s) || 0;
-    return num;
+
+    // Strategy for comma-based (Argentinian) vs dot-based (US/API)
+    // 1. If it has a comma, treat as Argentinian (1.234,56 -> 1234.56)
+    if (s.indexOf(',') !== -1) {
+        s = s.replace(/\./g, '').replace(',', '.');
+    }
+    // 2. If it has multiple dots but no comma, treat dots as thousands (1.234.567 -> 1234567)
+    else if ((s.match(/\./g) || []).length > 1) {
+        s = s.replace(/\./g, '');
+    }
+    // 3. Special case: single dot with exactly 3 digits after it and no other separator
+    // This is ambiguous (1.234 could be 1.234 or 1234). 
+    // Given the context of "multiplied by 100" errors, it's safer to trust standard parseFloat 
+    // UNLESS we are sure about the scale of the product.
+    // For now, we rely on the removal of non-numeric chars.
+
+    s = s.replace(/[^\d.-]/g, ''); // Keep numbers, dot, and minus sign
+
+    let num = parseFloat(s);
+    return isNaN(num) ? 0 : num;
 };
 
 // Helper: Format Argentinian price 1678.73 -> "1.678,73"
 const formatPrice = (val) => {
+    if (typeof val !== 'number') val = parseFloat(val) || 0;
     return val.toLocaleString('es-AR', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
@@ -64,16 +89,17 @@ self.onmessage = function (e) {
 
 function processDualExcel(filtrosBuffer, fijosBuffer, userDiscount) {
     // 1. Parse Filtros
-    const wbFiltros = XLSX.read(filtrosBuffer, { type: 'array' });
+    // CRITICAL: raw: true prevents SheetJS from auto-converting strings like "1678,73" to numbers (incorrectly).
+    const wbFiltros = XLSX.read(filtrosBuffer, { type: 'array', raw: true });
     const sheetFiltros = wbFiltros.SheetNames.find(n => n.includes("Hoja 1") || n.includes("Sheet1")) || wbFiltros.SheetNames[0];
-    const filtrosRaw = XLSX.utils.sheet_to_json(wbFiltros.Sheets[sheetFiltros], { header: 1 });
+    const filtrosRaw = XLSX.utils.sheet_to_json(wbFiltros.Sheets[sheetFiltros], { header: 1, raw: true });
 
     // 2. Parse Datos Fijos
     let fijosRaw = [];
     if (fijosBuffer) {
-        const wbFijos = XLSX.read(fijosBuffer, { type: 'array' });
+        const wbFijos = XLSX.read(fijosBuffer, { type: 'array', raw: true });
         const sheetFijos = wbFijos.SheetNames[0];
-        fijosRaw = XLSX.utils.sheet_to_json(wbFijos.Sheets[sheetFijos], { header: 1 });
+        fijosRaw = XLSX.utils.sheet_to_json(wbFijos.Sheets[sheetFijos], { header: 1, raw: true });
     }
 
     // 3. Cache both
@@ -111,7 +137,7 @@ function processRawData(filtrosRows, fijosRows, userDiscount) {
         const sku = fixEncoding(row[0]);
         const pvVal = parsePrice(row[2]);
         const costVal = pvVal * multiplier;
-        let brand = fixEncoding(row[13]);
+        let brand = fixEncoding(row[5]);
         const brandUpper = brand.toUpperCase();
 
         if (EXCLUDED_BRANDS.includes(brandUpper)) return null;
@@ -126,14 +152,14 @@ function processRawData(filtrosRows, fijosRows, userDiscount) {
             costo: costVal,
             precio: formatPrice(pvVal),
             priceRaw: pvVal,
-            subrubro: fixEncoding(row[8]),
+            subrubro: fixEncoding(row[3]),
             marca: brand,
-            rubro: fixEncoding(row[14]),
+            rubro: fixEncoding(row[6]),
             aplicaciones: fixed.aplicaciones,
             caracteristicas: fixed.caracteristicas,
             equivalentes: fixed.equivalencias,
             stock: (() => {
-                let s = (row[11] || 0).toString().trim();
+                let s = (row[4] || 0).toString().trim();
                 s = s.split(/[.,]/)[0];
                 const cleanValue = s.replace(/[^\d-]/g, '');
                 return parseInt(cleanValue) || 0;

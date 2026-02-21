@@ -38,7 +38,24 @@
                 </a>
 
                 <!-- Desktop Nav -->
-                <nav class="hidden md:flex flex-1 mx-12 justify-center">
+                <nav class="hidden md:flex flex-1 justify-center mx-4">
+                    <div class="flex items-center text-white font-semibold" style="gap: 40px;">
+                        <a href="index.html"
+                            class="hover:text-brand-accent transition-all duration-300 flex items-center gap-2 group">
+                            <i class="fas fa-home text-lg"></i>
+                            <span>Inicio</span>
+                        </a>
+                        <a href="buscador.html"
+                            class="hover:text-brand-accent transition-all duration-300 flex items-center gap-2 group">
+                            <i class="fas fa-search text-lg"></i>
+                            <span>Catálogo</span>
+                        </a>
+                        <a href="cart.html"
+                            class="hover:text-brand-accent transition-all duration-300 flex items-center gap-2 group">
+                            <i class="fas fa-shopping-cart text-lg"></i>
+                            <span>Carrito</span>
+                        </a>
+                    </div>
                 </nav>
 
                 <!-- Actions -->
@@ -64,11 +81,15 @@
         </div>
 
         <!-- Mobile Menu (Hidden) -->
-        <div id="mobile-menu" class="hidden md:hidden bg-brand-nav border-t border-white/10 p-4">
-            <a href="login.html" class="block py-2 text-white hover:text-brand-accent"><i class="fas fa-user mr-2"></i>
-                Iniciar Sesión</a>
+        <div id="mobile-menu" class="hidden md:hidden bg-brand-nav border-t border-white/10 p-4 space-y-2">
+            <a href="index.html" class="block py-2 text-white hover:text-brand-accent"><i class="fas fa-home mr-2"></i>
+                Inicio</a>
             <a href="buscador.html" class="block py-2 text-white hover:text-brand-accent"><i
                     class="fas fa-book-open mr-2"></i> Catálogo</a>
+            <a href="cart.html" class="block py-2 text-white hover:text-brand-accent"><i
+                    class="fas fa-shopping-cart mr-2"></i> Carrito</a>
+            <a href="login.html" class="block py-2 text-white hover:text-brand-accent"><i class="fas fa-user mr-2"></i>
+                Iniciar Sesión</a>
             <a href="#contacto" class="block py-2 text-white hover:text-brand-accent"><i
                     class="fas fa-envelope mr-2"></i> Contacto</a>
         </div>
@@ -357,16 +378,7 @@
         </div>
     </footer>
 
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/5493516861092?text=%C2%A1Hola%20Autoricambi!%20Quiero%20consultarles%20sobre..."
-        target="_blank" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 9999;"
-        class="bg-green-500 hover:bg-green-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 group">
-        <i class="fab fa-whatsapp text-3xl"></i>
-        <span
-            class="absolute right-full mr-3 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-            ¡Chateá con nosotros!
-        </span>
-    </a>
+
 
     <!-- Main Logic -->
     <script src="/src/js/catalog.js"></script>
