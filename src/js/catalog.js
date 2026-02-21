@@ -1,7 +1,7 @@
 // catalog.js - Logic for the Dynamic Excel Catalog
 
 // CONFIGURATION
-const EXCEL_FILE_PATH = '/Filtros.csv';
+const EXCEL_FILE_PATH = '/Filtros.xlsx';
 const FIXED_DATA_PATH = '/Datos fijos.xlsx';
 const R2_BASE_URL = 'https://pub-4a74b73ccfa3493ebcfc17e92136dcf4.r2.dev';
 
@@ -37,7 +37,7 @@ excelWorker.onmessage = async function (e) {
 
 // CACHE CONFIGURATION
 const CACHE_DB_NAME = 'AutoricambiCatalog';
-const CACHE_STORE_NAME = 'catalog_cache_v2';
+const CACHE_STORE_NAME = 'catalog_cache';
 
 const dbHelper = {
     open: () => new Promise((resolve) => {
