@@ -111,7 +111,7 @@ function processRawData(filtrosRows, fijosRows, userDiscount) {
         const sku = fixEncoding(row[0]);
         const pvVal = parsePrice(row[2]);
         const costVal = pvVal * multiplier;
-        let brand = fixEncoding(row[13]);
+        let brand = fixEncoding(row[5]);
         const brandUpper = brand.toUpperCase();
 
         if (EXCLUDED_BRANDS.includes(brandUpper)) return null;
@@ -126,14 +126,14 @@ function processRawData(filtrosRows, fijosRows, userDiscount) {
             costo: costVal,
             precio: formatPrice(pvVal),
             priceRaw: pvVal,
-            subrubro: fixEncoding(row[8]),
+            subrubro: fixEncoding(row[3]),
             marca: brand,
-            rubro: fixEncoding(row[14]),
+            rubro: fixEncoding(row[6]),
             aplicaciones: fixed.aplicaciones,
             caracteristicas: fixed.caracteristicas,
             equivalentes: fixed.equivalencias,
             stock: (() => {
-                let s = (row[11] || 0).toString().trim();
+                let s = (row[4] || 0).toString().trim();
                 s = s.split(/[.,]/)[0];
                 const cleanValue = s.replace(/[^\d-]/g, '');
                 return parseInt(cleanValue) || 0;
