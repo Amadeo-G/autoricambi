@@ -20,16 +20,13 @@ const formatPrice = (val) => {
     });
 };
 
-// Helper: Fix corrupted encoding (Halfwidth Katakana range misused for Latin-1)
+// Helper: Fix corrupted encoding
 const fixEncoding = (val) => {
     if (!val) return '';
     let s = val.toString().trim();
-    // Match chars in the Halfwidth Katakana range that are likely misused Latin-1
     return s.replace(/[\uff60-\ufffd]/g, (char) => {
         const code = char.charCodeAt(0);
         const latin1Code = code - 0xff00;
-
-        // Windows-1252 characters in 0x80-0x9F range
         const win1252Map = {
             0x82: '\u201a', 0x83: '\u0192', 0x84: '\u201e', 0x85: '\u2026',
             0x86: '\u2020', 0x87: '\u2021', 0x88: '\u02c6', 0x89: '\u2030',
@@ -39,78 +36,92 @@ const fixEncoding = (val) => {
             0x99: '\u2122', 0x9a: '\u0161', 0x9b: '\u203a', 0x9c: '\u0153',
             0x9e: '\u017e', 0x9f: '\u0178'
         };
-
         if (win1252Map[latin1Code]) return win1252Map[latin1Code];
-        if (latin1Code >= 0x20 && latin1Code <= 0xFF) {
-            return String.fromCharCode(latin1Code);
-        }
+        if (latin1Code >= 0x20 && latin1Code <= 0xFF) return String.fromCharCode(latin1Code);
         return char;
     });
 };
 
 self.onmessage = function (e) {
-    const { type, data, userDiscount } = e.data;
+    const { type, data, filtros, fijos, userDiscount } = e.data;
 
     try {
-        if (type === 'PARSE_EXCEL') {
-            // data is ArrayBuffer
-            processExcel(data, userDiscount);
+        if (type === 'PARSE_DUAL') {
+            processDualExcel(filtros, fijos, userDiscount);
         } else if (type === 'PROCESS_JSON') {
-            // data is already the raw JSON array (from cache)
-            processRawData(data, userDiscount);
+            // If data is array of arrays [filtrosRaw, fijosRaw]
+            if (Array.isArray(data) && data.length === 2 && Array.isArray(data[0])) {
+                processRawData(data[0], data[1], userDiscount);
+            } else {
+                // Fallback for old cache
+                processRawData(data, [], userDiscount);
+            }
         }
     } catch (error) {
         self.postMessage({ type: 'ERROR', error: error.message });
     }
 };
 
-function processExcel(arrayBuffer, userDiscount) {
-    // 1. Read Excel File
-    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-    const targetSheetName = workbook.SheetNames.find(n => n.includes("Hoja 1") || n.includes("Sheet1")) || workbook.SheetNames[0];
+function processDualExcel(filtrosBuffer, fijosBuffer, userDiscount) {
+    // 1. Parse Filtros
+    const wbFiltros = XLSX.read(filtrosBuffer, { type: 'array' });
+    const sheetFiltros = wbFiltros.SheetNames.find(n => n.includes("Hoja 1") || n.includes("Sheet1")) || wbFiltros.SheetNames[0];
+    const filtrosRaw = XLSX.utils.sheet_to_json(wbFiltros.Sheets[sheetFiltros], { header: 1 });
 
-    // 2. Convert to JSON (Header: 1 means array of arrays)
-    const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[targetSheetName], { header: 1 });
+    // 2. Parse Datos Fijos
+    let fijosRaw = [];
+    if (fijosBuffer) {
+        const wbFijos = XLSX.read(fijosBuffer, { type: 'array' });
+        const sheetFijos = wbFijos.SheetNames[0];
+        fijosRaw = XLSX.utils.sheet_to_json(wbFijos.Sheets[sheetFijos], { header: 1 });
+    }
 
-    // 3. Send raw data back for caching (optional, but good if we want to update cache)
-    self.postMessage({ type: 'CACHE_DATA', data: rawData });
+    // 3. Cache both
+    self.postMessage({ type: 'CACHE_DATA', data: [filtrosRaw, fijosRaw] });
 
-    // 4. Process for UI
-    processRawData(rawData, userDiscount);
+    // 4. Process
+    processRawData(filtrosRaw, fijosRaw, userDiscount);
 }
 
-function processRawData(dataRows, userDiscount) {
+function processRawData(filtrosRows, fijosRows, userDiscount) {
     const multiplier = (100 - (userDiscount || 42)) / 100;
-
-    // Marcas excluidas: Solo NGK permanece oculta.
     const EXCLUDED_BRANDS = ['NGK'];
-
-    // Marcas con nombre en blanco (pero visibles):
     const BLANK_NAME_BRANDS = [
         'BB', 'BOSCH', 'CHAMPION', 'CHAMPIONS', 'DELPHI',
         'INDIEL', 'MARELLI', 'SAGEM', 'RENAULT', 'MOTORCRAFT'
     ];
 
-    // Filter and Map
-    // Skip header (slice 1)
-    const processedData = dataRows.slice(1).map((row) => {
+    // Create Map for fixed data
+    const fixedMap = new Map();
+    if (fijosRows && fijosRows.length > 0) {
+        fijosRows.slice(1).forEach(row => {
+            if (!row || !row[0]) return;
+            const sku = row[0].toString().trim().toLowerCase();
+            fixedMap.set(sku, {
+                aplicaciones: fixEncoding(row[1]),
+                equivalencias: fixEncoding(row[2]),
+                caracteristicas: fixEncoding(row[3])
+            });
+        });
+    }
+
+    const processedData = filtrosRows.slice(1).map((row) => {
         if (!row || row.length < 3) return null;
 
+        const sku = fixEncoding(row[0]);
         const pvVal = parsePrice(row[2]);
         const costVal = pvVal * multiplier;
         let brand = fixEncoding(row[13]);
         const brandUpper = brand.toUpperCase();
 
-        // Verificar si la marca debe estar oculta (solo NGK)
         if (EXCLUDED_BRANDS.includes(brandUpper)) return null;
+        if (BLANK_NAME_BRANDS.includes(brandUpper)) brand = ' ';
 
-        // Verificar si la marca debe mostrarse con nombre en blanco
-        if (BLANK_NAME_BRANDS.includes(brandUpper)) {
-            brand = ' ';
-        }
+        // Lookup fixed data
+        const fixed = fixedMap.get(sku.toLowerCase()) || { aplicaciones: '', equivalencias: '', caracteristicas: '' };
 
         return {
-            codigo: fixEncoding(row[0]),
+            codigo: sku,
             descripcion: fixEncoding(row[1]),
             costo: costVal,
             precio: formatPrice(pvVal),
@@ -118,8 +129,9 @@ function processRawData(dataRows, userDiscount) {
             subrubro: fixEncoding(row[8]),
             marca: brand,
             rubro: fixEncoding(row[14]),
-            caracteristicas: '',
-            equivalentes: '',
+            aplicaciones: fixed.aplicaciones,
+            caracteristicas: fixed.caracteristicas,
+            equivalentes: fixed.equivalencias,
             stock: (() => {
                 let s = (row[11] || 0).toString().trim();
                 s = s.split(/[.,]/)[0];
@@ -129,6 +141,5 @@ function processRawData(dataRows, userDiscount) {
         };
     }).filter(item => item && item.codigo && item.rubro);
 
-    // Send final processed data to main thread
     self.postMessage({ type: 'DONE', data: processedData });
 }

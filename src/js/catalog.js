@@ -2,6 +2,7 @@
 
 // CONFIGURATION
 const EXCEL_FILE_PATH = '/Filtros.xlsx';
+const FIXED_DATA_PATH = '/Datos fijos.xlsx';
 const R2_BASE_URL = 'https://pub-4a74b73ccfa3493ebcfc17e92136dcf4.r2.dev';
 
 // GLOBAL STATE
@@ -168,23 +169,32 @@ async function fetchData(initialCode = null) {
             return;
         }
 
-        // 3. If cache is invalid or missing, fetch the whole Excel file
-        console.log("📥 Cache miss or outdated. Fetching Filtros.xlsx...");
+        // 3. If cache is invalid or missing, fetch both Excel files
+        console.log("📥 Cache miss or outdated. Fetching Excel files...");
         if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-cloud-download-alt mr-2"></i>Descargando catálogo actualizado...</td></tr>`;
 
-        const response = await fetch(`${EXCEL_FILE_PATH}?t=${Date.now()}`);
-        if (!response.ok) throw new Error("No se pudo cargar el catálogo.");
-        const arrayBuffer = await response.arrayBuffer();
+        const [respFiltros, respFijos] = await Promise.all([
+            fetch(`${EXCEL_FILE_PATH}?t=${Date.now()}`),
+            fetch(`${FIXED_DATA_PATH}?t=${Date.now()}`).catch(() => ({ ok: false }))
+        ]);
+
+        if (!respFiltros.ok) throw new Error("No se pudo cargar el catálogo.");
+
+        const [bufFiltros, bufFijos] = await Promise.all([
+            respFiltros.arrayBuffer(),
+            respFijos.ok ? respFijos.arrayBuffer() : Promise.resolve(null)
+        ]);
 
         // Mark as synced after successful download
         sessionStorage.setItem('catalog_synced', 'true');
 
         if (els.tbody) els.tbody.innerHTML = `<tr><td colspan="5" class="p-12 text-center text-brand-blue italic"><i class="fas fa-cog fa-spin mr-2"></i>Procesando base de datos...</td></tr>`;
 
-        // Send ArrayBuffer to worker for parsing and processing
+        // Send ArrayBuffers to worker for parsing and processing
         excelWorker.postMessage({
-            type: 'PARSE_EXCEL',
-            data: arrayBuffer,
+            type: 'PARSE_DUAL',
+            filtros: bufFiltros,
+            fijos: bufFijos,
             userDiscount: userDiscount
         });
 
@@ -608,6 +618,23 @@ window.openProductDetail = function (codigo, pushState = true) {
 
 
 
+
+    // Applications
+    const appsContainer = document.getElementById('modalApplications');
+    if (appsContainer) {
+        appsContainer.innerHTML = '';
+        if (item.aplicaciones) {
+            const apps = item.aplicaciones.split(/[,\n]/).filter(a => a.trim());
+            apps.forEach(a => {
+                const span = document.createElement('span');
+                span.className = "bg-white text-gray-700 px-2 py-1 rounded text-xs border border-gray-200 shadow-sm";
+                span.textContent = a;
+                appsContainer.appendChild(span);
+            });
+        } else {
+            appsContainer.innerHTML = '<span class="text-gray-400 italic text-xs">Información no disponible</span>';
+        }
+    }
 
     // Features
     const featContainer = document.getElementById('modalFeatures');
