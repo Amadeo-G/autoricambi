@@ -355,7 +355,16 @@ function applyFilters() {
         if (!searchRaw) return true;
 
         // Strategy 1: Standard Search (includes Description, Brand, etc.)
-        const itemText = normalizeText([item.codigo, item.descripcion, item.marca, item.rubro, item.subrubro].join(" "));
+        const itemText = normalizeText([
+            item.codigo,
+            item.descripcion,
+            item.marca,
+            item.rubro,
+            item.subrubro,
+            item.aplicaciones,
+            item.caracteristicas,
+            item.equivalentes
+        ].join(" "));
         const matchStandard = terms.every(t => itemText.includes(t));
         if (matchStandard) return true;
 
